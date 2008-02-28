@@ -1,37 +1,33 @@
 /**
- * This file is part of SIP-VoIP by the Touchmods-Team
- * (c) 2008 Christian Toepp <chris.touchmods@googlemail.com>
- * (c) 2008 Samuel <samuel@touchmods.net>
+ *  Siphon SIP-VoIP for iPhone and iPod Touch
+ *  Copyright (C) 2008 Samuel <samuelv@users.sourceforge.org>
  *
- * This application is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
  *
- * This application is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#include <sys/time.h>
-#import <UIKit/UIKit.h>
-#import "Touchmods.h"
 
-struct timeval tv;
+#import <UIKit/UIKit.h>
+#import "Siphon.h"
 
 int main(int argc, char **argv)
 {
     int returnCode = 0;
     
-    gettimeofday(&tv, NULL);
-    
     NSAutoreleasePool *autoreleasePool = [[ NSAutoreleasePool alloc ] init];
 
-    returnCode = UIApplicationMain( argc, argv, [ Touchmods class ] );
+    returnCode = UIApplicationMain( argc, argv, [ Siphon class ] );
     [ autoreleasePool release ];
     return returnCode;
 }
+

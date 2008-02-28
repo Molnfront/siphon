@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>nat</key>
+	<string>NO</string>
+	<key>password</key>
+	<string></string>
+	<key>server</key>
+	<string></string>
+	<key>stundomain</key>
+	<string></string>
+	<key>stunserver</key>
+	<string></string>
+	<key>timeout</key>
+	<string>1800</string>
+	<key>username</key>
+	<string></string>
+</dict>
+</plist>

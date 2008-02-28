@@ -156,9 +156,6 @@ pj_status_t sip_startup()
   app_config.rtp_cfg.port = 4000;
   
   /* Initialize application callbacks */
-#ifdef TIMER  
-  app_config.cfg.thread_cnt = 0;
-#endif  
   app_config.cfg.cb.on_incoming_call = &on_incoming_call;
   app_config.cfg.cb.on_call_media_state = &on_call_media_state;
   app_config.cfg.cb.on_call_state = &on_call_state;
@@ -167,25 +164,27 @@ pj_status_t sip_startup()
   status = pjsua_init(&app_config.cfg, &app_config.log_cfg, 
     &app_config.media_cfg);
   if (status != PJ_SUCCESS)
-    // FIXME: libérer le pool
-    return status;
+    goto error;
 
   /* Add UDP transport. */
   status = pjsua_transport_create(PJSIP_TRANSPORT_UDP,
           &app_config.udp_cfg, NULL/*&transport_id*/);
   if (status != PJ_SUCCESS)
-    // FIXME: libérer le pool
-    return status;
+    goto error;
       
   /* Add RTP transports */
   status = pjsua_media_transports_create(&app_config.rtp_cfg);
   if (status != PJ_SUCCESS)
-    // FIXME: libérer le pool
-    return status;
+    goto error;
  
   /* Initialization is done, now start pjsua */
   status = pjsua_start();
 
+  return status;
+
+error:
+  pj_pool_release(app_config.pool);
+  app_config.pool = NULL;
   return status;
 }
 

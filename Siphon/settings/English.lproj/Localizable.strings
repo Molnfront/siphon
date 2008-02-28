@@ -1,0 +1,26 @@
+/* SIP username */
+"Username" = "Username";
+
+/* SIP password */
+"Password" = "Password";
+
+/* SIP server */
+"Server" = "Server";
+
+/* Register Time-out */
+"Reg-Timeout" = "Reg-Timeout";
+
+/* Enable/Disable EDGE usage */
+"Siphon over EDGE" = "Siphon over EDGE";
+ 
+/* Enable/Disable NAT */
+"Enable Nat" = "Enable Nat";
+
+/* */
+"STUN Domain" = "STUN Domain";
+
+/* */
+"STUN Server" = "STUN Server";
+
+/* Enable/Disable log file */
+"Debugging log file" = "Debugging log file";

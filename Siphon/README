@@ -16,7 +16,7 @@ Compilation
  PJSIP
  =====
  To compile Siphon, you need headers and static libraries of pjsip.
- You can download on http://psjip.org/
+ You can download on http://pjsip.org/
  For the momennt, I don't release the media layer for ipod and iphone, so you 
  need to configure with this line :
    ./aconfigure --host=arm-apple-darwin --disable-speex-codec \

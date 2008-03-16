@@ -1,3 +1,5 @@
+"Account" = "Compte";
+
 /* SIP username */
 "Username" = "Nom d'utilisateur";
 
@@ -24,3 +26,15 @@
 
 /* Enable/Disable log file */
 "Debugging log file" = "Fichier journal";
+
+/* */
+"Advanced settings" = "Paramètres avancés";
+
+/* Logging Verbosity */
+"Disabled" = "Désactivé";
+"Error" = "Erreur";
+"Warning" = "Warning";
+"Info" = "Information";
+"Important" = "Important";
+"Detailed" = "Détaillé";
+"Very detailed" = "Très détaillé";

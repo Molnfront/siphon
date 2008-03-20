@@ -109,6 +109,9 @@ static void on_call_media_state(pjsua_call_id call_id)
     pjsua_call_info ci;
 
     pjsua_call_get_info(call_id, &ci);
+//    PJ_LOG(3,(THIS_FILE,"on_call_media_state status %d count %d",
+//      ci.media_status
+//      pjmedia_conf_get_connect_count()));
 
     if (ci.media_status == PJSUA_CALL_MEDIA_ACTIVE) 
     {
@@ -140,9 +143,9 @@ pj_status_t sip_startup()
   pj_strdup2_with_null(app_config.pool, &(app_config.cfg.user_agent), tmp);
   
   pjsua_logging_config_default(&(app_config.log_cfg));
-  app_config.log_cfg.msg_logging = PJ_FALSE;
-  app_config.log_cfg.console_level = 0;
-  app_config.log_cfg.level = 0; 
+  //app_config.log_cfg.msg_logging = PJ_FALSE;
+  app_config.log_cfg.console_level = 5;
+  app_config.log_cfg.level = 5;
   
   pjsua_media_config_default(&(app_config.media_cfg));
   app_config.media_cfg.clock_rate = 8000;
@@ -247,7 +250,12 @@ pj_status_t sip_connect(const char *server,
   acc_cfg.cred_info[0].username = pj_str(uname);
   acc_cfg.cred_info[0].data_type = PJSIP_CRED_DATA_PLAIN_PASSWD;
   acc_cfg.cred_info[0].data = pj_str(passwd);
+  acc_cfg.publish_enabled = PJ_TRUE;
   acc_cfg.reg_timeout = 1800; // FIXME: gestion du message 423 dans pjsip
+
+//{
+//  pjmedia_port *media_port = pjsua_set_no_snd_dev();
+//}
 
   status = pjsua_acc_add(&acc_cfg, PJ_TRUE, acc_id);
   if (status != PJ_SUCCESS) 

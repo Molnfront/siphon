@@ -434,11 +434,14 @@
 {
   if([btnCallHangup currentImage] == nil && [[lbNumber text] length] > 1)
   {
-    sip_dial(_sip_acc_id,
-      [[lbNumber text] UTF8String],
-      [[accountView getServer] UTF8String], &_sip_call_id);
-    // FIXME: si erreur
     [btnCallHangup setImage:imgHangup forState:0];
+    if (sip_dial(_sip_acc_id,
+      [[lbNumber text] UTF8String],
+      [[accountView getServer] UTF8String], &_sip_call_id))
+      {
+        [btnCallHangup setImage:nil forState:0];
+        [lbNumber setText:@""];
+      }
   }
   else if([btnCallHangup currentImage] == imgAnswer)
   {

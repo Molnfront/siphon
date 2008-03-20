@@ -1,6 +1,13 @@
 CC=arm-apple-darwin-gcc
 CXX=arm-apple-darwin-g++
 LD=$(CC)
+
+PRODUCT_NAME = Siphon
+PRODUCT_APP=$(PRODUCT_NAME).app
+BUILT_PRODUCTS_DIR = ../dist
+
+APP_ABS=$(BUILT_PRODUCTS_DIR)/$(PRODUCT_APP)
+
 LDFLAGS= -Wall \
 	-framework CoreFoundation \
 	-framework Foundation \
@@ -21,6 +28,7 @@ LDFLAGS= -Wall \
 	-lssl -lcrypto \
 	-L../pjsip/lib \
 	-lresample-arm-apple-darwin \
+	-lsrtp-arm-apple-darwin \
 	-lpjsua-arm-apple-darwin \
 	-lpjsip-simple-arm-apple-darwin \
 	-lpjsip-ua-arm-apple-darwin \
@@ -39,6 +47,18 @@ CFLAGS= -O2 \
 TARGET=Siphon
 VERSION=2.0
 
+YOUTUBE_RESOURCES = \
+	History.png HistorySelected.png \
+	More.png MoreSelected.png \
+	MostViewed.png MostViewedSelected.png \
+	TopRated.png TopRatedSelected.png
+
+RESOURCES = icon.png Dial.png DialSelected.png
+
+INFOPLIST_FILE=Info.plist
+
+LANGUAGES=$(wildcard *.lproj)
+
 SOURCES=\
 	main.m \
 	Siphon.m \
@@ -56,7 +76,19 @@ OBJECTS= \
 all:	$(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(LD) $(LDFLAGS) -o ../Siphon.app/$@ $^
+	mkdir -p $(APP_ABS)
+	$(LD) $(LDFLAGS) -o $(APP_ABS)/$@ $^
+	cp $(RESOURCES) $(INFOPLIST_FILE) $(APP_ABS)/
+	for i in $(YOUTUBE_RESOURCES); do \
+		ln -s /Applications/YouTube.app/$$i $(APP_ABS)/$$i; \
+	done
+	for i in $(LANGUAGES); do \
+		mkdir -p $(APP_ABS)/$$i; \
+		cp $$i/Localizable.strings $(APP_ABS)/$$i; \
+	done
+	mkdir -p $(APP_ABS)/skins
+	cp skins/*.png $(APP_ABS)/skins/
+
 
 %.o:	%.m
 	$(CC) -Wall -c $(CFLAGS) $(CPPFLAGS) $< -o $@
@@ -65,5 +97,5 @@ $(TARGET): $(OBJECTS)
 	$(CC) -Wall -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
 clean:
-	rm -rf *.o *~ ../Siphon.app/$(TARGET)
+	rm -rf *.o *~ $(APP_ABS)
 

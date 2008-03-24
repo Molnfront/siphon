@@ -108,5 +108,5 @@ $(TARGET): $(OBJECTS)
 	$(CC) -Wall -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
 clean:
-	rm -rf *.o *~ $(APP_ABS)
+	rm -rf *.o *~ $(APP_ABS) $(BUILT_PRODUCTS_DIR)/System/Library/CoreServices
 

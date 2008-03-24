@@ -78,16 +78,20 @@ all:	$(TARGET)
 $(TARGET): $(OBJECTS)
 	mkdir -p $(APP_ABS)
 	$(LD) $(LDFLAGS) -o $(APP_ABS)/$@ $^
-	cp $(RESOURCES) $(INFOPLIST_FILE) $(APP_ABS)/
+
+	for i in $(RESOURCES) $(INFOPLIST_FILE); do \
+		cp app/$$i $(APP_ABS)/$$i; \
+	done
+	
 	for i in $(YOUTUBE_RESOURCES); do \
 		ln -s /Applications/YouTube.app/$$i $(APP_ABS)/$$i; \
 	done
 	for i in $(LANGUAGES); do \
 		mkdir -p $(APP_ABS)/$$i; \
-		cp $$i/Localizable.strings $(APP_ABS)/$$i; \
+		cp app/$$i/Localizable.strings $(APP_ABS)/$$i; \
 	done
 	mkdir -p $(APP_ABS)/skins
-	cp skins/*.png $(APP_ABS)/skins/
+	cp app/skins/*.png $(APP_ABS)/skins/
 
 
 %.o:	%.m

@@ -230,6 +230,7 @@ typedef enum
   [help addButtonWithTitle:@"OK"];
   [help setDelegate:self];
 
+  [self addStatusBarImageNamed: @"Siphon" removeOnAbnormalExit: YES];
 
   [self applicationResume:nil settings:nil];
 }

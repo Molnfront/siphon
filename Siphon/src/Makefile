@@ -53,11 +53,13 @@ YOUTUBE_RESOURCES = \
 	MostViewed.png MostViewedSelected.png \
 	TopRated.png TopRatedSelected.png
 
-RESOURCES = icon.png Dial.png DialSelected.png
+RESOURCES = icon.png Dial.png DialSelected.png phone.png
 
 INFOPLIST_FILE=Info.plist
 
 LANGUAGES=$(wildcard *.lproj)
+
+STATUS_ICONS = Default_Siphon.png FSO_Siphon.png
 
 SOURCES=\
 	main.m \
@@ -84,7 +86,7 @@ $(TARGET): $(OBJECTS)
 	done
 	
 	for i in $(YOUTUBE_RESOURCES); do \
-		ln -s /Applications/YouTube.app/$$i $(APP_ABS)/$$i; \
+		ln -fs /Applications/YouTube.app/$$i $(APP_ABS)/$$i; \
 	done
 	for i in $(LANGUAGES); do \
 		mkdir -p $(APP_ABS)/$$i; \
@@ -92,6 +94,11 @@ $(TARGET): $(OBJECTS)
 	done
 	mkdir -p $(APP_ABS)/skins
 	cp app/skins/*.png $(APP_ABS)/skins/
+
+	mkdir -p $(BUILT_PRODUCTS_DIR)/System/Library/CoreServices/SpringBoard.app
+	for i in $(STATUS_ICONS); do \
+		cp app/$$i $(BUILT_PRODUCTS_DIR)/System/Library/CoreServices/SpringBoard.app/$$i; \
+	done
 
 
 %.o:	%.m

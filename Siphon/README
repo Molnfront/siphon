@@ -25,28 +25,26 @@ Compilation
  Like that, the media layer uses null sound. So you will be able to compile 
  Siphon, but you won't be able to talk and hear your callee.
  
- I will release the media layer for ipod in 2 weeks (I'm going to ski)
- 
+ You can find implementation of pjmedia for ipod touch at :
+ 	http://code.google.com/p/siphon/downloads/list
+  
  Siphon
  ======
  Go to src directory, modify makefile to indicate headers and static libraries.
- Make
+ Compile with : Make
+ 
+ Go to settings directory, modify makefile to indicate headers and static 
+ libraries.
+ Compile with : Make
  
 Installation
 ============
- Copy the Siphon.app directory on your iphone or ipod touch.
- 	cd /Applications/Siphon.app
+ Copy the content of dist directory on the root of your iphone or ipod touch.
+ 	cd /Widgets/Siphon.app
  Define executable right to Siphon.
  	chmod 755 Siphon
- Add these links :
- 	ln -s /Applications/YouTube.app/History.png
- 	ln -s /Applications/YouTube.app/HistorySelected.png
- 	ln -s /Applications/YouTube.app/More.png
- 	ln -s /Applications/YouTube.app/MoreSelected.png
- 	ln -s /Applications/YouTube.app/MostViewed.png
- 	ln -s /Applications/YouTube.app/MostViewedSelected.png
- 	ln -s /Applications/YouTube.app/TopRated.png
- 	ln -s /Applications/YouTube.app/TopRatedSelected.png
+ 	
+ Be careful, there are some symboic links.
 
 Help
 ====

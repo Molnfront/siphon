@@ -13,9 +13,9 @@
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleSignature</key>
-    <string>????</string>
+    <string>MBSC</string>
     <key>CFBundleVersion</key>
-    <string>1.0</string>
+    <string>2.0</string>
 	  <key>SBUsesNetwork</key>
 		<integer>3</integer>
 	</dict>

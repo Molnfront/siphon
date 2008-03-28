@@ -90,99 +90,9 @@
   [lbNumber setColor: fntColor];
   [lbNumber setBackgroundColor: bgColor];
 
-  UIImage* btn1Image = [UIImage imageNamed:@"skins/TEL-key-1.png"];
-  btn1 = [[UIPushButton alloc] init];
-  [btn1 setAutosizesToFit: NO];
-  [btn1 setFrame: CGRectMake(1.0f, 74.0f, 105.0f, 68.0f)];
-  [btn1 addTarget:self action:@selector(btn1Press:) forEvents:1];
-  [btn1 setImage:btn1Image forState:1];
-  [btn1 setEnabled: NO];
-
-  UIImage* btn2Image = [UIImage imageNamed:@"skins/TEL-key-2.png"];
-  btn2 = [[UIPushButton alloc] init];
-  [btn2 setAutosizesToFit: NO];
-  [btn2 setFrame: CGRectMake(107.0f, 74.0f, 105.0f, 68.0f)];
-  [btn2 addTarget:self action:@selector(btn2Press:) forEvents:1];
-  [btn2 setImage:btn2Image forState:1];
-  [btn2 setEnabled: NO];
-
-  UIImage* btn3Image = [UIImage imageNamed:@"skins/TEL-key-3.png"];
-  btn3 = [[UIPushButton alloc] init];
-  [btn3 setAutosizesToFit: NO];
-  [btn3 setFrame: CGRectMake(213.0f, 74.0f, 105.0f, 68.0f)];
-  [btn3 addTarget:self action:@selector(btn3Press:) forEvents:1];
-  [btn3 setImage:btn3Image forState:1];
-  [btn3 setEnabled: NO];
-
-  UIImage* btn4Image = [UIImage imageNamed:@"skins/TEL-key-4.png"];
-  btn4 = [[UIPushButton alloc] init];
-  [btn4 setAutosizesToFit: NO];
-  [btn4 setFrame: CGRectMake(1.0f, 142.0f, 105.0f, 68.0f)];
-  [btn4 addTarget:self action:@selector(btn4Press:) forEvents:1];
-  [btn4 setImage:btn4Image forState:1];
-  [btn4 setEnabled: NO];
-
-  UIImage* btn5Image = [UIImage imageNamed:@"skins/TEL-key-5.png"];
-  btn5 = [[UIPushButton alloc] init];
-  [btn5 setAutosizesToFit: NO];
-  [btn5 setFrame: CGRectMake(107.0f, 142.0f, 105.0f, 68.0f)];
-  [btn5 addTarget:self action:@selector(btn5Press:) forEvents:1];
-  [btn5 setImage:btn5Image forState:1];
-  [btn5 setEnabled: NO];
-
-  UIImage* btn6Image = [UIImage imageNamed:@"skins/TEL-key-6.png"];
-  btn6 = [[UIPushButton alloc] init];
-  [btn6 setAutosizesToFit: NO];
-  [btn6 setFrame: CGRectMake(213.0f, 142.0f, 105.0f, 68.0f)];
-  [btn6 addTarget:self action:@selector(btn6Press:) forEvents:1];
-  [btn6 setImage:btn6Image forState:1];
-  [btn6 setEnabled: NO];
-
-  UIImage* btn7Image = [UIImage imageNamed:@"skins/TEL-key-7.png"];
-  btn7 = [[UIPushButton alloc] init];
-  [btn7 setAutosizesToFit: NO];
-  [btn7 setFrame: CGRectMake(1.0f, 210.0f, 105.0f, 68.0f)];
-  [btn7 addTarget:self action:@selector(btn7Press:) forEvents:1];
-  [btn7 setImage:btn7Image forState:1];
-  [btn7 setEnabled: NO];
-
-  UIImage* btn8Image = [UIImage imageNamed:@"skins/TEL-key-8.png"];
-  btn8 = [[UIPushButton alloc] init];
-  [btn8 setAutosizesToFit: NO];
-  [btn8 setFrame: CGRectMake(107.0f, 210.0f, 105.0f, 68.0f)];
-  [btn8 addTarget:self action:@selector(btn8Press:) forEvents:1];
-  [btn8 setImage:btn8Image forState:1];
-  [btn8 setEnabled: NO];
-
-  UIImage* btn9Image = [UIImage imageNamed:@"skins/TEL-key-9.png"];
-  btn9 = [[UIPushButton alloc] init];
-  [btn9 setAutosizesToFit: NO];
-  [btn9 setFrame: CGRectMake(213.0f, 210.0f, 105.0f, 68.0f)];
-  [btn9 addTarget:self action:@selector(btn9Press:) forEvents:1];
-  [btn9 setImage:btn9Image forState:1];
-  [btn9 setEnabled: NO];
-
-  UIImage* btnStarImage = [UIImage imageNamed:@"skins/TEL-key-La.png"];
-  btnStar = [[UIPushButton alloc] init];
-  [btnStar setAutosizesToFit: NO];
-  [btnStar setFrame: CGRectMake(1.0f, 278.0f, 105.0f, 68.0f)];
-  [btnStar addTarget:self action:@selector(btnStarPress:) forEvents:1];
-  [btnStar setImage:btnStarImage forState:1];
-  [btnStar setEnabled: NO];
-
-  UIImage* btn0Image = [UIImage imageNamed:@"skins/TEL-key-0.png"];
-  btn0 = [[UIPushButton alloc] init];
-  [btn0 setAutosizesToFit: NO];
-  [btn0 setFrame: CGRectMake(107.0f, 278.0f, 105.0f, 68.0f)];
-  [btn0 addTarget:self action:@selector(btn0Press:) forEvents:1];
-  [btn0 setImage:btn0Image forState:1];
-  [btn0 setEnabled: NO];
-
-  UIImage* btnHashImage = [UIImage imageNamed:@"skins/TEL-key-Ra.png"];
-  btnHash = [[UIPushButton alloc] init];
-  [btnHash setAutosizesToFit: NO];
-  [btnHash setFrame: CGRectMake(213.0f, 278.0f, 105.0f, 68.0f)];
-  [btnHash setImage:btnHashImage forState:1];
+  _pad = [[DialerPhonePad alloc] initWithFrame:
+        CGRectMake(0.0f, 74.0f, 320.0f, 273.0f)];
+  [_pad setPlaysSounds:TRUE];
 
   // UIImage* btnAddImage = [UIImage imageNamed:@"skins/TEL-key-Lb.png"];
   imgConnecting = [UIImage imageNamed:@"skins/TEL-key-sip-connecting.png"];
@@ -228,18 +138,9 @@
   [incomming setDelegate:self];
 
   [self addSubview: lbNumber];
-  [self addSubview: btn1];
-  [self addSubview: btn2];
-  [self addSubview: btn3];
-  [self addSubview: btn4];
-  [self addSubview: btn5];
-  [self addSubview: btn6];
-  [self addSubview: btn7];
-  [self addSubview: btn8];
-  [self addSubview: btn9];
-  [self addSubview: btnStar];
-  [self addSubview: btn0];
-  [self addSubview: btnHash];
+
+  [self addSubview: _pad];
+  
   [self addSubview: btnAdd];
   [self addSubview: btnCallHangup];
   [self addSubview: btnDel];
@@ -274,77 +175,26 @@
   [sheet dismiss];
 }
 
--(void)appendChar:(NSString *)car
+/*** ***/
+- (void)phonePad:(TPPhonePad *)phonepad appendString:(NSString *)string
 {
-  NSString *curText = [lbNumber text];
+  NSLog(@"appendString %@ %@", phonepad, string);
+  
+    NSString *curText = [lbNumber text];
   if([lbNumber font] == font && [[lbNumber text] length] == 15)
   {
     [lbNumber setFont:font2];
   }
-  [lbNumber setText: [curText stringByAppendingString: car]];
+  [lbNumber setText: [curText stringByAppendingString: string]];
   if (_sip_call_id != PJSUA_INVALID_ID)
   {
-    const char *sd = [car UTF8String];
+    const char *sd = [string UTF8String];
     if (sd && strlen(sd) > 0)
     {
       sip_call_play_digit(_sip_call_id, sd[0]);
     }
   }
-}
-
-- (void)btnStarPress:(UIPushButton*)btn
-{
-  [self appendChar:@"*"];
-}
-
-- (void)btn1Press:(UIPushButton*)btn
-{
-  [self appendChar:@"1"];
-}
-
-- (void)btn2Press:(UIPushButton*)btn
-{
-  [self appendChar:@"2"];
-}
-
-- (void)btn3Press:(UIPushButton*)btn
-{
-  [self appendChar:@"3"];
-}
-
-- (void)btn4Press:(UIPushButton*)btn
-{
-  [self appendChar:@"4"];
-}
-
-- (void)btn5Press:(UIPushButton*)btn
-{
-  [self appendChar:@"5"];
-}
-
-- (void)btn6Press:(UIPushButton*)btn
-{
-  [self appendChar:@"6"];
-}
-
-- (void)btn7Press:(UIPushButton*)btn
-{
-  [self appendChar:@"7"];
-}
-
-- (void)btn8Press:(UIPushButton*)btn
-{
-  [self appendChar:@"8"];
-}
-
-- (void)btn9Press:(UIPushButton*)btn
-{
-  [self appendChar:@"9"];
-}
-
-- (void)btn0Press:(UIPushButton*)btn
-{
-  [self appendChar:@"0"];
+  
 }
 
 - (void)btnAddPress:(UIPushButton*)btn
@@ -369,6 +219,7 @@
     {
       return;
     }
+    
     if (sip_connect([[accountView getServer] UTF8String],
       [[accountView getUserName] UTF8String],
       [[accountView getPassword] UTF8String], &_sip_acc_id))
@@ -387,17 +238,9 @@
     [btnAdd setImage:imgConnecting forState:0];
    
     [btnAdd setImage:imgConnected forState:0];
-    [btn1 setEnabled: YES];
-    [btn2 setEnabled: YES];
-    [btn3 setEnabled: YES];
-    [btn4 setEnabled: YES];
-    [btn5 setEnabled: YES];
-    [btn6 setEnabled: YES];
-    [btn7 setEnabled: YES];
-    [btn8 setEnabled: YES];
-    [btn9 setEnabled: YES];
-    [btn0 setEnabled: YES];
-    [btnStar setEnabled: YES];
+
+    [_pad setDelegate:self];
+  
     [btnDel setEnabled: YES];
     [btnCallHangup setEnabled: YES];
     [lbNumber setText:@""];
@@ -412,17 +255,9 @@
     }
 
     [btnAdd setImage:nil forState:0];
-    [btn1 setEnabled: NO];
-    [btn2 setEnabled: NO];
-    [btn3 setEnabled: NO];
-    [btn4 setEnabled: NO];
-    [btn5 setEnabled: NO];
-    [btn6 setEnabled: NO];
-    [btn7 setEnabled: NO];
-    [btn8 setEnabled: NO];
-    [btn9 setEnabled: NO];
-    [btn0 setEnabled: NO];
-    [btnStar setEnabled: NO];
+
+    [_pad setDelegate:nil];
+    
     [btnDel setEnabled: NO];
     [btnCallHangup setEnabled: NO];
     [lbNumber setFont:font2];

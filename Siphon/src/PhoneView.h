@@ -24,21 +24,14 @@
 
 #import <pjsua-lib/pjsua.h>
 
+#import "DialerPhonePad.h"
+
 @interface PhoneView : UIView
 {
   UITextLabel *lbNumber;
-  UIPushButton *btn1;
-  UIPushButton *btn2;
-  UIPushButton *btn3;
-  UIPushButton *btn4;
-  UIPushButton *btn5;
-  UIPushButton *btn6;
-  UIPushButton *btn7;
-  UIPushButton *btn8;
-  UIPushButton *btn9;
-  UIPushButton *btnStar;
-  UIPushButton *btn0;
-  UIPushButton *btnHash;
+
+  DialerPhonePad *_pad;
+
   UIPushButton *btnAdd;
   UIImage *imgConnect;
   UIImage *imgConnecting;
@@ -67,16 +60,6 @@
 
 - (void)closeConn;
 
-- (void)btn1Press:(UIPushButton*)btn;
-- (void)btn2Press:(UIPushButton*)btn;
-- (void)btn3Press:(UIPushButton*)btn;
-- (void)btn4Press:(UIPushButton*)btn;
-- (void)btn5Press:(UIPushButton*)btn;
-- (void)btn6Press:(UIPushButton*)btn;
-- (void)btn7Press:(UIPushButton*)btn;
-- (void)btn8Press:(UIPushButton*)btn;
-- (void)btn9Press:(UIPushButton*)btn;
-- (void)btn0Press:(UIPushButton*)btn;
 - (void)btnAddPress:(UIPushButton*)btn;
 - (void)btnCallHangupPress:(UIPushButton*)btn;
 - (void)btnDelPress:(UIPushButton*)btn;

@@ -143,9 +143,9 @@ pj_status_t sip_startup()
   pj_strdup2_with_null(app_config.pool, &(app_config.cfg.user_agent), tmp);
   
   pjsua_logging_config_default(&(app_config.log_cfg));
-  //app_config.log_cfg.msg_logging = PJ_FALSE;
-  app_config.log_cfg.console_level = 5;
-  app_config.log_cfg.level = 5;
+  app_config.log_cfg.msg_logging = PJ_FALSE;
+  app_config.log_cfg.console_level = 0;
+  app_config.log_cfg.level = 0;
   
   pjsua_media_config_default(&(app_config.media_cfg));
   app_config.media_cfg.clock_rate = 8000;

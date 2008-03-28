@@ -6,7 +6,7 @@ PRODUCT_NAME = Siphon
 PRODUCT_APP=$(PRODUCT_NAME).app
 BUILT_PRODUCTS_DIR = ../dist
 
-APP_ABS=$(BUILT_PRODUCTS_DIR)/$(PRODUCT_APP)
+APP_ABS=$(BUILT_PRODUCTS_DIR)/Widgets/$(PRODUCT_APP)
 
 LDFLAGS= -Wall \
 	-framework CoreFoundation \
@@ -24,6 +24,7 @@ LDFLAGS= -Wall \
 	-framework WebKit \
 	-framework AddressBookUI \
 	-framework AddressBook \
+	-framework TelephonyUI \
 	-lobjc \
 	-lssl -lcrypto \
 	-L../pjsip/lib \
@@ -53,7 +54,8 @@ YOUTUBE_RESOURCES = \
 	MostViewed.png MostViewedSelected.png \
 	TopRated.png TopRatedSelected.png
 
-RESOURCES = icon.png Dial.png DialSelected.png phone.png
+RESOURCES = Default.png icon.png Dial.png DialSelected.png \
+	dialerkeypad.png dialerkeypad_pressed.png
 
 INFOPLIST_FILE=Info.plist
 
@@ -66,6 +68,7 @@ SOURCES=\
 	Siphon.m \
 	AccountView.m \
 	PhoneView.m \
+	DialerPhonePad.m \
 	ring.c \
 	call.c \
 	dtmf.c

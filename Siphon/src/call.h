@@ -27,12 +27,11 @@ PJ_BEGIN_DECL
 pj_status_t sip_startup    ();
 pj_status_t sip_cleanup    ();
 
-pj_status_t sip_connect    (const char *server, const char *uname, 
-                            const char *passwd, pjsua_acc_id *acc_id);
+pj_status_t sip_connect    (pjsua_acc_id *acc_id);
 pj_status_t sip_disconnect (pjsua_acc_id *acc_id);
 
 pj_status_t sip_dial       (pjsua_acc_id acc_id, const char *number, 
-                            const char *sip_domain, pjsua_call_id *call_id);
+                            pjsua_call_id *call_id);
 pj_status_t sip_answer     ();
 pj_status_t sip_hangup     (pjsua_call_id *call_id);
 

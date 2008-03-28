@@ -32,7 +32,6 @@
 #import <iTunesStore/ISNetworkController.h>
 #import <WebCore/WebFontCache.h>
 
-#import "AccountView.h"
 #import "PhoneView.h"
 
 #include "call.h"
@@ -45,14 +44,12 @@
     return ([[ISNetworkController sharedInstance] networkType] == 2);
 }
 
--(id)initWithFrame:(struct CGRect)frame account:(AccountView*)account
+-(id)initWithFrame:(struct CGRect)frame
 {
   self = [super initWithFrame:frame];
   
   _sip_acc_id = PJSUA_INVALID_ID;
   _sip_call_id = PJSUA_INVALID_ID;
-
-  accountView = account;
   
   UIImageView *background = [[[UIImageView alloc] 
       initWithFrame:CGRectMake(frame.origin.x, frame.origin.y, 
@@ -178,14 +175,14 @@
 /*** ***/
 - (void)phonePad:(TPPhonePad *)phonepad appendString:(NSString *)string
 {
-  NSLog(@"appendString %@ %@", phonepad, string);
-  
-    NSString *curText = [lbNumber text];
-  if([lbNumber font] == font && [[lbNumber text] length] == 15)
+  NSString *curText = [lbNumber text];
+  if([lbNumber font] == font && [curText length] == 15)
   {
     [lbNumber setFont:font2];
   }
   [lbNumber setText: [curText stringByAppendingString: string]];
+  
+  /* DTMF */
   if (_sip_call_id != PJSUA_INVALID_ID)
   {
     const char *sd = [string UTF8String];
@@ -219,18 +216,20 @@
     {
       return;
     }
-    
-    if (sip_connect([[accountView getServer] UTF8String],
-      [[accountView getUserName] UTF8String],
-      [[accountView getPassword] UTF8String], &_sip_acc_id))
+NSLog(@"edge %d", [[NSUserDefaults standardUserDefaults] boolForKey: @"siphonOverEDGE"]);
+NSLog(@"nat %d", [[NSUserDefaults standardUserDefaults] boolForKey: @"sip_nat"]);
+NSLog(@"stun domain %@", [[NSUserDefaults standardUserDefaults] stringForKey: @"sip_stunDomain"]);
+NSLog(@"stun server %@", [[NSUserDefaults standardUserDefaults] stringForKey: @"sip_stunServer"]);
+
+    if (sip_connect(&_sip_acc_id))
     { 
       UIAlertSheet * zSheet;
     
-    zSheet = [[UIAlertSheet alloc] initWithFrame:CGRectMake(0,240,320,240)];
-    [zSheet setTitle:@"Error"];
-    [zSheet setBodyText: @"\nConnection error\nVerify your account parameters\n\n"];
-    [zSheet setRunsModal: true]; //I'm a big fan of running sheet modally
-    [zSheet popupAlertAnimated:YES];
+      zSheet = [[UIAlertSheet alloc] initWithFrame:CGRectMake(0,240,320,240)];
+      [zSheet setTitle:@"Error"];
+      [zSheet setBodyText: @"\nConnection error\nVerify your account parameters\n\n"];
+      [zSheet setRunsModal: true]; //I'm a big fan of running sheet modally
+      [zSheet popupAlertAnimated:YES];
       
       return ;
     }
@@ -270,9 +269,7 @@
   if([btnCallHangup currentImage] == nil && [[lbNumber text] length] > 1)
   {
     [btnCallHangup setImage:imgHangup forState:0];
-    if (sip_dial(_sip_acc_id,
-      [[lbNumber text] UTF8String],
-      [[accountView getServer] UTF8String], &_sip_call_id))
+    if (sip_dial(_sip_acc_id, [[lbNumber text] UTF8String], &_sip_call_id))
       {
         [btnCallHangup setImage:nil forState:0];
         [lbNumber setText:@""];

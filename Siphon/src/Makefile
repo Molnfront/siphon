@@ -66,11 +66,10 @@ STATUS_ICONS = Default_Siphon.png FSO_Siphon.png
 SOURCES=\
 	main.m \
 	Siphon.m \
-	AccountView.m \
 	PhoneView.m \
 	DialerPhonePad.m \
 	ring.c \
-	call.c \
+	call.m \
 	dtmf.c
 
 

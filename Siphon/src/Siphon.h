@@ -21,7 +21,6 @@
 #import <UIKit/UIKit.h>
 #import <UIKit/UIAlertSheet.h>
 
-#import "AccountView.h"
 #import "PhoneView.h"
 
 @interface Siphon : UIApplication
@@ -33,10 +32,7 @@
   UIButtonBar      *_buttonBar;
   int               _currentView;
 
-  AccountView *accountView;
   PhoneView *_phoneView;
-
-//  PhoneView *_phoneView;
 
   UIAlertSheet *help;
 }

@@ -40,7 +40,7 @@
   UIImage *imgAnswer;
   UIImage *imgHangup;
   UIPushButton *btnDel;
-  AccountView *accountView;
+
 
   UIAlertSheet *incomming;
 
@@ -54,7 +54,7 @@
   pjsua_call_id _sip_call_id;
 }
 
--(id)initWithFrame:(struct CGRect)frame account:(AccountView*)account;
+-(id)initWithFrame:(struct CGRect)rect;
 
 - (void)alertSheet:(UIAlertSheet*)sheet buttonClicked:(int)button;
 

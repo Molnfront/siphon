@@ -153,9 +153,11 @@ pj_status_t sip_startup()
 //  app_config.media_cfg.quality = 2;
   
   pjsua_transport_config_default(&(app_config.udp_cfg));
+NSLog(@"port %d", [[NSUserDefaults standardUserDefaults] integerForKey: @"sip_localport"]);
   app_config.udp_cfg.port = 5060;
   
   pjsua_transport_config_default(&(app_config.rtp_cfg));
+NSLog(@"rtp %d", [[NSUserDefaults standardUserDefaults] integerForKey: @"sip_rtpport"]);  
   app_config.rtp_cfg.port = 4000;
   
   /* Initialize application callbacks */

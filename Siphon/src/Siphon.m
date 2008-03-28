@@ -20,6 +20,7 @@
 
 #import "Siphon.h"
 #import <UIKit/UINavBarPrompt.h>
+#import <UIKit/UIButtonBar.h>
 
 #import <Message/NetworkController.h>
 #import <iTunesStore/ISNetworkController.h>
@@ -117,17 +118,7 @@ typedef enum
            NSLocalizedString(@"Contacts", @"Siphon view"), kUIButtonBarButtonTitle,
            @"0", kUIButtonBarButtonType,
            nil 
-           ],
-    [ NSDictionary dictionaryWithObjectsAndKeys:
-           @"buttonBarItemTapped:", kUIButtonBarButtonAction,
-           @"More.png", kUIButtonBarButtonInfo,
-           @"MoreSelected.png", kUIButtonBarButtonSelectedInfo,
-           [ NSNumber numberWithInt: 5], kUIButtonBarButtonTag,
-           self, kUIButtonBarButtonTarget,
-           NSLocalizedString(@"Settings", @"Siphon view"), kUIButtonBarButtonTitle,
-           @"0", kUIButtonBarButtonType,
-           nil 
-           ],
+           ],         
     nil
   ];
 }
@@ -154,10 +145,7 @@ typedef enum
         break;
       case 4:
         NSLog(@"Contacts");       
-        break;
-      case 5:
-        [_transition transition:UITransitionShiftImmediate toView:accountView];
-        break;
+        break;        
     }
   }
 }
@@ -173,9 +161,10 @@ typedef enum
   [buttonBar setDelegate:self];
   [buttonBar setBarStyle:1];
   [buttonBar setButtonBarTrackingMode: 2];
-  
-  int buttons[5] = { 1, 2, 3, 4, 5 };
-  [buttonBar registerButtonGroup:0 withButtons:buttons withCount: 5];
+
+  int buttons[4] = { 1, 2, 3, 4};
+  [buttonBar registerButtonGroup:0 withButtons:buttons withCount: 4];
+ 
   [buttonBar showButtonGroup: 0 withDuration: 0.0f];
   
   [ buttonBar showSelectionForButton: 3];
@@ -205,12 +194,8 @@ typedef enum
   _transition = [[UITransitionView alloc] initWithFrame: windowRect];
   [_mainView addSubview: _transition];
 
-  accountView = [[AccountView alloc] initWithFrame: CGRectMake(0.0f, 0.0f, 320.0f, 414.0f)];
-//  accountView = [[TMAccountView alloc] initWithFrame: windowRect];
-  [accountView myinit];
-
-  _phoneView = [[PhoneView alloc] initWithFrame: windowRect account:accountView]; 
-
+  _phoneView = [[PhoneView alloc] initWithFrame: windowRect]; 
+  
   _buttonBar = [ self createButtonBar ];
 
   _currentView = 3;

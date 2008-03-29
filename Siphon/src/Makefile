@@ -55,11 +55,12 @@ YOUTUBE_RESOURCES = \
 	TopRated.png TopRatedSelected.png
 
 RESOURCES = Default.png icon.png Dial.png DialSelected.png \
-	dialerkeypad.png dialerkeypad_pressed.png
+	dialerkeypad.png dialerkeypad_pressed.png \
+	settings.png
 
 INFOPLIST_FILE=Info.plist
 
-LANGUAGES=$(wildcard *.lproj)
+LANGUAGES=English.lproj French.lproj
 
 STATUS_ICONS = Default_Siphon.png FSO_Siphon.png
 

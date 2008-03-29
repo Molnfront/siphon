@@ -19,11 +19,15 @@
  */
 
 #import "Siphon.h"
+#import "version.h"
+
 #import <UIKit/UINavBarPrompt.h>
 #import <UIKit/UIButtonBar.h>
 
 #import <Message/NetworkController.h>
 #import <iTunesStore/ISNetworkController.h>
+
+#import <GraphicsServices/GraphicsServices.h>
 
 #include <unistd.h>
 
@@ -222,10 +226,49 @@ typedef enum
 
 - (void)applicationResume:(struct __GSEvent *)event settings:(id)settings
 {
+  NSUserDefaults *userDef;
   NSLog(@"Resume");
-  if (0)
+  userDef = [NSUserDefaults standardUserDefaults];
+  if (![[userDef objectForKey: @"sip_user"] length])
   {
-    // Settings are not defined !!!
+    // TODO: go to settings immediately
+    
+    UINavigationBar *navBar = [[UINavigationBar alloc] init];
+    [navBar setFrame:CGRectMake(0, 0, 320,45)];
+    [navBar pushNavigationItem: [[UINavigationItem alloc] initWithTitle:VERSION_STRING]];
+    [navBar setBarStyle: 0];
+    [_mainView addSubview:navBar];
+
+    float bg[] = {255., 255., 255., 1.};
+    struct CGColor *bgColor = CGColorCreate(CGColorSpaceCreateDeviceRGB(),bg);
+    [_mainView setBackgroundColor: bgColor];
+
+    UIImageView *background = [[UIImageView alloc] 
+      initWithFrame:CGRectMake(0.0f, 45.0f, 320.0f, 185.0f)];
+    [background setImage:[[UIImage alloc] 
+      initWithContentsOfFile:[[NSBundle mainBundle] pathForResource :@"settings" ofType:@"png"]]];
+    [_mainView addSubview:background];
+    float transparentComponents[4] = {0, 0, 0, 0};
+    UITextLabel *text = [[UITextLabel alloc] 
+      initWithFrame: CGRectMake(0, 220, 320, 200.0f)];
+    [text setBackgroundColor: CGColorCreate(CGColorSpaceCreateDeviceRGB(), 
+      transparentComponents)];
+    [text setCentersHorizontally: YES];
+    [text setWrapsText: YES];
+    [text setFont:GSFontCreateWithName("Helvetica", 0, 18.0f)];
+    [text setText:NSLocalizedString(@"Siphon requires a valid\nSIP account.\n\nTo enter this information, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry.", @"Intro page greeting")];
+    [_mainView addSubview:text];
+
+    text = [[UITextLabel alloc] initWithFrame: CGRectMake(0, 420, 320, 40.0f)];
+    [text setBackgroundColor: CGColorCreate(CGColorSpaceCreateDeviceRGB(), transparentComponents)];
+    [text setCentersHorizontally: YES];
+    [text setFont:GSFontCreateWithName("Helvetica", 0, 16.0f)];
+    [text setText:NSLocalizedString(@"Press the Home button", @"Intro page greeting")];
+    [_mainView addSubview:text];
+    
+    
+    [_buttonBar setAlpha: 0];
+    _currentView = 0;
   }
   else
   {
@@ -243,7 +286,7 @@ typedef enum
 
 - (void)applicationSuspend:(struct __GSEvent *)event
 {
-  NSLog(@"Suspending\n");
+  NSLog(@"Suspending");
 }
 
 - (void)alertSheet:(UIAlertSheet*)sheet buttonClicked:(int)button

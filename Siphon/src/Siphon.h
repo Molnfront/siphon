@@ -22,6 +22,7 @@
 #import <UIKit/UIAlertSheet.h>
 
 #import "PhoneView.h"
+#import "ContactView.h"
 
 @interface Siphon : UIApplication
 {
@@ -32,7 +33,8 @@
   UIButtonBar      *_buttonBar;
   int               _currentView;
 
-  PhoneView *_phoneView;
+  PhoneView    *_phoneView;
+  ContactView *_contactView;
 
   UIAlertSheet *help;
 }

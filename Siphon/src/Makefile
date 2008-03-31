@@ -68,6 +68,7 @@ SOURCES=\
 	main.m \
 	Siphon.m \
 	PhoneView.m \
+	ContactView.m \
 	DialerPhonePad.m \
 	ring.c \
 	call.m \

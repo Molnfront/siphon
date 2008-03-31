@@ -137,18 +137,16 @@ typedef enum
     switch (button) 
     {
       case 1:
-        //[_transition transition:UITransitionFade toView:_radioListView];
         NSLog(@"Favorites");
         break;
       case 2:
         NSLog(@"Calls");
-        //[_transition transition:UITransitionFade toView:_chartsView];
         break;
       case 3:
         [_transition transition:UITransitionShiftImmediate toView:_phoneView];
         break;
       case 4:
-        NSLog(@"Contacts");       
+        [_transition transition:UITransitionShiftImmediate toView:_contactView];
         break;        
     }
   }
@@ -200,6 +198,11 @@ typedef enum
 
   _phoneView = [[PhoneView alloc] initWithFrame: windowRect]; 
   
+  _contactView = [[ContactView alloc] initWithFrame: /*windowRect*/
+    CGRectMake(windowRect.origin.x, windowRect.origin.y, 
+      windowRect.size.width, windowRect.size.height - 49.0f)];
+  [_contactView setDelegate: self];
+
   _buttonBar = [ self createButtonBar ];
 
   _currentView = 3;
@@ -297,6 +300,17 @@ typedef enum
   }
 
   [help dismiss];
+}
+
+/** FIXME plutot à mettre dans l'objet qui gère les appels **/
+- (void)contactSelected:(NSString *)phoneNumber
+{
+  // Check selected value
+  NSString* selectedName = [_contactView getSelectedContactName];
+  NSString* selectedPhone = [_contactView getSelectedPropertyValue];
+  NSLog(@"Contact %@, number %@ is selected",selectedName,selectedPhone);
+//  NSLog(@"OK. Phonenumber: %s",[[_contactsView getSelectedPropertyValue] UTF8String]);
+  NSLog(@"OK. Phonenumber: %@",phoneNumber);
 }
 
 @end

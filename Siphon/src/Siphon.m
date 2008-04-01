@@ -31,6 +31,8 @@
 
 #include <unistd.h>
 
+/*extern volatile*/ float _siphon_volume;
+
 typedef enum
 {
   UITransitionShiftImmediate = 0, // actually, zero or anything > 9
@@ -175,6 +177,15 @@ typedef enum
 }
 
 /************ **************/
+- (void)volumeChange:(NSNotification *)notification 
+{
+  NSString *audioDeviceName;
+  AVSystemController *newav = [ notification object ];
+  [newav getActiveCategoryVolume:&_siphon_volume andName:&audioDeviceName];
+  NSLog(@"Category %@ volume %f\n", audioDeviceName, _siphon_volume);
+}
+
+/************ **************/
 - (void) applicationDidFinishLaunching: (id) unused
 {
   NSLog(@"Waking up on an %s (%@)...\n", [self hasTelephony] ? "iPhone" : "iPod Touch", 
@@ -208,6 +219,13 @@ typedef enum
   _currentView = 3;
 
   [_mainView addSubview: _buttonBar];
+
+  _avs = [AVSystemController sharedAVSystemController];
+  [[NSNotificationCenter defaultCenter] addObserver: self 
+    selector:@selector(volumeChange:) 
+    name: @"AVSystemController_SystemVolumeDidChangeNotification"
+    object: _avs ];
+
 
   help = [[UIAlertSheet alloc] initWithFrame:CGRectMake(20.0f, 20.0f, 280.0f, 300.0f)];
   [help setTitle: @"About Siphon"];

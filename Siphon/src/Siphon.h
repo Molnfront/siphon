@@ -20,6 +20,7 @@
 
 #import <UIKit/UIKit.h>
 #import <UIKit/UIAlertSheet.h>
+#import <Celestial/AVSystemController.h>
 
 #import "PhoneView.h"
 #import "ContactView.h"
@@ -37,6 +38,8 @@
   ContactView *_contactView;
 
   UIAlertSheet *help;
+  
+  AVSystemController *_avs;
 }
 - (void)alertSheet:(UIAlertSheet*)sheet buttonClicked:(int)button;
 

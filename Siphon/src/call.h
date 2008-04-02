@@ -22,6 +22,8 @@
 
 #include <pjsua-lib/pjsua.h>
 
+#define VOLUME_MULT 8.0f
+
 PJ_BEGIN_DECL
 
 pj_status_t sip_startup    ();

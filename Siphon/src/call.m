@@ -18,6 +18,7 @@
  */
 
 #import <Foundation/NSUserDefaults.h>
+#import <Celestial/AVSystemController.h>
 
 #include <pjsua-lib/pjsua.h>
 
@@ -110,6 +111,10 @@ static void on_call_media_state(pjsua_call_id call_id)
 {
     pjsua_call_info ci;
 
+    AVSystemController *avs;
+    NSString *audioDeviceName;
+    float     volume;
+
     pjsua_call_get_info(call_id, &ci);
 //    PJ_LOG(3,(THIS_FILE,"on_call_media_state status %d count %d",
 //      ci.media_status
@@ -120,8 +125,16 @@ static void on_call_media_state(pjsua_call_id call_id)
       // When media is active, connect call to sound device.
       pjsua_conf_connect(ci.conf_slot, 0);
       pjsua_conf_connect(0, ci.conf_slot);
-      pjsua_conf_adjust_tx_level(0, 4.0);
+
       pjsua_conf_adjust_rx_level(0, 3.0);
+      // TODO: deplace somewhere but I don't know where for the moment !!! 
+      {
+        NSAutoreleasePool *autoreleasePool = [[ NSAutoreleasePool alloc ] init];
+        avs = [ AVSystemController sharedAVSystemController ];
+        [ avs getActiveCategoryVolume: &volume andName: &audioDeviceName ];
+        [ autoreleasePool release ];
+      }
+      pjsua_conf_adjust_tx_level(0, VOLUME_MULT * volume);
     }
 }
 

@@ -20,6 +20,7 @@
 
 #import "Siphon.h"
 #import "version.h"
+#import "call.h"
 
 #import <UIKit/UINavBarPrompt.h>
 #import <UIKit/UIButtonBar.h>
@@ -30,8 +31,6 @@
 #import <GraphicsServices/GraphicsServices.h>
 
 #include <unistd.h>
-
-/*extern volatile*/ float _siphon_volume;
 
 typedef enum
 {
@@ -179,10 +178,14 @@ typedef enum
 /************ **************/
 - (void)volumeChange:(NSNotification *)notification 
 {
+  float     volume;
   NSString *audioDeviceName;
   AVSystemController *newav = [ notification object ];
-  [newav getActiveCategoryVolume:&_siphon_volume andName:&audioDeviceName];
-  NSLog(@"Category %@ volume %f\n", audioDeviceName, _siphon_volume);
+  
+  [newav getActiveCategoryVolume:&volume andName:&audioDeviceName];
+  pjsua_conf_adjust_tx_level(0, volume * VOLUME_MULT);
+  
+  //  NSLog(@"Category %@ volume %f\n", audioDeviceName, volume);
 }
 
 /************ **************/

@@ -169,9 +169,7 @@ typedef enum
   [buttonBar registerButtonGroup:0 withButtons:buttons withCount: 4];
  
   [buttonBar showButtonGroup: 0 withDuration: 0.0f];
-  
-  [ buttonBar showSelectionForButton: 3];
-  
+
   return buttonBar;
 }
 
@@ -218,9 +216,6 @@ typedef enum
   [_contactView setDelegate: self];
 
   _buttonBar = [ self createButtonBar ];
-
-  _currentView = 3;
-
   [_mainView addSubview: _buttonBar];
 
   _avs = [AVSystemController sharedAVSystemController];
@@ -229,10 +224,8 @@ typedef enum
     name: @"AVSystemController_SystemVolumeDidChangeNotification"
     object: _avs ];
 
-
   help = [[UIAlertSheet alloc] initWithFrame:CGRectMake(20.0f, 20.0f, 280.0f, 300.0f)];
   [help setTitle: @"About Siphon"];
- 
 
   [help setBodyText:@"Siphon Version 2.0\n"
     "Samuel, Metabaron\n"
@@ -289,14 +282,14 @@ typedef enum
     [text setFont:GSFontCreateWithName("Helvetica", 0, 16.0f)];
     [text setText:NSLocalizedString(@"Press the Home button", @"Intro page greeting")];
     [_mainView addSubview:text];
-    
-    
+
     [_buttonBar setAlpha: 0];
     _currentView = 0;
   }
   else
   {
     [_transition transition:UITransitionShiftImmediate toView:_phoneView];
+    [_buttonBar showSelectionForButton: 3];
     [_buttonBar setAlpha: 1];
      _currentView = 3;
   }
@@ -306,11 +299,19 @@ typedef enum
 {
   NSLog(@"Terminate");
 //  [phoneView closeConn];
+  exit(0);
 }
 
 - (void)applicationSuspend:(struct __GSEvent *)event
 {
-  NSLog(@"Suspending");
+  if(_currentView) 
+  {
+    NSLog(@"Suspending\n");
+  } 
+  else 
+  {
+    [self applicationWillTerminate];
+  }
 }
 
 - (void)alertSheet:(UIAlertSheet*)sheet buttonClicked:(int)button

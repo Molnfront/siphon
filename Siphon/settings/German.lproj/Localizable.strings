@@ -13,7 +13,7 @@
 "Reg-Timeout" = "Reg-Timeout";
 
 /* Enable/Disable EDGE usage */
-"Siphon over EDGE" = "Verbindung über EDGE";
+"Siphon over EDGE" = "Verbindung Ãœber EDGE";
  
 /* Enable/Disable NAT */
 "Enable Nat" = "Aktiviere NAT";

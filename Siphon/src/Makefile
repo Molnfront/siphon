@@ -60,7 +60,7 @@ RESOURCES = Default.png icon.png Dial.png DialSelected.png \
 
 INFOPLIST_FILE=Info.plist
 
-LANGUAGES=English.lproj French.lproj German.lproj
+LANGUAGES=English.lproj French.lproj German.lproj Spanish.lproj
 
 STATUS_ICONS = Default_Siphon.png FSO_Siphon.png
 

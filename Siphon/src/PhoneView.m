@@ -81,11 +81,11 @@
   lbNumber = [[UITextLabel alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 65.0f)];
   [lbNumber setCentersHorizontally:TRUE];
   [lbNumber setFont: font2];
-
-  [lbNumber setText: @"   Please connect to SIP-Server"];
- 
+  [lbNumber setAlignment: 1]; // Center
   [lbNumber setColor: fntColor];
   [lbNumber setBackgroundColor: bgColor];
+  [lbNumber setText: NSLocalizedString(@"Please connect to SIP-Server", 
+    @"PhoneView")];
 
   _pad = [[DialerPhonePad alloc] initWithFrame:
         CGRectMake(0.0f, 74.0f, 320.0f, 273.0f)];
@@ -176,10 +176,6 @@
 - (void)phonePad:(TPPhonePad *)phonepad appendString:(NSString *)string
 {
   NSString *curText = [lbNumber text];
-  if([lbNumber font] == font && [curText length] == 15)
-  {
-    [lbNumber setFont:font2];
-  }
   [lbNumber setText: [curText stringByAppendingString: string]];
   
   /* DTMF */
@@ -244,6 +240,7 @@ NSLog(@"stun server %@", [[NSUserDefaults standardUserDefaults] stringForKey: @"
     [btnCallHangup setEnabled: YES];
     [lbNumber setText:@""];
     [lbNumber setFont:font];
+    [lbNumber setTextAutoresizesToFit:YES];
   }
   else
   {  
@@ -259,8 +256,11 @@ NSLog(@"stun server %@", [[NSUserDefaults standardUserDefaults] stringForKey: @"
     
     [btnDel setEnabled: NO];
     [btnCallHangup setEnabled: NO];
+
     [lbNumber setFont:font2];
-    [lbNumber setText:@"   Please connect to SIP-Server"];
+    [lbNumber setTextAutoresizesToFit:NO];
+    [lbNumber setText:NSLocalizedString(@"Please connect to SIP-Server", 
+      @"PhoneView")];
   }
 }
 
@@ -291,11 +291,9 @@ NSLog(@"stun server %@", [[NSUserDefaults standardUserDefaults] stringForKey: @"
 - (void)btnDelPress:(UIPushButton*)btn
 {
   NSString *curText = [lbNumber text];
-  if([curText length] > 0){
+  if([curText length] > 0)
+  {
     [lbNumber setText: [curText substringToIndex:([curText length]-1)]];
-  }
-  if([lbNumber font] == font2 && [[lbNumber text] length] == 15){
-    [lbNumber setFont:font];
   }
 }
 

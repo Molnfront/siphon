@@ -38,8 +38,6 @@
 #include "call.h"
 #include "dtmf.h"
 
-extern Siphon *theApp;
-
 @implementation PhoneView
 
 - (BOOL)hasWiFiConnection 
@@ -146,6 +144,7 @@ extern Siphon *theApp;
       ([_delegate respondsToSelector:@selector(dialup:)])) 
     {
       [_delegate dialup: [lbNumber text]];
+      [lbNumber setText:@""];
     }
 }
 

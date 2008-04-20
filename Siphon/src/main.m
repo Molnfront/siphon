@@ -68,9 +68,9 @@ void removePrefBundle(NSString *settingsFile)
 
 int main(int argc, char **argv)
 {
-    int returnCode = 0;
-    
-    NSAutoreleasePool *autoreleasePool = [[ NSAutoreleasePool alloc ] init];
+  int returnCode = 0;
+  
+  NSAutoreleasePool *autoreleasePool = [[ NSAutoreleasePool alloc ] init];
 
   if(argc > 1 && !strcmp(argv[1],"--installPrefBundle")) 
   {
@@ -85,8 +85,8 @@ int main(int argc, char **argv)
     return 0;
   }
 
-    returnCode = UIApplicationMain( argc, argv, [ Siphon class ] );
-    [ autoreleasePool release ];
-    return returnCode;
+  returnCode = UIApplicationMain( argc, argv, [ Siphon class ] );
+  [ autoreleasePool release ];
+  return returnCode;
 }
 

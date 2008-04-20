@@ -46,8 +46,8 @@ extern int       ABCRecordCopyValue(struct CPRecord *,int );
 };
 #endif
 
-/** FIXME plutot à mettre dans l'objet qui gère les appels **/
-@protocol Siphon
+@protocol ContactView
+// TODO rename to dialup ???
 -(void) contactSelected:(NSString *)phoneNumber;
 @end
 

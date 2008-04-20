@@ -20,6 +20,7 @@
 
 #import "Siphon.h"
 #import "version.h"
+
 #import "call.h"
 
 #import <UIKit/UINavBarPrompt.h>
@@ -38,15 +39,19 @@ typedef enum
   UITransitionShiftLeft = 1,
   UITransitionShiftRight = 2,
   UITransitionShiftUp = 3,
+  UITransitionPeelUpDown = 4,
+  UITransitionPeelDownUp = 5,
   UITransitionFade = 6,
-  UITransitionShiftDown = 7
+  UITransitionShiftDown = 7,
+  UITransitionPeelUpOver = 8,
+  UITransitionPeelDownOver = 9
 } UITransitionStyle;
 
+#define THIS_FILE "Siphon.m"
 
 @implementation Siphon
 
 /***** NETWORK : WIFI, EDGE ********/
-
 - (BOOL)hasWiFiConnection 
 {
     return ([[ISNetworkController sharedInstance] networkType] == 2);
@@ -78,6 +83,50 @@ typedef enum
     }
 }
 
+
+-(void)displayError:(NSString *)error withTitle:(NSString *)title 
+{
+  UIAlertSheet *alertSheet = [[UIAlertSheet alloc] initWithTitle:title buttons:[NSArray arrayWithObjects:NSLocalizedString(@"OK", @"OK"), nil] defaultButtonIndex:1 delegate:self context:self];
+  [alertSheet setBodyText:error];
+  [alertSheet setRunsModal: true];
+  [alertSheet popupAlertAnimated:YES];
+}
+- (void)alertSheet:(UIAlertSheet*)sheet buttonClicked:(int)button 
+{
+  [sheet dismiss];
+}
+
+/***** SIP ********/
+
+/* */
+- (BOOL)sipConnect
+{
+  if ((_sip_acc_id == PJSUA_INVALID_ID) &&
+      (sip_connect(_app_config.pool, &_sip_acc_id) != PJ_SUCCESS))
+  {
+    // TODO display error
+    return FALSE;
+  }
+
+  [self addStatusBarImageNamed: @"Siphon" removeOnAbnormalExit: YES];
+  
+  return TRUE;
+}
+
+/* */
+- (BOOL)sipDisconnect
+{
+  if ((_sip_acc_id != PJSUA_INVALID_ID) && 
+      (sip_disconnect(&_sip_acc_id) != PJ_SUCCESS))
+  {
+    return FALSE;
+  }
+
+  _sip_acc_id = PJSUA_INVALID_ID;
+  [self removeStatusBarImageNamed: @"Siphon"];
+
+  return TRUE;
+}
 
 /***** BUTTONBAR ********/
 - (NSArray *)buttonBarItems 
@@ -187,65 +236,16 @@ typedef enum
 }
 
 /************ **************/
-- (void) applicationDidFinishLaunching: (id) unused
-{
-  NSLog(@"Waking up on an %s (%@)...\n", [self hasTelephony] ? "iPhone" : "iPod Touch", 
-        [[[NSUserDefaults standardUserDefaults] objectForKey: @"AppleLanguages"] objectAtIndex:0]);
-  NSLog(@"Network connection is %s...\n", [self hasNetworkConnection] ? "up" : "down");
-  NSLog(@"Edge connection is %s...\n", ([[NetworkController sharedInstance] isEdgeUp] ? "up" : "down"));
-        
-  CGRect windowRect = [ UIHardware fullScreenApplicationContentRect ];
-  windowRect.origin.x = windowRect.origin.y = 0.0f;
-  
-  _window = [[UIWindow alloc] initWithContentRect: windowRect];
-  [_window orderFront: self];
-  [_window makeKey: self];
-  [_window _setHidden: NO];
- 
-  _mainView = [[UIView alloc] initWithFrame: windowRect];
-  [_window setContentView: _mainView];
+//- (void)prefsHaveChanged:(NSNotification *)notification
+//{
+//  NSUserDefaults *userDef = [NSUserDefaults standardUserDefaults];
+//  [self displayError:[userDef objectForKey: @"sip_user"] withTitle:@"username"];
+//}
 
-  _transition = [[UITransitionView alloc] initWithFrame: windowRect];
-  [_mainView addSubview: _transition];
-
-  _phoneView = [[PhoneView alloc] initWithFrame: windowRect]; 
-  
-  _contactView = [[ContactView alloc] initWithFrame: /*windowRect*/
-    CGRectMake(windowRect.origin.x, windowRect.origin.y, 
-      windowRect.size.width, windowRect.size.height - 49.0f)];
-  [_contactView setDelegate: self];
-
-  _buttonBar = [ self createButtonBar ];
-  [_mainView addSubview: _buttonBar];
-
-  _avs = [AVSystemController sharedAVSystemController];
-  [[NSNotificationCenter defaultCenter] addObserver: self 
-    selector:@selector(volumeChange:) 
-    name: @"AVSystemController_SystemVolumeDidChangeNotification"
-    object: _avs ];
-
-  help = [[UIAlertSheet alloc] initWithFrame:CGRectMake(20.0f, 20.0f, 280.0f, 300.0f)];
-  [help setTitle: @"About Siphon"];
-
-  [help setBodyText:@"Siphon Version 2.0\n"
-    "Samuel, Metabaron\n"
-    "Help, FAQ and more at\n"
-    "http://code.google.com/p/siphon/"];
-    [help addButtonWithTitle:@"Visit Site"];
-
-  [help addButtonWithTitle:@"OK"];
-  [help setDelegate:self];
-
-  [self addStatusBarImageNamed: @"Siphon" removeOnAbnormalExit: YES];
-
-  [self applicationResume:nil settings:nil];
-}
-
+/************ **************/
 - (void)applicationResume:(struct __GSEvent *)event settings:(id)settings
 {
-  NSUserDefaults *userDef;
-  NSLog(@"Resume");
-  userDef = [NSUserDefaults standardUserDefaults];
+  NSUserDefaults *userDef = [NSUserDefaults standardUserDefaults];
   if (![[userDef objectForKey: @"sip_user"] length])
   {
     // TODO: go to settings immediately
@@ -288,6 +288,8 @@ typedef enum
   }
   else
   {
+    sip_startup(&_app_config);
+
     [_transition transition:UITransitionShiftImmediate toView:_phoneView];
     [_buttonBar showSelectionForButton: 3];
     [_buttonBar setAlpha: 1];
@@ -295,16 +297,84 @@ typedef enum
   }
 }
 
+/************ **************/
+- (void) applicationDidFinishLaunching: (id) unused
+{
+  _sip_acc_id = PJSUA_INVALID_ID;
+  
+  NSLog(@"Waking up on an %s (%@)...\n", [self hasTelephony] ? "iPhone" : "iPod Touch", 
+        [[[NSUserDefaults standardUserDefaults] objectForKey: @"AppleLanguages"] objectAtIndex:0]);
+  NSLog(@"Network connection is %s...\n", [self hasNetworkConnection] ? "up" : "down");
+  NSLog(@"Edge connection is %s...\n", ([[NetworkController sharedInstance] isEdgeUp] ? "up" : "down"));
+        
+  CGRect windowRect = [ UIHardware fullScreenApplicationContentRect ];
+  windowRect.origin.x = windowRect.origin.y = 0.0f;
+  
+  _window = [[UIWindow alloc] initWithContentRect: windowRect];
+  [_window orderFront: self];
+  [_window makeKey: self];
+  [_window _setHidden: NO];
+ 
+  _mainView = [[UIView alloc] initWithFrame: windowRect];
+  [_window setContentView: _mainView];
+
+  _transition = [[UITransitionView alloc] initWithFrame: windowRect];
+  [_mainView addSubview: _transition];
+
+  _phoneView = [[PhoneView alloc] initWithFrame: windowRect];
+  [_phoneView setDelegate: self];
+  
+  _contactView = [[ContactView alloc] initWithFrame: windowRect];
+//    CGRectMake(windowRect.origin.x, windowRect.origin.y, 
+//      windowRect.size.width, windowRect.size.height - 49.0f)];
+  [_contactView setDelegate: self];
+
+  _buttonBar = [ self createButtonBar ];
+  [_mainView addSubview: _buttonBar];
+  
+  _callView = [[CallView alloc] init];
+
+  /**  Volume management **/
+  _avs = [AVSystemController sharedAVSystemController];
+  [[NSNotificationCenter defaultCenter] addObserver: self 
+    selector:@selector(volumeChange:) 
+    name: @"AVSystemController_SystemVolumeDidChangeNotification"
+    object: _avs ];
+  
+  /** Preferences management **/
+//  [[NSNotificationCenter defaultCenter] addObserver: self
+//   selector:@selector(prefsHaveChanged:) 
+//   name: NSUserDefaultsDidChangeNotification 
+//   object: nil];
+
+  /** Call management **/
+  [[NSNotificationCenter defaultCenter] addObserver:self 
+    selector:@selector(hideCallView:) 
+    name: kSIPEndOfCall object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self 
+      selector:@selector(showCallView:) 
+      name:kSIPStartOfCall object:nil];
+  
+  // TODO: Maybe in applicationResume ??
+  // TODO: sip_startup() && sip_connect()
+//  [self addStatusBarImageNamed: @"Siphon" removeOnAbnormalExit: YES];
+
+  [self applicationResume:nil settings:nil];
+}
+
 - (void)applicationWillTerminate
 {
   NSLog(@"Terminate");
-//  [phoneView closeConn];
+
+  [self sipDisconnect];  
+  sip_cleanup(&_app_config);
+
   exit(0);
 }
 
 - (void)applicationSuspend:(struct __GSEvent *)event
 {
-  if(_currentView) 
+  if(_currentView) // TODO: If user wants bg app, if not quit 
   {
     NSLog(@"Suspending\n");
   } 
@@ -312,16 +382,6 @@ typedef enum
   {
     [self applicationWillTerminate];
   }
-}
-
-- (void)alertSheet:(UIAlertSheet*)sheet buttonClicked:(int)button
-{
-  if(button == 1)
-  {
-    [self openURL:[NSURL URLWithString:@"http://code.google.com/p/siphon/"]];  
-  }
-
-  [help dismiss];
 }
 
 /** FIXME plutot à mettre dans l'objet qui gère les appels **/
@@ -333,6 +393,37 @@ typedef enum
   NSLog(@"Contact %@, number %@ is selected",selectedName,selectedPhone);
 //  NSLog(@"OK. Phonenumber: %s",[[_contactsView getSelectedPropertyValue] UTF8String]);
   NSLog(@"OK. Phonenumber: %@",phoneNumber);
+  // TODO: sip_dial()
+}
+
+- (void)dialup:(NSString *)phoneNumber
+{
+  pjsua_call_id call_id;
+  NSLog(@"Dialup: %@", phoneNumber);
+
+  if ([self sipConnect])
+  {
+    sip_dial(_sip_acc_id, [phoneNumber UTF8String], &call_id);
+  }
+}
+
+- (void)showCallView:(NSNotification *)notification 
+{
+  NSNumber *value = [ notification object ];
+//  NSNumber *value = [[notification userInfo] objectForKey:@"callID"];
+  NSLog(@"showCallView notif %@:%d", value, [value intValue]);
+  [_callView setCallId: [value intValue]];
+  [_transition transition:UITransitionShiftImmediate toView:_callView];
+  _currentView = 5;
+  [_buttonBar setAlpha: 0];
+}
+
+- (void)hideCallView:(NSNotification *)notification 
+{
+  [_transition transition:UITransitionShiftImmediate toView:_phoneView];
+  _currentView = 3;
+  [_buttonBar setAlpha: 1];
+  [_callView setCallId: PJSUA_INVALID_ID];
 }
 
 @end

@@ -29,11 +29,16 @@
   TPPhonePad        *_phonePad;
   TPBottomButtonBar *_bottomBar;
 
+  id _delegate;
+  
   pjsua_call_id _call_id;
 }
 
-//- (id)init:(pjsua_call_id)call_id;
 - (id)init;
+- (id)delegate;
+- (void)setDelegate:(id)newDelegate;
+
+- (void)setCallId:(pjsua_call_id)call_id;
 
 @end
 

@@ -26,41 +26,30 @@
 
 #import "DialerPhonePad.h"
 
+@protocol PhoneView
+-(void) dialup:(NSString *)phoneNumber;
+@end
+
 @interface PhoneView : UIView
 {
   UITextLabel *lbNumber;
 
   DialerPhonePad *_pad;
 
-  UIPushButton *btnAdd;
-  UIImage *imgConnect;
-  UIImage *imgConnecting;
-  UIImage *imgConnected;
+//  UIPushButton *btnAdd;
+  
+//  UIImage *imgConnect;
   UIPushButton *btnCallHangup;
-  UIImage *imgAnswer;
-  UIImage *imgHangup;
   UIPushButton *btnDel;
-
-
-  UIAlertSheet *incomming;
-
-  BOOL connected;
-  BOOL dialed;
 
   struct __GSFont *font;
   struct __GSFont *font2;
 
-  pjsua_acc_id  _sip_acc_id;
-  pjsua_call_id _sip_call_id;
+  id _delegate;
 }
 
--(id)initWithFrame:(struct CGRect)rect;
+- (id)initWithFrame:(struct CGRect)rect;
+- (id)delegate;
+- (void)setDelegate:(id)newDelegate;
 
-- (void)alertSheet:(UIAlertSheet*)sheet buttonClicked:(int)button;
-
-- (void)closeConn;
-
-- (void)btnAddPress:(UIPushButton*)btn;
-- (void)btnCallHangupPress:(UIPushButton*)btn;
-- (void)btnDelPress:(UIPushButton*)btn;
 @end

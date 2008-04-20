@@ -69,7 +69,9 @@ SOURCES=\
 	Siphon.m \
 	PhoneView.m \
 	ContactView.m \
+	CallView.m \
 	DialerPhonePad.m \
+	NSNotificationAdditions.m \
 	ring.c \
 	call.m \
 	dtmf.c

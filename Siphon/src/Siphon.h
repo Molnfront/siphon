@@ -24,6 +24,9 @@
 
 #import "PhoneView.h"
 #import "ContactView.h"
+#import "CallView.h"
+
+#import "call.h"
 
 @interface Siphon : UIApplication
 {
@@ -35,13 +38,17 @@
   int               _currentView;
 
   PhoneView    *_phoneView;
-  ContactView *_contactView;
-
-  UIAlertSheet *help;
+  ContactView  *_contactView;
+  CallView     *_callView;
   
   AVSystemController *_avs;
+  
+  app_config_t _app_config; // pointer ???
+  pjsua_acc_id  _sip_acc_id;
 }
-- (void)alertSheet:(UIAlertSheet*)sheet buttonClicked:(int)button;
+
+- (void)showCallView:(NSNotification *)notification;
+- (void)hideCallView:(NSNotification *)notification;
 
 @end
 

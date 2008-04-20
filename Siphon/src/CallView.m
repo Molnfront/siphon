@@ -58,7 +58,7 @@
 {
   struct CGRect hwRect, appRect;
  
-//  _call_id = call_id;
+  _call_id = PJSUA_INVALID_ID;
  
   hwRect  = [UIHardware fullScreenApplicationContentRect];
   appRect = hwRect;
@@ -106,6 +106,24 @@
   }
   
   return self;
+}
+
+/*** ***/
+- (id)delegate 
+{
+  return _delegate;
+}
+
+- (void)setDelegate:(id)newDelegate 
+{
+  _delegate = newDelegate;
+}
+
+/*** ***/
+- (void)setCallId:(pjsua_call_id)call_id
+{
+  NSLog(@"CallView %d", call_id);
+  _call_id = call_id;
 }
 
 @end

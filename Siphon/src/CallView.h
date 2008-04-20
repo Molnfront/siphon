@@ -31,6 +31,8 @@
 
   id _delegate;
   
+  NSTimer *_timer;
+  
   pjsua_call_id _call_id;
 }
 

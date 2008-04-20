@@ -100,7 +100,7 @@
     /** LCD **/
     _lcd = [[TPLCDView alloc] initWithDefaultSize];
     [_lcd setLabel:@"Label"]; // name of callee
-    [_lcd setText:@"Text"];   // timer for example
+    [_lcd setText:@"Text"];   // timer, call state for example
 //    [_lcd setSubImage:];  // image/avatar
     [self addSubview: _lcd];
   }
@@ -119,11 +119,50 @@
   _delegate = newDelegate;
 }
 
+- (void)timeout:(id)unused
+{
+  pjsua_call_info ci;
+  
+  pjsua_call_get_info(_call_id, &ci);
+  
+  if (ci.connect_duration.sec >= 3600)
+  {
+    long sec = ci.connect_duration.sec % 3600;
+    [_lcd setLabel:[NSString stringWithFormat:@"%d:%02d:%02d", 
+                     ci.connect_duration.sec / 3600,
+                     sec/60, sec%60]];
+  }
+  else
+  {
+    [_lcd setLabel:[NSString stringWithFormat:@"%02d:%02d", 
+                     (ci.connect_duration.sec)/60,
+                     (ci.connect_duration.sec)%60]];
+  }
+}
+
 /*** ***/
 - (void)setCallId:(pjsua_call_id)call_id
 {
+  pjsua_call_info ci;
+  
   NSLog(@"CallView %d", call_id);
   _call_id = call_id;
+  if (_call_id != PJSUA_INVALID_ID)
+  {
+    // TODO diplay user name or number
+    // TODO display call state (CALLING, INCOMING, EARLY...) 
+    // TODO activate timer after Connected state
+    _timer = [NSTimer scheduledTimerWithTimeInterval:1.0
+         target:self
+         selector:@selector(timeout:)
+         userInfo:nil
+         repeats:YES];
+    [_timer fire];
+  }
+  else
+  {
+    [_timer invalidate];
+  }
 }
 
 @end

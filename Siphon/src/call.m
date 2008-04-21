@@ -36,6 +36,7 @@ NSString *kSIPStartOfCall = @"StartOfCall";
 NSString *kSIPEndOfCall   = @"EndOfCall";
 
 NSString *kSIPCallState         = @"CallState";
+
 NSString *kSIPStateNull         = @"StateNull";
 NSString *kSIPStateCalling      = @"StateCalling";
 NSString *kSIPStateIncoming     = @"StateIncoming";
@@ -48,7 +49,7 @@ NSString *kSIPStateDisconnected = @"StateDisconnected";
 static void on_call_state(pjsua_call_id call_id, pjsip_event *e)
 {
   pjsua_call_info ci;
-  NSNumber *value;
+//  NSNumber *value;
   
   PJ_UNUSED_ARG(e);
   
@@ -58,46 +59,32 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e)
     (int)ci.state_text.slen, ci.state_text.ptr));
   
   NSAutoreleasePool *autoreleasePool = [[ NSAutoreleasePool alloc ] init];
+  
+  NSDictionary *userinfo = [NSDictionary dictionaryWithObjectsAndKeys:
+    [NSNumber numberWithInt: call_id], @"CallID",
+    [NSNumber numberWithInt: ci.state], @"CallState",
+    nil];
   switch(ci.state)
   {
-  case PJSIP_INV_STATE_CALLING:
-    value = [[NSNumber numberWithInt: call_id] retain];
+  case PJSIP_INV_STATE_NULL: // Before INVITE is sent or received.
+    break;
+  case PJSIP_INV_STATE_CALLING:      // After INVITE is sent.
+  case PJSIP_INV_STATE_INCOMING:     // After INVITE is received.
+  case PJSIP_INV_STATE_EARLY:        // After response with To tag.
+  case PJSIP_INV_STATE_CONNECTING:   // After 2xx is sent/received.
+  case PJSIP_INV_STATE_CONFIRMED:    // After ACK is sent/received.
     [[NSNotificationCenter defaultCenter] 
-      postNotificationOnMainThreadWithName:kSIPStartOfCall object:value];
+      postNotificationOnMainThreadWithName:kSIPCallState object:nil
+      userInfo: userinfo];
     break;
-  case PJSIP_INV_STATE_INCOMING:
-    // TODO Display Call View
-    //   during call : End Call + answer or Cancel
-    //   first call  : Decline or Answer
-    NSLog(@"showCallView incoming");
-    break;
-  case PJSIP_INV_STATE_DISCONNECTED:
-    NSLog(@"Disconnected");
-    // TODO mettre fin à la sonnerie si la personne a racrochée avant le
-    // décrochage
-    //sip_ring_cleanup(call_id);
+  case PJSIP_INV_STATE_DISCONNECTED: // Session is terminated.
     sip_call_deinit_tonegen(call_id);
     [[NSNotificationCenter defaultCenter] 
-      postNotificationOnMainThreadWithName:kSIPEndOfCall object:nil];
-    break;
-  default:
+      postNotificationOnMainThreadWithName:kSIPCallState object:nil
+      userInfo: userinfo];
     break;
   }
   [ autoreleasePool release ];
-  /*
-    PJSIP_INV_STATE_NULL,     < Before INVITE is sent or received.
-    PJSIP_INV_STATE_CALLING,      < After INVITE is sent. 
-    [theApp showCallView];  
-    PJSIP_INV_STATE_INCOMING,     < After INVITE is received.
-    //   during call : End Call + answer or Cancel
-    //   first call  : Decline or Answer
-    [theApp showCallView];   
-    PJSIP_INV_STATE_EARLY,      < After response with To tag.     
-    PJSIP_INV_STATE_CONNECTING,     < After 2xx is sent/received.
-    PJSIP_INV_STATE_CONFIRMED,      < After ACK is sent/received.
-    PJSIP_INV_STATE_DISCONNECTED,   < Session is terminated.
-    [theApp hideCallView];
-  */
 }
 
 /* Callback called by the library upon receiving incoming call */
@@ -415,15 +402,17 @@ pj_status_t sip_dial(pjsua_acc_id acc_id, const char *number,
 /* */
 pj_status_t sip_answer(pjsua_call_id *call_id)
 {
-//  pj_status_t status;
-//  
-//  sip_ring_cleanup(current_call);
-//
-//  status = pjsua_call_answer(current_call, 200, NULL, NULL);
-//  *call_id = (status == PJ_SUCCESS ? current_call : PJSUA_INVALID_ID);
-//  
-//  return status;
-  return PJ_SUCCESS;
+  pj_status_t status;
+  
+  sip_ring_cleanup(*call_id);
+
+  status = pjsua_call_answer(*call_id, 200, NULL, NULL);
+  if (status != PJ_SUCCESS)
+  {
+    *call_id = PJSUA_INVALID_ID;
+  }
+
+  return status;
 }
 
 /* */

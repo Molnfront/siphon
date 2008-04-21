@@ -36,6 +36,7 @@
 
   UIButtonBar      *_buttonBar;
   int               _currentView;
+//  int               _previousView;
 
   PhoneView    *_phoneView;
   ContactView  *_contactView;
@@ -47,8 +48,7 @@
   pjsua_acc_id  _sip_acc_id;
 }
 
-- (void)showCallView:(NSNotification *)notification;
-- (void)hideCallView:(NSNotification *)notification;
+- (void)processCallState:(NSNotification *)notification;
 
 @end
 

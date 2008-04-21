@@ -53,7 +53,6 @@
 }
 
 //** **
-//- (id)init:(pjsua_call_id)call_id
 - (id)init
 {
   struct CGRect hwRect, appRect;
@@ -78,29 +77,26 @@
     [_phonePad setPlaysSounds: TRUE];
     [_phonePad setNeedsDisplayForKey: TRUE];
     [_phonePad setDelegate: self];
-  
-    [self addSubview: _phonePad];
-    
+   
     /** End call **/
     _bottomBar = [[TPBottomButtonBar alloc] initForEndCallWithFrame: 
       CGRectMake(0.0f, 460.0f - 96.0f, 320.0f, 96.0f)];
     [[_bottomBar button] addTarget:self action:@selector(endCallUpInside:) 
       forEvents:kUIControlEventMouseUpInside/*kUIControlEventMouseDown*/];
 
-    [self addSubview: _bottomBar];
-//  /** Decline or Answer **/
-//  _bottomBar = [[TPBottomDualButtonBar alloc] initForIncomingCallWithFrame:
-//      CGRectMake(0.0f, 460.0f - 96.0f, 320.0f, 96.0f)];
-//
-//  [[_bottomBar button] addTarget:self action:@selector(declineCallDown:) 
-//    forEvents:kUIControlEventMouseUpInside/*kUIControlEventMouseDown*/];
-//  [[_bottomBar button2] addTarget:self action:@selector(answerCallDown:) 
-//    forEvents:kUIControlEventMouseUpInside/*kUIControlEventMouseDown*/];
-
+    /** Decline or Answer **/
+    _dualBottomBar = [[TPBottomDualButtonBar alloc] initForIncomingCallWithFrame:
+        CGRectMake(0.0f, 460.0f - 96.0f, 320.0f, 96.0f)];
+  
+    [[_dualBottomBar button] addTarget:self action:@selector(declineCallDown:) 
+      forEvents:kUIControlEventMouseUpInside/*kUIControlEventMouseDown*/];
+    [[_dualBottomBar button2] addTarget:self action:@selector(answerCallDown:) 
+      forEvents:kUIControlEventMouseUpInside/*kUIControlEventMouseDown*/];
+    
     /** LCD **/
     _lcd = [[TPLCDView alloc] initWithDefaultSize];
     [_lcd setLabel:@"Label"]; // name of callee
-    [_lcd setText:@"Text"];   // timer, call state for example
+    [_lcd setText:@""];   // timer, call state for example
 //    [_lcd setSubImage:];  // image/avatar
     [self addSubview: _lcd];
   }
@@ -119,6 +115,7 @@
   _delegate = newDelegate;
 }
 
+/*** ***/
 - (void)timeout:(id)unused
 {
   pjsua_call_info ci;
@@ -141,28 +138,42 @@
 }
 
 /*** ***/
-- (void)setCallId:(pjsua_call_id)call_id
+- (void)setState:(int)state callId:(pjsua_call_id)call_id
 {
-  pjsua_call_info ci;
-  
-  NSLog(@"CallView %d", call_id);
   _call_id = call_id;
-  if (_call_id != PJSUA_INVALID_ID)
+  switch(state)
   {
-    // TODO diplay user name or number
-    // TODO display call state (CALLING, INCOMING, EARLY...) 
-    // TODO activate timer after Connected state
-    _timer = [NSTimer scheduledTimerWithTimeInterval:1.0
-         target:self
-         selector:@selector(timeout:)
-         userInfo:nil
-         repeats:YES];
-    [_timer fire];
-  }
-  else
-  {
-    [_timer invalidate];
+    case PJSIP_INV_STATE_CALLING: // After INVITE is sent.
+      [self addSubview: _bottomBar];
+      [_lcd setLabel: NSLocalizedString(@"CALLING", @"Call view")];
+      break;
+    case PJSIP_INV_STATE_INCOMING: // After INVITE is received.
+      [self addSubview: _dualBottomBar];
+      break;
+    case PJSIP_INV_STATE_EARLY: // After response with To tag.
+    case PJSIP_INV_STATE_CONNECTING: // After 2xx is sent/received.
+      break;
+    case PJSIP_INV_STATE_CONFIRMED: // After ACK is sent/received.
+      [_dualBottomBar removeFromSuperview];
+      [self addSubview: _bottomBar];
+      [self addSubview: _phonePad];
+      _timer = [NSTimer scheduledTimerWithTimeInterval:1.0
+               target:self
+               selector:@selector(timeout:)
+               userInfo:nil
+               repeats:YES];
+      [_timer fire];
+      break;
+    case PJSIP_INV_STATE_DISCONNECTED:
+      if (_timer) [_timer invalidate];
+      [_lcd setLabel: NSLocalizedString(@"CALL_ENDED", @"Call view")];
+      _call_id = PJSUA_INVALID_ID;
+      [_bottomBar removeFromSuperview];
+      [_dualBottomBar removeFromSuperview];
+      [_phonePad removeFromSuperview];
+      break;
   }
 }
+
 
 @end

@@ -289,7 +289,7 @@ typedef enum
   else
   {
     sip_startup(&_app_config);
-
+    [self sipConnect];
     [_transition transition:UITransitionShiftImmediate toView:_phoneView];
     [_buttonBar showSelectionForButton: 3];
     [_buttonBar setAlpha: 1];
@@ -349,12 +349,9 @@ typedef enum
 
   /** Call management **/
   [[NSNotificationCenter defaultCenter] addObserver:self 
-    selector:@selector(hideCallView:) 
-    name: kSIPEndOfCall object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self 
-      selector:@selector(showCallView:) 
-      name:kSIPStartOfCall object:nil];
-  
+      selector:@selector(processCallState:) 
+      name: kSIPCallState object:nil];
+
   // TODO: Maybe in applicationResume ??
   // TODO: sip_startup() && sip_connect()
 //  [self addStatusBarImageNamed: @"Siphon" removeOnAbnormalExit: YES];
@@ -407,23 +404,36 @@ typedef enum
   }
 }
 
-- (void)showCallView:(NSNotification *)notification 
+- (void)processCallState:(NSNotification *)notification
 {
-  NSNumber *value = [ notification object ];
-//  NSNumber *value = [[notification userInfo] objectForKey:@"callID"];
-  NSLog(@"showCallView notif %@:%d", value, [value intValue]);
-  [_callView setCallId: [value intValue]];
-  [_transition transition:UITransitionShiftImmediate toView:_callView];
-  _currentView = 5;
-  [_buttonBar setAlpha: 0];
-}
+  NSNumber *value = [[ notification userInfo ] objectForKey: @"CallID"];
+  pjsua_call_id callId = [value intValue];
+  int state = [[[ notification userInfo ] objectForKey: @"CallState"] intValue];
+  
+  switch(state)
+  {
+    case PJSIP_INV_STATE_NULL: // Before INVITE is sent or received.
+    break;
 
-- (void)hideCallView:(NSNotification *)notification 
-{
-  [_transition transition:UITransitionShiftImmediate toView:_phoneView];
-  _currentView = 3;
-  [_buttonBar setAlpha: 1];
-  [_callView setCallId: PJSUA_INVALID_ID];
+    case PJSIP_INV_STATE_CALLING: // After INVITE is sent.
+    case PJSIP_INV_STATE_INCOMING: // After INVITE is received.
+      [_callView setState: state callId: callId];
+      [_transition transition:UITransitionShiftImmediate toView:_callView];
+      [_buttonBar setAlpha: 0];
+       _currentView = 5;
+      break;
+    case PJSIP_INV_STATE_EARLY: // After response with To tag.
+    case PJSIP_INV_STATE_CONNECTING: // After 2xx is sent/received.
+    case PJSIP_INV_STATE_CONFIRMED: // After ACK is sent/received.
+      [_callView setState: state callId: callId];
+      break;
+    case PJSIP_INV_STATE_DISCONNECTED:
+      [_callView setState: state callId: callId];
+      [_transition transition:UITransitionShiftImmediate toView:_phoneView];
+      [_buttonBar setAlpha: 1];
+      _currentView = 3;
+      break;
+  }
 }
 
 @end

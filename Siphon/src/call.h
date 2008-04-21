@@ -42,8 +42,7 @@ typedef struct app_config_t
 //  float speaker_level;
 } app_config_t;
 
-extern NSString *kSIPStartOfCall;
-extern NSString *kSIPEndOfCall;
+extern NSString *kSIPCallState;
 
 PJ_BEGIN_DECL
 

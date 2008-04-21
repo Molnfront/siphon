@@ -28,6 +28,7 @@
   TPLCDView         *_lcd;
   TPPhonePad        *_phonePad;
   TPBottomButtonBar *_bottomBar;
+  TPBottomDualButtonBar *_dualBottomBar;
 
   id _delegate;
   
@@ -40,7 +41,7 @@
 - (id)delegate;
 - (void)setDelegate:(id)newDelegate;
 
-- (void)setCallId:(pjsua_call_id)call_id;
+- (void)setState:(int)state callId:(pjsua_call_id)call_id;
 
 @end
 

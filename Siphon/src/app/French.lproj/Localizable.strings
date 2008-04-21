@@ -1,4 +1,4 @@
-"Favorites" = "Favoris";
+﻿"Favorites" = "Favoris";
 "Calls"     = "Appels";
 "Dialpad"   = "Clavier";
 "Contacts"  = "Contacts";
@@ -9,3 +9,7 @@
 "Siphon nécessite un compte\n SIP valide.\n\nPour saisir cette information, sélectionner \"Réglages\" sur le bureau, et sélectionner \"Siphon\".";
 
 "Please connect to SIP-Server" = "Connectez-vous au serveur SIP";
+
+"CALLING" = "appel en cours…";
+"CALL_ENDED" = "appel terminé";
+"CALL_ENDING" = "fin de l’appel…";

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>info</key>
+		<dict>
+	    <key>name</key>
+	    <string>Touchmods</string>
+	    <key>maintainer</key>
+	    <string>cto,eok,franklyn,marian,metabaron,samuel</string>
+	    <key>contact</key>
+	    <string>info@touchmods.net</string>
+	    <key>url</key>
+	    <string>http://touchmods.net/</string>
+	    <key>category</key>
+	    <string>Touchmods</string>
+	    <key>description</key>
+	    <string>Touchmods Repository - Home of the 1st free SIP-VoIP Application for the iPod</string>
+		</dict>
+		<key>packages</key>
+		<array>
+	    <dict>
+	      <key>bundleIdentifier</key>
+	      <string>net.touchmods.Siphon</string>
+	      <key>description</key>
+	      <string>Touchmods free SIP-VoIP Application for the iPod Touch</string>
+	      <key>hash</key>
+	      <string>[MD5 Hash]</string>
+	      <key>location</key>
+	      <string>http://touchmods.net/releases/2008-easter/SIP-VoIP.app.zip</string>
+	      <key>name</key>
+	      <string>Touchmods SIP-VoIP</string>
+	      <key>scripts</key>
+	      <dict>
+	        <key>install</key>
+	          <array>
+	            <array>
+	              <string>CopyPath</string>
+	              <string>Siphon.app</string>
+	              <string>/Applications/Siphon.app</string>
+	            </array>
+	            <array>
+	              <string>CopyPath</string>
+	              <string>SiphonSettings.bundle</string>
+	              <string>/System/Library/PreferenceBundles/SiphonSettings.bundle</string>
+	            </array>
+	            <array>
+	              <string>CopyPath</string>
+	              <string>SpringBoard.app</string>
+	              <string>/System/Library/CoreServices/SpringBoard.app</string>
+	            </array>
+	            <array>
+								<string>Exec</string>
+								<string>/Applications/Siphon.app/Siphon --installPrefBundle</string>
+							</array>
+	          </array>
+	        <key>uninstall</key>
+	          <array>
+	          	<array>
+								<string>Exec</string>
+								<string>/Applications/Siphon.app/Siphon --removePrefBundle</string>
+							</array>
+	            <array>
+	              <string>RemovePath</string>
+	              <string>/Applications/Siphon.app</string>
+	            </array>
+	            <array>
+	              <string>RemovePath</string>
+	              <string>/System/Library/PreferenceBundles/SiphonSettings.bundle</string>
+	            </array>
+	            <array>
+	              <string>RemovePath</string>
+	              <string>/System/Library/CoreServices/SpringBoard.app/Default_Siphon.png</string>
+	            </array>
+	            <array>
+	              <string>RemovePath</string>
+	              <string>/System/Library/CoreServices/SpringBoard.app/FSO_Siphon.png</string>
+	            </array>
+	          </array>
+	        <key>update</key>
+	          <array>
+	            <array>
+	              <string>RemovePath</string>
+	              <string>/Applications/Siphon.app</string>
+	            </array>
+	            <array>
+	              <string>CopyPath</string>
+	              <string>Siphon.app</string>
+	              <string>/Applications/Siphon.app</string>
+	            </array>
+	          </array>
+	      </dict>
+	      <key>size</key>
+	      <string>[BYTES]</string>
+	      <key>url</key>
+	      <string>http://touchmods.net/</string>
+	      <key>version</key>
+	      <string>1.9</string>
+	      <key>category</key>
+	      <string>Touchmods</string>
+	      <key>date</key>
+	      <string>[seconds since 1970]</string>
+	    </dict>
+		</array>
+	</dict>
+</plist>

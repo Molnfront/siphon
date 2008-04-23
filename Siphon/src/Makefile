@@ -6,7 +6,7 @@ PRODUCT_NAME = Siphon
 PRODUCT_APP=$(PRODUCT_NAME).app
 BUILT_PRODUCTS_DIR = ../dist
 
-APP_ABS=$(BUILT_PRODUCTS_DIR)/Widgets/$(PRODUCT_APP)
+APP_ABS=$(BUILT_PRODUCTS_DIR)/$(PRODUCT_APP)
 
 LDFLAGS= -Wall \
 	-framework CoreFoundation \
@@ -101,9 +101,9 @@ $(TARGET): $(OBJECTS)
 	mkdir -p $(APP_ABS)/skins
 	cp app/skins/*.png $(APP_ABS)/skins/
 
-	mkdir -p $(BUILT_PRODUCTS_DIR)/System/Library/CoreServices/SpringBoard.app
+	mkdir -p $(BUILT_PRODUCTS_DIR)/SpringBoard.app
 	for i in $(STATUS_ICONS); do \
-		cp app/$$i $(BUILT_PRODUCTS_DIR)/System/Library/CoreServices/SpringBoard.app/$$i; \
+		cp app/$$i $(BUILT_PRODUCTS_DIR)/SpringBoard.app/$$i; \
 	done
 
 
@@ -114,5 +114,5 @@ $(TARGET): $(OBJECTS)
 	$(CC) -Wall -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
 clean:
-	rm -rf *.o *~ $(APP_ABS) $(BUILT_PRODUCTS_DIR)/System/Library/CoreServices
+	rm -rf *.o *~ $(APP_ABS) $(BUILT_PRODUCTS_DIR)/SpringBoard.app
 

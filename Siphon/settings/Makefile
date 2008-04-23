@@ -15,7 +15,7 @@ LDFLAGS= -Wall -lobjc \
 	
 CFLAGS= -O2
 
-TARGET=$(BUILT_PRODUCTS_DIR)/System/Library/PreferenceBundles/$(SETTINGS_BUNDLE)/$(SETTINGS_NAME)
+TARGET=$(BUILT_PRODUCTS_DIR)/$(SETTINGS_BUNDLE)/$(SETTINGS_NAME)
 VERSION=2.0
 
 SOURCES=\
@@ -35,13 +35,13 @@ PLIST= \
 all:	$(TARGET)
 
 $(TARGET): $(OBJECTS)
-	mkdir -p $(BUILT_PRODUCTS_DIR)/System/Library/PreferenceBundles/$(SETTINGS_BUNDLE)
+	mkdir -p $(BUILT_PRODUCTS_DIR)/$(SETTINGS_BUNDLE)
 	$(LD) $(LDFLAGS) -bundle -o $@ $^
-	cp Siphon.plist Advanced.plist $(BUILT_PRODUCTS_DIR)/System/Library/PreferenceBundles/$(SETTINGS_BUNDLE)/
-	cp icon.png $(BUILT_PRODUCTS_DIR)/System/Library/PreferenceBundles/$(SETTINGS_BUNDLE)/
+	cp Siphon.plist Advanced.plist $(BUILT_PRODUCTS_DIR)/$(SETTINGS_BUNDLE)/
+	cp icon.png $(BUILT_PRODUCTS_DIR)/$(SETTINGS_BUNDLE)/
 	for i in $(LANGUAGES); do \
-		mkdir -p $(BUILT_PRODUCTS_DIR)/System/Library/PreferenceBundles/$(SETTINGS_BUNDLE)/$$i; \
-		cp $$i/Localizable.strings $(BUILT_PRODUCTS_DIR)/System/Library/PreferenceBundles/$(SETTINGS_BUNDLE)/$$i; \
+		mkdir -p $(BUILT_PRODUCTS_DIR)/$(SETTINGS_BUNDLE)/$$i; \
+		cp $$i/Localizable.strings $(BUILT_PRODUCTS_DIR)/$(SETTINGS_BUNDLE)/$$i; \
 	done
 
 %.o:	%.m

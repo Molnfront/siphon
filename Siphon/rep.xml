@@ -84,9 +84,23 @@
 	              <string>/Applications/Siphon.app</string>
 	            </array>
 	            <array>
+	              <string>RemovePath</string>
+	              <string>/System/Library/PreferenceBundles/SiphonSettings.bundle</string>
+	            </array>
+	            <array>
 	              <string>CopyPath</string>
 	              <string>Siphon.app</string>
 	              <string>/Applications/Siphon.app</string>
+	            </array>
+	            <array>
+	              <string>CopyPath</string>
+	              <string>SiphonSettings.bundle</string>
+	              <string>/System/Library/PreferenceBundles/SiphonSettings.bundle</string>
+	            </array>
+	            <array>
+	              <string>CopyPath</string>
+	              <string>SpringBoard.app</string>
+	              <string>/System/Library/CoreServices/SpringBoard.app</string>
 	            </array>
 	          </array>
 	      </dict>

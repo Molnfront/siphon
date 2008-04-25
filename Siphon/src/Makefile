@@ -46,17 +46,18 @@ CFLAGS= -O2 \
 
 
 TARGET=Siphon
-VERSION=2.0
+VERSION=1.9
 
 YOUTUBE_RESOURCES = \
 	History.png HistorySelected.png \
 	More.png MoreSelected.png \
 	MostViewed.png MostViewedSelected.png \
-	TopRated.png TopRatedSelected.png
+	TopRated.png TopRatedSelected.png \
+	Featured.png FeaturedSelected.png
 
 RESOURCES = Default.png icon.png Dial.png DialSelected.png \
 	dialerkeypad.png dialerkeypad_pressed.png \
-	settings.png
+	settings.png index.html
 
 INFOPLIST_FILE=Info.plist
 
@@ -70,6 +71,7 @@ SOURCES=\
 	PhoneView.m \
 	ContactView.m \
 	CallView.m \
+	AboutView.m \
 	DialerPhonePad.m \
 	NSNotificationAdditions.m \
 	ring.c \

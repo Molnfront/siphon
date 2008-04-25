@@ -172,7 +172,17 @@ typedef enum
            NSLocalizedString(@"Contacts", @"Siphon view"), kUIButtonBarButtonTitle,
            @"0", kUIButtonBarButtonType,
            nil 
-           ],         
+           ],
+     [ NSDictionary dictionaryWithObjectsAndKeys:
+          @"buttonBarItemTapped:", kUIButtonBarButtonAction,
+          @"Featured.png", kUIButtonBarButtonInfo,
+          @"FeaturedSelected.png", kUIButtonBarButtonSelectedInfo,
+          [ NSNumber numberWithInt: 5], kUIButtonBarButtonTag,
+          self, kUIButtonBarButtonTarget,
+          NSLocalizedString(@"Help", @"Siphon view"), kUIButtonBarButtonTitle,
+          @"0", kUIButtonBarButtonType,
+          nil 
+          ],  
     nil
   ];
 }
@@ -197,7 +207,10 @@ typedef enum
         break;
       case 4:
         [_transition transition:UITransitionShiftImmediate toView:_contactView];
-        break;        
+        break;
+      case 5:
+        [_transition transition:UITransitionShiftImmediate toView:_aboutView];
+        break;
     }
   }
 }
@@ -214,8 +227,8 @@ typedef enum
   [buttonBar setBarStyle:1];
   [buttonBar setButtonBarTrackingMode: 2];
 
-  int buttons[4] = { 1, 2, 3, 4};
-  [buttonBar registerButtonGroup:0 withButtons:buttons withCount: 4];
+  int buttons[5] = { 1, 2, 3, 4, 5};
+  [buttonBar registerButtonGroup:0 withButtons:buttons withCount: 5];
  
   [buttonBar showButtonGroup: 0 withDuration: 0.0f];
 
@@ -328,6 +341,8 @@ typedef enum
 //    CGRectMake(windowRect.origin.x, windowRect.origin.y, 
 //      windowRect.size.width, windowRect.size.height - 49.0f)];
   [_contactView setDelegate: self];
+  
+  _aboutView = [[AboutView alloc] initWithFrame: windowRect];
 
   _buttonBar = [ self createButtonBar ];
   [_mainView addSubview: _buttonBar];
@@ -420,7 +435,7 @@ typedef enum
       [_callView setState: state callId: callId];
       [_transition transition:UITransitionShiftImmediate toView:_callView];
       [_buttonBar setAlpha: 0];
-       _currentView = 5;
+       _currentView = 10;
       break;
     case PJSIP_INV_STATE_EARLY: // After response with To tag.
     case PJSIP_INV_STATE_CONNECTING: // After 2xx is sent/received.

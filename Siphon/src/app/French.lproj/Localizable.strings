@@ -2,7 +2,7 @@
 "Calls"     = "Appels";
 "Dialpad"   = "Clavier";
 "Contacts"  = "Contacts";
-"Settings"  = "Réglages";
+"Help"      = "Aide";
 
 "Press the Home button" = "Pressez le bouton Home";
 "Siphon requires a valid\nSIP account.\n\nTo enter this information, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry."=

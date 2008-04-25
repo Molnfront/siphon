@@ -25,6 +25,7 @@
 #import "PhoneView.h"
 #import "ContactView.h"
 #import "CallView.h"
+#import "AboutView.h"
 
 #import "call.h"
 
@@ -41,6 +42,7 @@
   PhoneView    *_phoneView;
   ContactView  *_contactView;
   CallView     *_callView;
+  AboutView    *_aboutView;
   
   AVSystemController *_avs;
   

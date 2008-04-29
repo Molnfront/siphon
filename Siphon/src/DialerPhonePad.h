@@ -21,7 +21,7 @@
 #define __DIALER_PHONE_PAD_H__
 
 #import <UIKit/UIControl.h>
-#import <TelephonyUI/TPPhonepad.h>
+#import <TelephonyUI/TPPhonePad.h>
 
 @interface DialerPhonePad : TPPhonePad
 {

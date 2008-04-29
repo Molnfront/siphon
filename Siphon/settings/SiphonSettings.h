@@ -24,7 +24,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <UIKit/UIProgressHud.h>
+#import <UIKit/UIProgressHUD.h>
 #import <Preferences/PSListController.h>
 #import <Preferences/PSListItemsController.h>
 

@@ -185,7 +185,7 @@ pj_status_t sip_startup(app_config_t *app_config)
   app_config->media_cfg.clock_rate = 8000;
   app_config->media_cfg.ec_tail_len = 0;
 //  app_config.media_cfg.quality = 2;
-//  app_config.media_cfg.channel_count = 2;
+  app_config->media_cfg.channel_count = 2;
   
   pjsua_transport_config_default(&(app_config->udp_cfg));
   val = [[NSUserDefaults standardUserDefaults] integerForKey: @"sip_localport"];

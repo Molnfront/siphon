@@ -19,11 +19,6 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <UIKit/UITextField-Internal.h>
-#import <UIKit/UITextField-SyntheticEvents.h>
-#import <UIKit/UITextField.h>
-#import <UIKit/UITextFieldBackground.h>
-#import <UIKit/UITextFieldLabel.h>
 
 #import <CoreGraphics/CGGeometry.h>
 #import <OSServices/SystemSound.h>
@@ -50,78 +45,64 @@
   
   if ((self = [super initWithFrame:frame]) != nil)
   {
-  UIImageView *background = [[[UIImageView alloc] 
-      initWithFrame:CGRectMake(frame.origin.x, frame.origin.y, 
-      frame.size.width,frame.size.height-66.0f)] autorelease];
-  [background setImage:[[UIImage alloc] 
-      initWithContentsOfFile:[[NSBundle mainBundle] 
-      pathForResource :@"TEL-background-top" ofType:@"png"
-      inDirectory:@"skins"]]];
-  [self addSubview:background];
+    UIImageView *lcd = [[UIImageView alloc] initWithFrame:
+    CGRectMake(0.0f,0.0f, 320.0f, 74.0f)];
+    [lcd setImage: [UIImage applicationImageNamed:@"lcd_top.png"]];
+    [self addSubview:lcd];
 
-  font = [NSClassFromString(@"WebFontCache") 
-         createFontWithFamily:@"Helvetica" 
-         traits:2 size:35];
-  font2 = [NSClassFromString(@"WebFontCache") 
-         createFontWithFamily:@"Helvetica" 
-         traits:2 size:20];
+    font = [NSClassFromString(@"WebFontCache") 
+           createFontWithFamily:@"Helvetica" 
+           traits:2 size:35];
 
-//  struct __GSFont *btnFont = [NSClassFromString(@"WebFontCache") 
-//                 createFontWithFamily:@"Helvetica" 
-//                 traits:2 size:16];
+    float fnt[] = {255, 255, 255, 1};
+    struct CGColor *fntColor = CGColorCreate(CGColorSpaceCreateDeviceRGB(),fnt);
+    float bg[] = {0, 0, 0, 0};
+    struct CGColor *bgColor = CGColorCreate(CGColorSpaceCreateDeviceRGB(),bg);
+    
+    _lcd = [[UITextLabel alloc] initWithFrame:
+      CGRectMake(0.0f, 0.0f, 320.0f, 65.0f)];
+    [_lcd setCentersHorizontally:TRUE];
+    [_lcd setFont: font];
+    [_lcd setAlignment: 1]; // Center
+    [_lcd setColor: fntColor];
+    [_lcd setBackgroundColor: bgColor];
+    [_lcd setTextAutoresizesToFit:YES];
+    [_lcd setText: @""];
 
-  float fnt[] = {255, 255, 255, 1};
-  struct CGColor *fntColor = CGColorCreate(CGColorSpaceCreateDeviceRGB(),fnt);
-  float bg[] = {0, 0, 0, 0};
-  struct CGColor *bgColor = CGColorCreate(CGColorSpaceCreateDeviceRGB(),bg);
-//  float bg2[] = {255, 255, 255, 1};
-//  struct CGColor *bg2Color = CGColorCreate(CGColorSpaceCreateDeviceRGB(),bg2);
-  
-  lbNumber = [[UITextLabel alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 65.0f)];
-  [lbNumber setCentersHorizontally:TRUE];
-  [lbNumber setFont: font];
-  [lbNumber setAlignment: 1]; // Center
-  [lbNumber setColor: fntColor];
-  [lbNumber setBackgroundColor: bgColor];
-  [lbNumber setTextAutoresizesToFit:YES];
-  [lbNumber setText: @""];
-//  [lbNumber setText: NSLocalizedString(@"Please connect to SIP-Server", 
-//    @"PhoneView")];
+    _pad = [[DialerPhonePad alloc] initWithFrame:
+          CGRectMake(0.0f, 74.0f, 320.0f, 273.0f)];
+    [_pad setPlaysSounds:TRUE];
+    [_pad setDelegate:self];
 
-  _pad = [[DialerPhonePad alloc] initWithFrame:
-        CGRectMake(0.0f, 74.0f, 320.0f, 273.0f)];
-  [_pad setPlaysSounds:TRUE];
-  [_pad setDelegate:self];
+    _addContactButton = [[UIPushButton alloc] initWithFrame: 
+      CGRectMake(0.0f, 348.0f, 107.0f, 64.0f)];
+    [_addContactButton setImage:
+      [UIImage applicationImageNamed:@"addcontact.png"] forState:0];
+    [_addContactButton setImage:
+      [UIImage applicationImageNamed:@"addcontact_pressed.png"] forState:1];
+    [_addContactButton addTarget:self action:@selector(addButtonPressed:) 
+      forEvents:1];
+   
+    _callButton = [[UIPushButton alloc] initWithFrame: 
+      CGRectMake(107.0f, 348.0f, 107.0f, 64.0f)];
+    [_callButton setImage:[UIImage applicationImageNamed:@"call.png"] 
+      forState:0];
+  //  [_callButton setImage:[UIImage applicationImageNamed:@"call_pressed.png"] forState:1];
+    [_callButton addTarget:self action:@selector(callButtonPressed:) forEvents:1];
 
-  // UIImage* btnAddImage = [UIImage imageNamed:@"skins/TEL-key-Lb.png"];
- 
-  btnCallHangup = [[UIPushButton alloc] init];
-  [btnCallHangup setAutosizesToFit: NO];
-  [btnCallHangup setFrame: CGRectMake(107.0f, 346.0f, 105.0f, 68.0f)];
-  [btnCallHangup addTarget:self action:@selector(btnCallHangupPress:) forEvents:1];
-  [btnCallHangup setImage:nil forState:0];
-  // [btnCallHangup setTitle: @"Dial"];
-//  [btnCallHangup setTitleColor: bg2Color forState:0];
-//  [btnCallHangup setTitleColor: bg2Color forState:1];
-//  [btnCallHangup setTitleFont: btnFont];
-  [btnCallHangup setDrawContentsCentered: YES];
+    _deleteButton = [[UIPushButton alloc] initWithFrame: 
+      CGRectMake(214.0f, 348.0f, 107.0f, 64.0f)];
+    [_deleteButton setImage:[UIImage applicationImageNamed:@"delete.png"] 
+      forState:0];
+    [_deleteButton setImage:
+      [UIImage applicationImageNamed:@"delete_pressed.png"] forState:1];
+    [_deleteButton addTarget:self action:@selector(deleteButtonPressed:) forEvents:1];
 
-  UIImage* btnDelImage = [UIImage imageNamed:@"skins/TEL-key-Rb.png"];
-  btnDel = [[UIPushButton alloc] init];
-  [btnDel setAutosizesToFit: NO];
-  [btnDel setFrame: CGRectMake(213.0f, 346.0f, 105.0f, 68.0f)];
-  [btnDel addTarget:self action:@selector(btnDelPress:) forEvents:1];
-  [btnDel setImage:btnDelImage forState:1];
-//  [btnDel setEnabled: NO];
-
-
-  [self addSubview: lbNumber];
-
-  [self addSubview: _pad];
-
-//  [self addSubview: btnAdd];
-  [self addSubview: btnCallHangup];
-  [self addSubview: btnDel];
+    [self addSubview: _lcd];
+    [self addSubview: _pad];
+    [self addSubview: _addContactButton];
+    [self addSubview: _callButton];
+    [self addSubview: _deleteButton];
   }
   return self;
 }
@@ -129,31 +110,31 @@
 /*** Buttons callback ***/
 - (void)phonePad:(TPPhonePad *)phonepad appendString:(NSString *)string
 {
-  NSString *curText = [lbNumber text];
-  [lbNumber setText: [curText stringByAppendingString: string]];
+  NSString *curText = [_lcd text];
+  [_lcd setText: [curText stringByAppendingString: string]];
 }
 
-- (void)btnAddPress:(UIPushButton*)btn
+- (void)addButtonPressed:(UIPushButton*)btn
 {
 
 }
 
-- (void)btnCallHangupPress:(UIPushButton*)btn
+- (void)callButtonPressed:(UIPushButton*)btn
 {
-  if (([[lbNumber text] length] > 1) && 
+  if (([[_lcd text] length] > 1) && 
       ([_delegate respondsToSelector:@selector(dialup:)])) 
     {
-      [_delegate dialup: [lbNumber text]];
-      [lbNumber setText:@""];
+      [_delegate dialup: [_lcd text]];
+      [_lcd setText:@""];
     }
 }
 
-- (void)btnDelPress:(UIPushButton*)btn
+- (void)deleteButtonPress:(UIPushButton*)btn
 {
-  NSString *curText = [lbNumber text];
+  NSString *curText = [_lcd text];
   if([curText length] > 0)
   {
-    [lbNumber setText: [curText substringToIndex:([curText length]-1)]];
+    [_lcd setText: [curText substringToIndex:([curText length]-1)]];
   }
 }
 

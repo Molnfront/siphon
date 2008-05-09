@@ -20,7 +20,6 @@
 
 #import <UIKit/UIKit.h>
 #import <UIKit/UIView.h>
-#import <UIKit/UIAlertSheet.h>
 
 #import <pjsua-lib/pjsua.h>
 
@@ -32,18 +31,15 @@
 
 @interface PhoneView : UIView
 {
-  UITextLabel *lbNumber;
+  UITextLabel    *_lcd;
 
   DialerPhonePad *_pad;
 
-//  UIPushButton *btnAdd;
-  
-//  UIImage *imgConnect;
-  UIPushButton *btnCallHangup;
-  UIPushButton *btnDel;
+  UIPushButton   *_addContactButton;
+  UIPushButton   *_callButton;
+  UIPushButton   *_deleteButton;
 
   struct __GSFont *font;
-  struct __GSFont *font2;
 
   id _delegate;
 }
@@ -53,3 +49,4 @@
 - (void)setDelegate:(id)newDelegate;
 
 @end
+

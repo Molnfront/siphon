@@ -28,7 +28,6 @@ LDFLAGS= -Wall \
 	-lobjc \
 	-lssl -lcrypto \
 	-L../pjsip/lib \
-	-lresample-arm-apple-darwin \
 	-lsrtp-arm-apple-darwin \
 	-lpjsua-arm-apple-darwin \
 	-lpjsip-simple-arm-apple-darwin \
@@ -38,7 +37,9 @@ LDFLAGS= -Wall \
 	-lpjnath-arm-apple-darwin \
 	-lpjlib-util-arm-apple-darwin \
 	-lpj-arm-apple-darwin
-	
+
+#	-lresample-arm-apple-darwin	
+
 CFLAGS= -O2 \
 	-I../pjsip/include \
 	-DPJ_DARWINOS=1 \
@@ -57,6 +58,10 @@ YOUTUBE_RESOURCES = \
 
 RESOURCES = Default.png icon.png Dial.png DialSelected.png \
 	dialerkeypad.png dialerkeypad_pressed.png \
+	lcd_top.png \
+	addcontact.png addcontact_pressed.png \
+	call.png \
+	delete.png delete_pressed.png \
 	settings.png index.html
 
 INFOPLIST_FILE=Info.plist
@@ -100,14 +105,11 @@ $(TARGET): $(OBJECTS)
 		mkdir -p $(APP_ABS)/$$i; \
 		cp app/$$i/Localizable.strings $(APP_ABS)/$$i; \
 	done
-	mkdir -p $(APP_ABS)/skins
-	cp app/skins/*.png $(APP_ABS)/skins/
 
 	mkdir -p $(BUILT_PRODUCTS_DIR)/SpringBoard.app
 	for i in $(STATUS_ICONS); do \
 		cp app/$$i $(BUILT_PRODUCTS_DIR)/SpringBoard.app/$$i; \
 	done
-
 
 %.o:	%.m
 	$(CC) -Wall -c $(CFLAGS) $(CPPFLAGS) $< -o $@

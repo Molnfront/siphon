@@ -175,10 +175,15 @@ pj_status_t sip_startup(app_config_t *app_config)
 
   app_config->log_cfg.msg_logging = (val ? PJ_TRUE : PJ_FALSE);
   app_config->log_cfg.console_level = val;
+//  app_config->log_cfg.console_level = 0;
   app_config->log_cfg.level = val;
-  // TODO define filename and path
-//  if (val != 0)
-//    app_config.log_cfg.log_filename = ;
+  if (val != 0)
+  {
+    NSString *path = [[[NSBundle mainBundle] bundlePath] 
+      stringByAppendingString: @"/log.txt"];
+    app_config->log_cfg.log_filename = pj_strdup3(app_config->pool, 
+      [path UTF8String]);
+  }
   
   
   pjsua_media_config_default(&(app_config->media_cfg));

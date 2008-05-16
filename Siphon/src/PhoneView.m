@@ -129,7 +129,7 @@
     }
 }
 
-- (void)deleteButtonPress:(UIPushButton*)btn
+- (void)deleteButtonPressed:(UIPushButton*)btn
 {
   NSString *curText = [_lcd text];
   if([curText length] > 0)

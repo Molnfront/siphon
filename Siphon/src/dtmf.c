@@ -42,23 +42,23 @@ struct my_call_data *call_init_tonegen(pjsua_call_id call_id)
   cd = PJ_POOL_ZALLOC_T(pool, struct my_call_data);
   cd->pool = pool;
 
-  //pjmedia_tonegen_create(cd->pool, 8000, 1, 160, 16, 0, &cd->tonegen);
-  status = pjmedia_tonegen_create(cd->pool, 8000, 1, 64 /  10, 16, 0, &cd->tonegen);
+  status = pjmedia_tonegen_create(cd->pool, 8000, 1, 160, 16, 0, &cd->tonegen);
+
   if (status == PJ_SUCCESS)
   {
-	pjsua_conf_add_port(cd->pool, cd->tonegen, &cd->toneslot);
-
-	pjsua_call_get_info(call_id, &ci);
-	pjsua_conf_connect(cd->toneslot, ci.conf_slot);
-	pjsua_conf_connect(cd->toneslot, 0); // sortie haut parleur.
-
-	pjsua_call_set_user_data(call_id, (void*) cd);
+  	pjsua_conf_add_port(cd->pool, cd->tonegen, &cd->toneslot);
+  
+  	pjsua_call_get_info(call_id, &ci);
+  	pjsua_conf_connect(cd->toneslot, ci.conf_slot);
+//	pjsua_conf_connect(cd->toneslot, 0); // sortie haut parleur.
+  
+  	pjsua_call_set_user_data(call_id, (void*) cd);
   }
   else
   {
     pjsua_perror(THIS_FILE, "Error: Error creating DTMF generator", status);
     pj_pool_release(pool);
-	cd = NULL;
+    cd = NULL;
   }
 
   return cd;

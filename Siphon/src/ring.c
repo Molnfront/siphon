@@ -33,15 +33,14 @@ void sip_ring_startup(pjsua_call_id call_id)
 	struct my_call_data *cd;
 
 	pj_pool_t *pool;
-	//pjmedia_port       *tonegen;
-    //pjsua_conf_port_id  toneslot;
 	pjmedia_tone_desc   tones[1];
 	
 	pool = pjsua_pool_create("ring", 512, 512);
 	cd = PJ_POOL_ZALLOC_T(pool, struct my_call_data);
 	cd->pool = pool;
 	
-	pjmedia_tonegen_create(cd->pool, 8000, 1, /*8000 /  10*/64 /  10, 16, 0, &cd->tonegen);
+  pjmedia_tonegen_create(cd->pool, 8000, 1, 8000 /  10, 16, 0, &cd->tonegen);
+
 	pjsua_conf_add_port(cd->pool, cd->tonegen, &cd->toneslot);
 	pjsua_conf_connect(cd->toneslot, 0);
 	

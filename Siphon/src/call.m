@@ -148,6 +148,20 @@ static void on_call_media_state(pjsua_call_id call_id)
     }
 }
 
+/*
+ * Handler registration status has changed.
+ */
+static void on_reg_state(pjsua_acc_id acc_id)
+{
+  pjsua_acc_info info;
+
+  pjsua_acc_get_info(acc_id, &info);
+
+  // Log already written.
+  NSLog(@"Status changed acc %d %.*s", acc_id, (int)info.status_text.slen, 
+      info.status_text.ptr);
+}
+
 /* */
 pj_status_t sip_startup(app_config_t *app_config)
 {
@@ -184,8 +198,7 @@ pj_status_t sip_startup(app_config_t *app_config)
     app_config->log_cfg.log_filename = pj_strdup3(app_config->pool, 
       [path UTF8String]);
   }
-  
-  
+
   pjsua_media_config_default(&(app_config->media_cfg));
   app_config->media_cfg.clock_rate = 8000;
   app_config->media_cfg.ec_tail_len = 0;
@@ -226,6 +239,14 @@ pj_status_t sip_startup(app_config_t *app_config)
   app_config->cfg.cb.on_incoming_call = &on_incoming_call;
   app_config->cfg.cb.on_call_media_state = &on_call_media_state;
   app_config->cfg.cb.on_call_state = &on_call_state;
+  app_config->cfg.cb.on_reg_state = &on_reg_state;
+  
+//  [[[NSUserDefaults standardUserDefaults] stringForKey: 
+//      @"sip_stunDomain"] UTF8String];
+//  app_config->cfg.stun_domain = pj_str(pj_optarg); /* STUN domain */
+//  [[[NSUserDefaults standardUserDefaults] stringForKey: 
+//      @"sip_stunServer"] UTF8String];
+//  app_config->cfg.stun_host = pj_str(pj_optarg);   /* STUN server */
   
   /* Initialize pjsua */
   status = pjsua_init(&app_config->cfg, &app_config->log_cfg, 
@@ -327,7 +348,9 @@ pj_status_t sip_connect(pj_pool_t *pool, pjsua_acc_id *acc_id)
   acc_cfg.cred_info[0].username = pj_str((char *)uname);
   acc_cfg.cred_info[0].data_type = PJSIP_CRED_DATA_PLAIN_PASSWD;
   acc_cfg.cred_info[0].data = pj_str((char *)passwd);
+  
   acc_cfg.publish_enabled = PJ_TRUE;
+  acc_cfg.allow_contact_rewrite = PJ_FALSE; // FIXME pb with SIP provider Free !!
   
   // FIXME: gestion du message 423 dans pjsip
   acc_cfg.reg_timeout = [[NSUserDefaults standardUserDefaults] integerForKey: 
@@ -371,7 +394,7 @@ pj_status_t sip_disconnect(pjsua_acc_id *acc_id)
 pj_status_t sip_dial(pjsua_acc_id acc_id, const char *number, 
   pjsua_call_id *call_id)
 {
-  // FIXME: récupérer le domain à partir du compte (acc_id);
+  // FIXME: rÃ©cupÃ©rer le domain Ã  partir du compte (acc_id);
   // TODO be careful app already mustn't be in communication!
   // TODO if not SIP connected, use GSM ? NSURL with 'tel' protocol
   pj_status_t status = PJ_SUCCESS;

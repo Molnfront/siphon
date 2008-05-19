@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>info</key>
-		<dict>
+	  <dict>
 	    <key>name</key>
 	    <string>Touchmods</string>
 	    <key>maintainer</key>
-	    <string>cto,eok,franklyn,marian,metabaron,samuel</string>
+	    <string>samuel,marian,metabaron,cto,eok,franklyn</string>
 	    <key>contact</key>
 	    <string>info@touchmods.net</string>
 	    <key>url</key>
@@ -15,7 +15,7 @@
 	    <key>category</key>
 	    <string>Touchmods</string>
 	    <key>description</key>
-	    <string>Touchmods Repository - Home of the 1st free SIP-VoIP Application for the iPod</string>
+	    <string>Touchmods Repository - Home of the 1st free SIP-VoIP Application for the iPod Touch</string>
 		</dict>
 		<key>packages</key>
 		<array>
@@ -50,16 +50,16 @@
 	              <string>/System/Library/CoreServices/SpringBoard.app</string>
 	            </array>
 	            <array>
-								<string>Exec</string>
-								<string>/Applications/Siphon.app/Siphon --installPrefBundle</string>
-							</array>
+                  <string>Exec</string>
+                  <string>/Applications/Siphon.app/Siphon --installPrefBundle</string>
+                </array>
 	          </array>
 	        <key>uninstall</key>
 	          <array>
-	          	<array>
-								<string>Exec</string>
-								<string>/Applications/Siphon.app/Siphon --removePrefBundle</string>
-							</array>
+	            <array>
+                  <string>Exec</string>
+                  <string>/Applications/Siphon.app/Siphon --removePrefBundle</string>
+                </array>
 	            <array>
 	              <string>RemovePath</string>
 	              <string>/Applications/Siphon.app</string>

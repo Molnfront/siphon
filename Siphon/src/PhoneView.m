@@ -114,9 +114,43 @@
   [_lcd setText: [curText stringByAppendingString: string]];
 }
 
+- (void)alertSheet:(UIAlertSheet*)sheet buttonClicked:(int)button
+{
+  if ( button == 1 )
+    NSLog(@"Create New Contact");
+  else if ( button == 2 )
+    NSLog(@"Add to Existing Contact");
+  else if ( button == 2 )
+      NSLog(@"Cancel");
+
+  [sheet dismiss];
+
+}
+
 - (void)addButtonPressed:(UIPushButton*)btn
 {
-
+  if ([[_lcd text] length] < 1)
+    return;
+  
+//  if ([[ABCGetSharedAddressBook] ABCGetPersonCount] == 0)
+//  {
+//    // Create New Contact
+//  }
+//  else
+  {
+    NSArray *array = [[NSArray alloc] initWithObjects: 
+      NSLocalizedString(@"Create New Contact",@"Phone View"),
+      NSLocalizedString(@"Add to Existing Contact",@"Phone View"),
+      NSLocalizedString(@"Cancel",@"Phone View"),
+      nil];
+    
+    UIAlertSheet *alertSheet = [[UIAlertSheet alloc] initWithTitle:nil 
+                                buttons:array defaultButtonIndex:2 
+                                delegate:self context:self];
+    
+    [alertSheet presentSheetInView: self];
+  }
+  
 }
 
 - (void)callButtonPressed:(UIPushButton*)btn

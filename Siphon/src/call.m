@@ -193,17 +193,18 @@ pj_status_t sip_startup(app_config_t *app_config)
   app_config->log_cfg.level = val;
   if (val != 0)
   {
-    NSString *path = [[[NSBundle mainBundle] bundlePath] 
-      stringByAppendingString: @"/log.txt"];
-    app_config->log_cfg.log_filename = pj_strdup3(app_config->pool, 
-      [path UTF8String]);
+//    NSString *path = [[[NSBundle mainBundle] bundlePath] 
+//      stringByAppendingString: @"/log.txt"];
+//    app_config->log_cfg.log_filename = pj_strdup3(app_config->pool, 
+//      [path UTF8String]);
   }
 
   pjsua_media_config_default(&(app_config->media_cfg));
   app_config->media_cfg.clock_rate = 8000;
+  app_config->media_cfg.snd_clock_rate = 8000;
   app_config->media_cfg.ec_tail_len = 0;
 //  app_config.media_cfg.quality = 2;
-  app_config->media_cfg.channel_count = 2;
+//  app_config->media_cfg.channel_count = 2;
   
   pjsua_transport_config_default(&(app_config->udp_cfg));
   val = [[NSUserDefaults standardUserDefaults] integerForKey: @"sip_localport"];

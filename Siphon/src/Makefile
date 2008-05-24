@@ -47,7 +47,7 @@ CFLAGS= -O2 \
 
 
 TARGET=Siphon
-VERSION=1.9
+VERSION=1.9.1
 
 YOUTUBE_RESOURCES = \
 	History.png HistorySelected.png \

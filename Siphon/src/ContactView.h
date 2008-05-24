@@ -1,6 +1,5 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008 Mathieu Feulvarc'h <metabaron@metabaron.net>
  *  Copyright (C) 2008 Samuel <samuelv@users.sourceforge.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -37,7 +36,8 @@ extern NSString* ABCCopyLocalizedPropertyOrLabel(NSString*);
 
 extern NSString* ABCMultiValueGetLabelAtIndex(int,int);
 extern NSString* ABCMultiValueCopyValueAtIndex(int, int);
-extern int       ABCMultiValueIndexForIdentifier(int,int); 
+extern int       ABCMultiValueIndexForIdentifier(int,int);
+extern void      ABCMultiValueDestroy(int);
 
 extern NSString* ABCRecordCopyCompositeName(struct CPRecord*);
 extern int       ABCRecordCopyValue(struct CPRecord *,int ); 
@@ -48,23 +48,18 @@ extern int       ABCRecordCopyValue(struct CPRecord *,int );
 
 @protocol ContactView
 // TODO rename to dialup ???
--(void) contactSelected:(NSString *)phoneNumber;
+-(void) dialup:(NSString *)phoneNumber;
 @end
 
 @interface ContactView : UIView
 {
   ABPeoplePicker *_peoplepicker;
-  NSString *_contactPropertyName;
-  NSString *_contactPropertyValue;
-  NSString *_contactName;
+  NSString *_phoneNumber;
   id _delegate;
 }
 
 - (id)initWithFrame:(struct CGRect)rect;
 - (void)setDelegate:(id)delegate;
-- (NSString *)getSelectedPropertyName;
-- (NSString *)getSelectedPropertyValue;
-- (NSString *)getSelectedContactName;
 
 @end
 

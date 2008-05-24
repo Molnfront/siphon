@@ -396,7 +396,7 @@ typedef enum
   }
 }
 
-/** FIXME plutot à mettre dans l'objet qui gère les appels **/
+/** FIXME plutot Ã  mettre dans l'objet qui gÃ¨sre les appels **/
 - (void)dialup:(NSString *)phoneNumber
 {
   pjsua_call_id call_id;
@@ -406,18 +406,6 @@ typedef enum
   {
     sip_dial(_sip_acc_id, [phoneNumber UTF8String], &call_id);
   }
-}
-
-- (void)contactSelected:(NSString *)phoneNumber
-{
-  // Check selected value
-  NSString* selectedName = [_contactView getSelectedContactName];
-  NSString* selectedPhone = [_contactView getSelectedPropertyValue];
-  NSLog(@"Contact %@, number %@ is selected",selectedName,selectedPhone);
-//  NSLog(@"OK. Phonenumber: %s",[[_contactsView getSelectedPropertyValue] UTF8String]);
-  NSLog(@"OK. Phonenumber: %@",phoneNumber);
-  // TODO: sip_dial()
-  [self dialup: phoneNumber];
 }
 /** Fin du FIXME */
 

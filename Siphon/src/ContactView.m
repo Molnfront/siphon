@@ -1,6 +1,5 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008 Mathieu Feulvarc'h <metabaron@metabaron.net>
  *  Copyright (C) 2008 Samuel <samuelv@users.sourceforge.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -27,26 +26,9 @@
   self = [super initWithFrame:rect];
   if(self != nil) 
   {
-    _contactName = nil;
-    _contactPropertyValue = nil;
-    
-    _peoplepicker =[[ABPeoplePicker alloc] initWithFrame: rect];
+    _peoplepicker =[[ABPeoplePicker alloc] initAsAddressBookWithFrame: rect];
     [_peoplepicker setDelegate: self];
-
-  
-    CFMutableArrayRef _props = CFArrayCreateMutable( NULL, 1, NULL );
-    CFArrayAppendValue(_props, kABCPhoneProperty);
-    //CFArrayAppendValue(_props, kABCEmailProperty);
-    
-    [_peoplepicker setAllowsCancel: NO];
-    [_peoplepicker setAllowsActions: NO];
-    [_peoplepicker setAllowsOtherValue: YES];
-    //Do you allow to edit contact (not wroking right now)
-    [_peoplepicker setAllowsCardEditing: NO];
-//    [_peoplepicker setAllowsCardEditing: YES];
-    [_peoplepicker setDisplayedProperties:_props];
-//    CFRelease(_props);
-    
+   
     [self addSubview:_peoplepicker];
   }
 
@@ -55,44 +37,8 @@
 
 -  (void) dealloc
 {
-//NEED FIX ArrayRef release
-  //[_props release];
   [_peoplepicker release];
   [super dealloc];
-}
-
--(void)copyPropertyValue:(struct CPRecord*)cpRecord 
-      multiValue:(int)multiValue 
-      valueIdx:(int) valueIdx 
-      withLabel:(BOOL)withLabel
-{
-  if(_contactPropertyValue)
-  {
-    [_contactPropertyValue release];
-//    contactPropertyValue = nil;
-  }
-  
-  _contactPropertyValue = ABCMultiValueCopyValueAtIndex(multiValue,valueIdx);
-  if(_contactName)
-  {
-    [_contactName release];
-//    contactName = nil;
-  }
-  
-  NSString* compositeName = (NSString*)ABCRecordCopyCompositeName(cpRecord);
-  if(withLabel)
-  {
-    // Append phone label if contact has 2+ phone numbers
-    NSString *label = ABCMultiValueGetLabelAtIndex(multiValue,valueIdx);
-    NSString *localizedLabel = ABCCopyLocalizedPropertyOrLabel(label);    
-    _contactName = [[NSString alloc] initWithFormat:@"%@(%@)",compositeName,localizedLabel];
-    [compositeName release];
-    [localizedLabel release];
-  }
-  else
-  {
-    _contactName = compositeName;
-  }
 }
 
 /***************************************************************
@@ -102,32 +48,46 @@
  * identifier - value of "identifier" field in table ABMultiValue
  *  
  ***************************************************************/
-- (void)peoplePicker:(id)fp8 selectedPerson:(struct CPRecord *)cpRecord 
+- (void)peoplePicker:(id)peoplePicker
+      selectedPerson:(struct CPRecord *)cpRecord 
       property:(int)propertyId 
       identifier:(int)propertyIdentifier 
 {
   int multiValue,valueIdx;
-  // Get the propert values
-  multiValue=ABCRecordCopyValue(cpRecord,propertyId);
-
-  // Get the property value id in the values
-  valueIdx=ABCMultiValueIndexForIdentifier(multiValue,propertyIdentifier);
   
-  [self copyPropertyValue:cpRecord multiValue:multiValue valueIdx:valueIdx withLabel:YES];
+  if ((int)kABCPhoneProperty == propertyId)
+  {
+    multiValue = ABCRecordCopyValue(cpRecord, propertyId);
+    valueIdx=ABCMultiValueIndexForIdentifier(multiValue,propertyIdentifier);
+//  TODO find TPNumberToDialForNumber signature !!!
+    _phoneNumber = ABCMultiValueCopyValueAtIndex(multiValue, valueIdx);
+    NSMutableString *mString = [_phoneNumber mutableCopy];
+    [mString replaceOccurrencesOfString:@" " 
+                    withString:@"" options:NSCaseInsensitiveSearch 
+                    range:(NSRange){0,[_phoneNumber length]}];
+    _phoneNumber = [ NSString stringWithString: [ mString autorelease ]];
+    ABCMultiValueDestroy(multiValue);
+  }
+  else
+  {
+    [peoplePicker performDefaultActionForPerson:cpRecord 
+                  property:propertyId identifier:propertyIdentifier];
+  }
 }
 
 - (void)peoplePickerDidEndPicking:(id)iself 
 {
   //[_peoplepicker saveState];
   [_peoplepicker resume];
-  if(_delegate == nil) {
+  if(_delegate == nil) 
+  {
     NSLog(@"ERROR: delegate is nil!");
     //TODO throw exception!!
     return;
   }
-  if ( [_delegate respondsToSelector:@selector(contactSelected:)]) 
+  if ( [_delegate respondsToSelector:@selector(dialup:)]) 
   {
-    [_delegate contactSelected:_contactName];
+    [_delegate dialup:_phoneNumber];
   }
   else 
   {
@@ -139,21 +99,6 @@
 - (void)setDelegate:(id)delegate 
 {
   _delegate = delegate;
-}
-
-- (NSString *)getSelectedPropertyName
-{
-  return _contactPropertyName;
-}
-
-- (NSString *)getSelectedPropertyValue
-{
-  return _contactPropertyValue;
-}
-
--(NSString *)getSelectedContactName
-{
-  return _contactName;
 }
 
 @end

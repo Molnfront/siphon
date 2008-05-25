@@ -47,7 +47,6 @@ extern int       ABCRecordCopyValue(struct CPRecord *,int );
 #endif
 
 @protocol ContactView
-// TODO rename to dialup ???
 -(void) dialup:(NSString *)phoneNumber;
 @end
 

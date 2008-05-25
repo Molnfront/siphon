@@ -76,6 +76,7 @@ SOURCES=\
 	PhoneView.m \
 	ContactView.m \
 	CallView.m \
+	FavoritesView.m \
 	AboutView.m \
 	DialerPhonePad.m \
 	NSNotificationAdditions.m \

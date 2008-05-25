@@ -26,6 +26,7 @@
 #import "ContactView.h"
 #import "CallView.h"
 #import "AboutView.h"
+#import "FavoritesView.h"
 
 #import "call.h"
 
@@ -39,10 +40,11 @@
   int               _currentView;
 //  int               _previousView;
 
-  PhoneView    *_phoneView;
-  ContactView  *_contactView;
-  CallView     *_callView;
-  AboutView    *_aboutView;
+  PhoneView     *_phoneView;
+  ContactView   *_contactView;
+  CallView      *_callView;
+  FavoritesView *_favoritesView;
+  AboutView     *_aboutView;
   
   AVSystemController *_avs;
   

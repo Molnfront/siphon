@@ -59,13 +59,7 @@
   {
     multiValue = ABCRecordCopyValue(cpRecord, propertyId);
     valueIdx=ABCMultiValueIndexForIdentifier(multiValue,propertyIdentifier);
-//  TODO find TPNumberToDialForNumber signature !!!
     _phoneNumber = ABCMultiValueCopyValueAtIndex(multiValue, valueIdx);
-    NSMutableString *mString = [_phoneNumber mutableCopy];
-    [mString replaceOccurrencesOfString:@" " 
-                    withString:@"" options:NSCaseInsensitiveSearch 
-                    range:(NSRange){0,[_phoneNumber length]}];
-    _phoneNumber = [ NSString stringWithString: [ mString autorelease ]];
     ABCMultiValueDestroy(multiValue);
   }
   else

@@ -197,7 +197,8 @@ typedef enum
     switch (button) 
     {
       case 1:
-        NSLog(@"Favorites");
+        [_transition transition:UITransitionShiftImmediate 
+           toView:_favoritesView];
         break;
       case 2:
         NSLog(@"Calls");
@@ -321,7 +322,9 @@ typedef enum
         [[[NSUserDefaults standardUserDefaults] objectForKey: @"AppleLanguages"] objectAtIndex:0]);
   NSLog(@"Network connection is %s...\n", [self hasNetworkConnection] ? "up" : "down");
   NSLog(@"Edge connection is %s...\n", ([[NetworkController sharedInstance] isEdgeUp] ? "up" : "down"));
-        
+ 
+//  [self setRelaunchesAfterAbnormalExit: YES];
+  
   CGRect windowRect = [ UIHardware fullScreenApplicationContentRect ];
   windowRect.origin.x = windowRect.origin.y = 0.0f;
   
@@ -343,6 +346,9 @@ typedef enum
 //    CGRectMake(windowRect.origin.x, windowRect.origin.y, 
 //      windowRect.size.width, windowRect.size.height - 49.0f)];
   [_contactView setDelegate: self];
+  
+  _favoritesView = [[FavoritesView alloc] initWithFrame: windowRect];
+  [_favoritesView setDelegate: self];
   
   _aboutView = [[AboutView alloc] initWithFrame: windowRect];
 
@@ -406,7 +412,14 @@ typedef enum
 
   if ([self sipConnect])
   {
-    sip_dial(_sip_acc_id, [phoneNumber UTF8String], &call_id);
+    //  TODO find TPNumberToDialForNumber signature !?
+    NSString *number;
+    NSMutableString *mString = [phoneNumber mutableCopy];
+    [mString replaceOccurrencesOfString:@" " 
+                    withString:@"" options:NSCaseInsensitiveSearch 
+                    range:(NSRange){0,[phoneNumber length]}];
+    number =  [ NSString stringWithString: [ mString autorelease ]];
+    sip_dial(_sip_acc_id, [number UTF8String], &call_id);
   }
 }
 /** Fin du FIXME */

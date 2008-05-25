@@ -301,7 +301,8 @@ typedef enum
   }
   else
   {
-    sip_startup(&_app_config);
+    if (_app_config.pool == NULL)
+      sip_startup(&_app_config);
     [self sipConnect];
     [_transition transition:UITransitionShiftImmediate toView:_phoneView];
     [_buttonBar showSelectionForButton: 3];
@@ -314,6 +315,7 @@ typedef enum
 - (void) applicationDidFinishLaunching: (id) unused
 {
   _sip_acc_id = PJSUA_INVALID_ID;
+  pj_bzero(&_app_config, sizeof(app_config_t));
   
   NSLog(@"Waking up on an %s (%@)...\n", [self hasTelephony] ? "iPhone" : "iPod Touch", 
         [[[NSUserDefaults standardUserDefaults] objectForKey: @"AppleLanguages"] objectAtIndex:0]);

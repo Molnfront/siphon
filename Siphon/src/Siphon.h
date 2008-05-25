@@ -51,6 +51,8 @@
 }
 
 - (void)processCallState:(NSNotification *)notification;
+- (void)hideButtonBar:(UIView *)view;
+- (void)showButtonBar:(UIView *)view;
 
 @end
 

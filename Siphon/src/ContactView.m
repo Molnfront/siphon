@@ -96,6 +96,17 @@
   //TODO send out notification ?
 }
 
+- (void)peoplePicker:(id)fp8 willTransitionToFullScreenViewFromView:(id)view
+{
+  [UIApp hideButtonBar: view];
+}
+//- (void)peoplePicker:(id)fp8 willTransitionFromFullScreenViewToView:(id)view
+
+- (void)peoplePicker:(id)fp8 didTransitionFromFullScreenViewToView:(id)view
+{
+  [UIApp showButtonBar: view];
+}
+
 - (void)setDelegate:(id)delegate 
 {
   _delegate = delegate;

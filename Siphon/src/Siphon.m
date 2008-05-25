@@ -442,4 +442,14 @@ typedef enum
   }
 }
 
+/*** ***/
+- (void)hideButtonBar:(UIView *)view
+{
+  [_buttonBar setAlpha: 0];
+}
+- (void)showButtonBar:(UIView *)view
+{
+  [_buttonBar setAlpha: 1];
+}
+
 @end

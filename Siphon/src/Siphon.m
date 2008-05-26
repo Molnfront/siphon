@@ -189,7 +189,6 @@ typedef enum
 
 - (void)buttonBarItemTapped:(id) sender 
 {
-  NSLog(@"buttonBarItemTapped");
   int button = [ sender tag ];
   if(button != _currentView) 
   {
@@ -303,12 +302,14 @@ typedef enum
   else
   {
     if (_app_config.pool == NULL)
+    {
       sip_startup(&_app_config);
-    [self sipConnect];
-    [_transition transition:UITransitionShiftImmediate toView:_phoneView];
-    [_buttonBar showSelectionForButton: 3];
-    [_buttonBar setAlpha: 1];
-     _currentView = 3;
+      [self sipConnect];
+      [_transition transition:UITransitionShiftImmediate toView:_phoneView];
+      [_buttonBar showSelectionForButton: 3];
+      [_buttonBar setAlpha: 1];
+       _currentView = 3;
+    }
   }
 }
 
@@ -408,7 +409,6 @@ typedef enum
 - (void)dialup:(NSString *)phoneNumber
 {
   pjsua_call_id call_id;
-  NSLog(@"Dialup: %@", phoneNumber);
 
   if ([self sipConnect])
   {
@@ -417,8 +417,18 @@ typedef enum
     NSMutableString *mString = [phoneNumber mutableCopy];
     [mString replaceOccurrencesOfString:@" " 
                     withString:@"" options:NSCaseInsensitiveSearch 
-                    range:(NSRange){0,[phoneNumber length]}];
+                    range: NSMakeRange(0, [mString length])];
+    [mString replaceOccurrencesOfString:@"(" 
+                    withString:@"" options:NSCaseInsensitiveSearch 
+                    range: NSMakeRange(0, [mString length])];
+    [mString replaceOccurrencesOfString:@")" 
+                    withString:@"" options:NSCaseInsensitiveSearch 
+                    range: NSMakeRange(0, [mString length])];
+    [mString replaceOccurrencesOfString:@"/" 
+                    withString:@"" options:NSCaseInsensitiveSearch 
+                    range: NSMakeRange(0, [mString length])];
     number =  [ NSString stringWithString: [ mString autorelease ]];
+    NSLog(@"Dialup: %@", number);
     sip_dial(_sip_acc_id, [number UTF8String], &call_id);
   }
 }
@@ -451,6 +461,7 @@ typedef enum
     case PJSIP_INV_STATE_DISCONNECTED:
       [_callView setState: state callId: callId];
       [_transition transition:UITransitionShiftImmediate toView:_phoneView];
+      [_buttonBar showSelectionForButton: 3];
       [_buttonBar setAlpha: 1];
       _currentView = 3;
       break;

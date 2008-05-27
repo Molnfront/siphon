@@ -19,7 +19,6 @@
  */
 
 #import "Siphon.h"
-#import "version.h"
 
 #import "call.h"
 

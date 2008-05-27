@@ -2,6 +2,9 @@ CC=arm-apple-darwin-gcc
 CXX=arm-apple-darwin-g++
 LD=$(CC)
 
+TARGET=Siphon
+VERSION=1.9.4
+
 PRODUCT_NAME = Siphon
 PRODUCT_APP=$(PRODUCT_NAME).app
 BUILT_PRODUCTS_DIR = ../dist
@@ -43,11 +46,7 @@ LDFLAGS= -Wall \
 CFLAGS= -O2 \
 	-I../pjsip/include \
 	-DPJ_DARWINOS=1 \
-	-DOPEN=1
-
-
-TARGET=Siphon
-VERSION=1.9.1
+	-DVERSION_STRING="@\"$(PRODUCT_NAME) $(VERSION)\""
 
 YOUTUBE_RESOURCES = \
 	History.png HistorySelected.png \

@@ -15,7 +15,7 @@
 		<key>CFBundleSignature</key>
 		<string>MBST</string>
 		<key>CFBundleVersion</key>
-		<string>1.9.4</string>
+		<string>1.9.5</string>
 		<key>NSPrincipalClass</key>
 		<string>SiphonSettings</string>
 	</dict>

@@ -95,7 +95,7 @@
     
     /** LCD **/
     _lcd = [[TPLCDView alloc] initWithDefaultSize];
-    [_lcd setLabel:@"Label"]; // name of callee
+    [_lcd setLabel:@""]; // name or number of callee
     [_lcd setText:@""];   // timer, call state for example
 //    [_lcd setSubImage:];  // image/avatar
     [self addSubview: _lcd];
@@ -138,6 +138,41 @@
 }
 
 /*** ***/
+- (void)displayName:(pjsua_call_id)call_id
+{
+  pjsua_call_info ci;
+  pjsip_name_addr *url;
+  pjsip_sip_uri *sip_uri;
+  pj_str_t tmp, dst;
+  pj_pool_t     *pool;
+  
+  pool = pjsua_pool_create("call", 128, 128);
+
+  if (pool)
+  {
+    pjsua_call_get_info(call_id, &ci);
+    pj_strdup_with_null(pool, &tmp, &ci.remote_info);
+  
+    url = (pjsip_name_addr*)pjsip_parse_uri(pool, tmp.ptr, tmp.slen,
+                  PJSIP_PARSE_URI_AS_NAMEADDR);
+    if (url != NULL) 
+    {
+      if (url->display.slen)
+      {
+        pj_strdup_with_null(pool, &dst, &url->display);
+      }
+      else
+      {
+        sip_uri = (pjsip_sip_uri*) pjsip_uri_get_uri(url->uri);
+        pj_strdup_with_null(pool, &dst, &sip_uri->user);
+      }
+      [_lcd setText: [NSString stringWithUTF8String: pj_strbuf(&dst)]];
+    }
+    pj_pool_release(pool);
+  } 
+}
+
+/*** ***/
 - (void)setState:(int)state callId:(pjsua_call_id)call_id
 {
   _call_id = call_id;
@@ -145,10 +180,12 @@
   {
     case PJSIP_INV_STATE_CALLING: // After INVITE is sent.
       [self addSubview: _bottomBar];
+      [self displayName: call_id];
       [_lcd setLabel: NSLocalizedString(@"CALLING", @"Call view")];
       break;
     case PJSIP_INV_STATE_INCOMING: // After INVITE is received.
       [self addSubview: _dualBottomBar];
+      [self displayName: call_id];
       break;
     case PJSIP_INV_STATE_EARLY: // After response with To tag.
     case PJSIP_INV_STATE_CONNECTING: // After 2xx is sent/received.
@@ -157,16 +194,22 @@
       [_dualBottomBar removeFromSuperview];
       [self addSubview: _bottomBar];
       [self addSubview: _phonePad];
-      _timer = [NSTimer scheduledTimerWithTimeInterval:1.0
+      _timer = [[NSTimer scheduledTimerWithTimeInterval:1.0
                target:self
                selector:@selector(timeout:)
                userInfo:nil
-               repeats:YES];
+               repeats:YES] retain];
       [_timer fire];
       break;
     case PJSIP_INV_STATE_DISCONNECTED:
-      if (_timer) [_timer invalidate];
+      if (_timer) 
+      {
+        [_timer invalidate];
+        [_timer release];
+        _timer = NULL;
+      }
       [_lcd setLabel: NSLocalizedString(@"CALL_ENDED", @"Call view")];
+      [_lcd setText:@""];
       _call_id = PJSUA_INVALID_ID;
       [_bottomBar removeFromSuperview];
       [_dualBottomBar removeFromSuperview];

@@ -44,8 +44,9 @@
   ContactView   *_contactView;
   CallView      *_callView;
   FavoritesView *_favoritesView;
+#ifdef ABOUT  
   AboutView     *_aboutView;
-  
+#endif  
   AVSystemController *_avs;
   
   app_config_t _app_config; // pointer ???

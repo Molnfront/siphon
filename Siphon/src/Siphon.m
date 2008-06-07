@@ -1,7 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
  *  Copyright (C) 2008 Samuel <samuelv@users.sourceforge.org>
- *  Copyright (C) 2008 Christian Toepp <chris.touchmods@googlemail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -172,6 +171,7 @@ typedef enum
            @"0", kUIButtonBarButtonType,
            nil 
            ],
+#ifdef ABOUT           
      [ NSDictionary dictionaryWithObjectsAndKeys:
           @"buttonBarItemTapped:", kUIButtonBarButtonAction,
           @"Featured.png", kUIButtonBarButtonInfo,
@@ -181,7 +181,8 @@ typedef enum
           NSLocalizedString(@"Help", @"Siphon view"), kUIButtonBarButtonTitle,
           @"0", kUIButtonBarButtonType,
           nil 
-          ],  
+          ],
+#endif          
     nil
   ];
 }
@@ -207,9 +208,11 @@ typedef enum
       case 4:
         [_transition transition:UITransitionShiftImmediate toView:_contactView];
         break;
+#ifdef ABOUT
       case 5:
         [_transition transition:UITransitionShiftImmediate toView:_aboutView];
         break;
+#endif        
     }
   }
 }
@@ -226,9 +229,13 @@ typedef enum
   [buttonBar setBarStyle:1];
   [buttonBar setButtonBarTrackingMode: 2];
 
+#ifdef ABOUT
   int buttons[5] = { 1, 2, 3, 4, 5};
   [buttonBar registerButtonGroup:0 withButtons:buttons withCount: 5];
- 
+#else
+  int buttons[4] = { 1, 2, 3, 4};
+  [buttonBar registerButtonGroup:0 withButtons:buttons withCount: 4];
+#endif
   [buttonBar showButtonGroup: 0 withDuration: 0.0f];
 
   return buttonBar;
@@ -247,6 +254,18 @@ typedef enum
   //  NSLog(@"Category %@ volume %f\n", audioDeviceName, volume);
 }
 
+- (void)mediaServerDied:(NSNotification *)notification
+{
+  NSLog(@"mediaServerDied");
+}
+- (void)audioDevicesChanged:(NSNotification *)notification
+{
+  NSLog(@"audioDevicesChanged");
+  AVSystemController *newav = [ notification object ];
+  NSLog(@"ActiveAudioRoute %@",
+        [newav attributeForKey: @"AVController_ActiveAudioRouteAttribute"]);
+}
+
 /************ **************/
 //- (void)prefsHaveChanged:(NSNotification *)notification
 //{
@@ -258,7 +277,8 @@ typedef enum
 - (void)applicationResume:(struct __GSEvent *)event settings:(id)settings
 {
   NSUserDefaults *userDef = [NSUserDefaults standardUserDefaults];
-  if (![[userDef objectForKey: @"sip_user"] length])
+  if (![[userDef objectForKey: @"sip_user"] length] ||
+      ![[userDef objectForKey: @"sip_server"] length])
   {
     // TODO: go to settings immediately
     
@@ -349,8 +369,10 @@ typedef enum
   
   _favoritesView = [[FavoritesView alloc] initWithFrame: windowRect];
   [_favoritesView setDelegate: self];
-  
+
+#ifdef ABOUT
   _aboutView = [[AboutView alloc] initWithFrame: windowRect];
+#endif
 
   _buttonBar = [ self createButtonBar ];
   [_mainView addSubview: _buttonBar];
@@ -362,6 +384,16 @@ typedef enum
   [[NSNotificationCenter defaultCenter] addObserver: self 
     selector:@selector(volumeChange:) 
     name: @"AVSystemController_SystemVolumeDidChangeNotification"
+    object: _avs ];
+
+  [[NSNotificationCenter defaultCenter] addObserver: self 
+    selector:@selector(audioDevicesChanged:)
+    name: @"AVSystemController_ActiveAudioRouteDidChangeNotification"
+    object: _avs ];
+  
+  [[NSNotificationCenter defaultCenter] addObserver: self 
+    selector:@selector(mediaServerDied:)
+    name: @"AVController_ServerConnectionDiedNotification"
     object: _avs ];
   
   /** Preferences management **/

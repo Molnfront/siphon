@@ -70,7 +70,7 @@
     [_lcd setText: @""];
 
     _pad = [[DialerPhonePad alloc] initWithFrame:
-          CGRectMake(0.0f, 74.0f, 320.0f, 273.0f)];
+          CGRectMake(0.0f, 74.0f, 320.0f, 274.0f)];
     [_pad setPlaysSounds:TRUE];
     [_pad setDelegate:self];
 
@@ -96,7 +96,9 @@
       forState:0];
     [_deleteButton setImage:
       [UIImage applicationImageNamed:@"delete_pressed.png"] forState:1];
+
     [_deleteButton addTarget:self action:@selector(deleteButtonPressed:) forEvents:1];
+    [_deleteButton addTarget:self action:@selector(deleteButtonReleased:) forEvents:0x40];
 
     [self addSubview: _lcd];
     [self addSubview: _pad];
@@ -107,6 +109,30 @@
   return self;
 }
 
+- (void)alertSheet:(UIAlertSheet*)sheet buttonClicked:(int)button
+{
+  if ( button == 1 )
+    NSLog(@"Create New Contact");
+  else if ( button == 2 )
+  {
+    NSLog(@"Add to Existing Contact");
+    ABPeoplePicker *peoplePicker = [[ABPeoplePicker alloc] initWithFrame:
+      CGRectMake(0.0f,0.0f, 320.0f, 74.0f)];
+    [peoplePicker setBehavior:YES];
+    [peoplePicker setAllowsCancel:YES];
+    [peoplePicker setDelegate:self];
+//    CFArrayRef _props = CFArrayCreate(nil, &kABCPhoneProperty, 1, nil);
+    CFMutableArrayRef _props = CFArrayCreateMutable( NULL, 1, NULL );
+    CFArrayAppendValue(_props, kABCPhoneProperty);
+    [peoplePicker setDisplayedProperties:_props];
+//    [_props release];
+  }
+//  else if ( button == 3 )
+//      NSLog(@"Cancel");
+
+  [sheet dismiss];
+}
+
 /*** Buttons callback ***/
 - (void)phonePad:(TPPhonePad *)phonepad appendString:(NSString *)string
 {
@@ -114,29 +140,17 @@
   [_lcd setText: [curText stringByAppendingString: string]];
 }
 
-- (void)alertSheet:(UIAlertSheet*)sheet buttonClicked:(int)button
-{
-  if ( button == 1 )
-    NSLog(@"Create New Contact");
-  else if ( button == 2 )
-    NSLog(@"Add to Existing Contact");
-  else if ( button == 2 )
-      NSLog(@"Cancel");
-
-  [sheet dismiss];
-
-}
-
 - (void)addButtonPressed:(UIPushButton*)btn
 {
   if ([[_lcd text] length] < 1)
     return;
   
-//  if ([[ABCGetSharedAddressBook] ABCGetPersonCount] == 0)
-//  {
-//    // Create New Contact
-//  }
-//  else
+#if 0 
+  if ([[ABCGetSharedAddressBook] ABCGetPersonCount] == 0)
+  {
+    // Create New Contact
+  }
+  else
   {
     NSArray *array = [[NSArray alloc] initWithObjects: 
       NSLocalizedString(@"Create New Contact",@"Phone View"),
@@ -150,7 +164,7 @@
     
     [alertSheet presentSheetInView: self];
   }
-  
+#endif  
 }
 
 - (void)callButtonPressed:(UIPushButton*)btn
@@ -163,14 +177,56 @@
     }
 }
 
-- (void)deleteButtonPressed:(UIPushButton*)btn
+- (void)stopTimer
+{
+  if (_deleteTimer)
+  {
+    [_deleteTimer invalidate];
+    [_deleteTimer release];
+    _deleteTimer = NULL;
+  }
+}
+
+- (void)deleteRepeat
 {
   NSString *curText = [_lcd text];
   if([curText length] > 0)
   {
     [_lcd setText: [curText substringToIndex:([curText length]-1)]];
   }
+  else
+  {
+    [self stopTimer];
+  }
 }
+
+- (void)deleteButtonPressed:(UIPushButton*)btn
+{
+  [self deleteRepeat];
+  _deleteTimer = [[NSTimer scheduledTimerWithTimeInterval:0.4 target:self 
+                   selector:@selector(deleteRepeat) userInfo:nil 
+                   repeats:YES] retain];
+  
+}
+
+- (void)deleteButtonReleased:(UIPushButton*)btn
+{
+  [self stopTimer];
+}
+
+/*** PeoplePicker ***/
+- (void)peoplePickerDidEndPicking:(id)fp8
+{
+  NSLog(@"PhoneView peoplePickerDidEndPicking");
+}
+
+- (void)peoplePicker:(id)fp8 editedPerson:(struct CPRecord *)fp12 
+    property:(int)fp16 identifier:(int)fp20
+{
+  NSLog(@"PhoneView peoplePicker");
+}
+
+
 
 /*** ***/
 - (id)delegate 

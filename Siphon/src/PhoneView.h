@@ -39,6 +39,8 @@
   UIPushButton   *_callButton;
   UIPushButton   *_deleteButton;
 
+  NSTimer *_deleteTimer;
+  
   struct __GSFont *font;
 
   id _delegate;
@@ -47,6 +49,10 @@
 - (id)initWithFrame:(struct CGRect)rect;
 - (id)delegate;
 - (void)setDelegate:(id)newDelegate;
+
+- (void)peoplePickerDidEndPicking:(id)fp8;
+- (void)peoplePicker:(id)fp8 editedPerson:(struct CPRecord *)fp12 
+    property:(int)fp16 identifier:(int)fp20;
 
 @end
 

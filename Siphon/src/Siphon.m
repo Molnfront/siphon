@@ -257,6 +257,7 @@ typedef enum
 - (void)mediaServerDied:(NSNotification *)notification
 {
   NSLog(@"mediaServerDied");
+  // TODO: restart sound
 }
 - (void)audioDevicesChanged:(NSNotification *)notification
 {

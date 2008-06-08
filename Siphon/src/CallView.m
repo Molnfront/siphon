@@ -20,6 +20,19 @@
 #import "call.h"
 #import "dtmf.h"
 
+typedef struct __ABAddressBookRef *ABAddressBookRef;
+typedef void *ABRecordRef;
+
+extern NSString* const kABCFirstNameProperty;
+extern NSString* const kABCLastNameProperty;
+
+extern ABAddressBookRef ABCGetSharedAddressBook();
+extern ABRecordRef ABCFindPersonMatchingPhoneNumber(ABAddressBookRef addressBook, 
+    NSString *phoneNumber, int identifier, int uid);
+extern int         ABCRecordGetUniqueId(ABRecordRef record);
+extern ABRecordRef ABCPersonGetRecordForUniqueID(ABAddressBookRef addressBook, SInt32 uid);
+
+
 @implementation CallView  : UIView
 
 //****************************************************************************************
@@ -138,6 +151,29 @@
 }
 
 /*** ***/
+- (NSString *)findName:(NSString *)phoneNumber
+{
+  NSString *personName = NULL;
+  ABAddressBookRef addressBook = ABCGetSharedAddressBook();
+  ABRecordRef record = ABCFindPersonMatchingPhoneNumber(addressBook, 
+      phoneNumber,0, 0);
+  if (record)
+  {
+    personName = ABCRecordCopyValue (record,kABCFirstNameProperty);
+    NSString *lastName = ABCRecordCopyValue (record,kABCLastNameProperty);
+    if (personName && lastName)
+    {
+      return [personName stringByAppendingFormat:@" %@",lastName];
+    }
+    else if (lastName)
+    {
+      return lastName;
+    }
+  }
+  
+  return personName;
+}
+
 - (void)displayName:(pjsua_call_id)call_id
 {
   pjsua_call_info ci;
@@ -157,17 +193,25 @@
                   PJSIP_PARSE_URI_AS_NAMEADDR);
     if (url != NULL) 
     {
-      if (url->display.slen)
+      sip_uri = (pjsip_sip_uri*) pjsip_uri_get_uri(url->uri);
+      pj_strdup_with_null(pool, &dst, &sip_uri->user);
+
+      NSString *phoneNumber = [self findName: 
+            [NSString stringWithUTF8String: pj_strbuf(&dst)]];
+
+      if (!phoneNumber)
       {
-        pj_strdup_with_null(pool, &dst, &url->display);
+        if (url->display.slen)
+        {
+          pj_strdup_with_null(pool, &dst, &url->display);
+        }
+        phoneNumber = [NSString stringWithUTF8String: pj_strbuf(&dst)];
       }
-      else
-      {
-        sip_uri = (pjsip_sip_uri*) pjsip_uri_get_uri(url->uri);
-        pj_strdup_with_null(pool, &dst, &sip_uri->user);
-      }
-      [_lcd setText: [NSString stringWithUTF8String: pj_strbuf(&dst)]];
+      [_lcd setText: phoneNumber];
     }
+    else
+      [_lcd setText: @""];
+    
     pj_pool_release(pool);
   } 
 }
@@ -186,6 +230,7 @@
     case PJSIP_INV_STATE_INCOMING: // After INVITE is received.
       [self addSubview: _dualBottomBar];
       [self displayName: call_id];
+      [_lcd setLabel: @""];
       break;
     case PJSIP_INV_STATE_EARLY: // After response with To tag.
     case PJSIP_INV_STATE_CONNECTING: // After 2xx is sent/received.

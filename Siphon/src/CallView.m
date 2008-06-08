@@ -20,8 +20,19 @@
 #import "call.h"
 #import "dtmf.h"
 
+/**
+ * The iPhone stores photos in three (?) different sizes.
+ */
+enum {
+    IPHONE_PHOTO_SIZE_THUMBNAIL,
+    IPHONE_PHOTO_SIZE_MEDIUM,
+    IPHONE_PHOTO_SIZE_ORIGINAL
+};
+
 typedef struct __ABAddressBookRef *ABAddressBookRef;
+typedef const struct __CFData *CFDataRef;
 typedef void *ABRecordRef;
+typedef struct __ABPerson *ABPersonRef;
 
 extern NSString* const kABCFirstNameProperty;
 extern NSString* const kABCLastNameProperty;
@@ -30,8 +41,9 @@ extern ABAddressBookRef ABCGetSharedAddressBook();
 extern ABRecordRef ABCFindPersonMatchingPhoneNumber(ABAddressBookRef addressBook, 
     NSString *phoneNumber, int identifier, int uid);
 extern int         ABCRecordGetUniqueId(ABRecordRef record);
-extern ABRecordRef ABCPersonGetRecordForUniqueID(ABAddressBookRef addressBook, SInt32 uid);
-
+extern ABRecordRef ABCPersonGetRecordForUniqueID(ABAddressBookRef addressBook, int uid);
+extern CFDataRef   ABCPersonCopyImageData(ABPersonRef person, int format);
+extern NSString   *ABCRecordCopyCompositeName(ABRecordRef record);
 
 @implementation CallView  : UIView
 
@@ -151,30 +163,35 @@ extern ABRecordRef ABCPersonGetRecordForUniqueID(ABAddressBookRef addressBook, S
 }
 
 /*** ***/
-- (NSString *)findName:(NSString *)phoneNumber
+- (ABRecordRef)findRecord:(NSString *)phoneNumber
 {
-  NSString *personName = NULL;
   ABAddressBookRef addressBook = ABCGetSharedAddressBook();
   ABRecordRef record = ABCFindPersonMatchingPhoneNumber(addressBook, 
       phoneNumber,0, 0);
-  if (record)
-  {
-    personName = ABCRecordCopyValue (record,kABCFirstNameProperty);
-    NSString *lastName = ABCRecordCopyValue (record,kABCLastNameProperty);
-    if (personName && lastName)
-    {
-      return [personName stringByAppendingFormat:@" %@",lastName];
-    }
-    else if (lastName)
-    {
-      return lastName;
-    }
-  }
   
-  return personName;
+  return record;
 }
 
-- (void)displayName:(pjsua_call_id)call_id
+- (UIImage *)findImage:(ABRecordRef)record
+{
+  UIImage *image = NULL;
+  
+  if (record)
+  {
+    CFDataRef data;
+    
+    data = ABCPersonCopyImageData(record, IPHONE_PHOTO_SIZE_THUMBNAIL);
+    if (!data)
+    {
+      data = ABCPersonCopyImageData(record, IPHONE_PHOTO_SIZE_MEDIUM);
+    }
+    if (data)
+      image = [[UIImage alloc] initWithData: data cache:YES];
+  }
+  return image;
+}
+
+- (void)displayUserInfo:(pjsua_call_id)call_id
 {
   pjsua_call_info ci;
   pjsip_name_addr *url;
@@ -196,9 +213,9 @@ extern ABRecordRef ABCPersonGetRecordForUniqueID(ABAddressBookRef addressBook, S
       sip_uri = (pjsip_sip_uri*) pjsip_uri_get_uri(url->uri);
       pj_strdup_with_null(pool, &dst, &sip_uri->user);
 
-      NSString *phoneNumber = [self findName: 
-            [NSString stringWithUTF8String: pj_strbuf(&dst)]];
-
+      ABRecordRef record = [self findRecord:[NSString stringWithUTF8String: 
+                                             pj_strbuf(&dst)]];
+      NSString *phoneNumber = ABCRecordCopyCompositeName(record);
       if (!phoneNumber)
       {
         if (url->display.slen)
@@ -208,9 +225,14 @@ extern ABRecordRef ABCPersonGetRecordForUniqueID(ABAddressBookRef addressBook, S
         phoneNumber = [NSString stringWithUTF8String: pj_strbuf(&dst)];
       }
       [_lcd setText: phoneNumber];
+      UIImage *image = [self findImage: record];
+      [_lcd setSubImage: image];
     }
     else
+    {
       [_lcd setText: @""];
+      [_lcd setSubImage: nil];
+    }
     
     pj_pool_release(pool);
   } 
@@ -224,12 +246,12 @@ extern ABRecordRef ABCPersonGetRecordForUniqueID(ABAddressBookRef addressBook, S
   {
     case PJSIP_INV_STATE_CALLING: // After INVITE is sent.
       [self addSubview: _bottomBar];
-      [self displayName: call_id];
+      [self displayUserInfo: call_id];
       [_lcd setLabel: NSLocalizedString(@"CALLING", @"Call view")];
       break;
     case PJSIP_INV_STATE_INCOMING: // After INVITE is received.
       [self addSubview: _dualBottomBar];
-      [self displayName: call_id];
+      [self displayUserInfo: call_id];
       [_lcd setLabel: @""];
       break;
     case PJSIP_INV_STATE_EARLY: // After response with To tag.

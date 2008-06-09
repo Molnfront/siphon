@@ -210,12 +210,14 @@ extern NSString   *ABCRecordCopyCompositeName(ABRecordRef record);
                   PJSIP_PARSE_URI_AS_NAMEADDR);
     if (url != NULL) 
     {
+      NSString *phoneNumber = NULL;
       sip_uri = (pjsip_sip_uri*) pjsip_uri_get_uri(url->uri);
       pj_strdup_with_null(pool, &dst, &sip_uri->user);
 
       ABRecordRef record = [self findRecord:[NSString stringWithUTF8String: 
                                              pj_strbuf(&dst)]];
-      NSString *phoneNumber = ABCRecordCopyCompositeName(record);
+      if (record)
+        phoneNumber = ABCRecordCopyCompositeName(record);
       if (!phoneNumber)
       {
         if (url->display.slen)

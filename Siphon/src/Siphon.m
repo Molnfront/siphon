@@ -66,7 +66,7 @@ typedef enum
     {
         return YES;
     }
-    else if([[NSUserDefaults standardUserDefaults] integerForKey: @"siphonOverEDGE"] && [self hasTelephony]) 
+    else if([[NSUserDefaults standardUserDefaults] boolForKey: @"siphonOverEDGE"] && [self hasTelephony]) 
     {
         if(![[NetworkController sharedInstance] isNetworkUp]) 
         {
@@ -427,7 +427,8 @@ typedef enum
 
 - (void)applicationSuspend:(struct __GSEvent *)event
 {
-  if(_currentView) // TODO: If user wants bg app, if not quit 
+  if(_currentView &&
+     [[NSUserDefaults standardUserDefaults] boolForKey: @"daemonMode"]) // TODO: If user wants bg app, if not quit 
   {
     NSLog(@"Suspending\n");
   } 

@@ -56,6 +56,18 @@
 			<string>PSGroupCell</string>
 		</dict>
 		<dict>
+      <key>cell</key>
+      <string>PSSwitchCell</string>
+      <key>default</key>
+      <true/>
+      <key>defaults</key>
+      <string>com.google.code.siphon</string>
+      <key>key</key>
+      <string>daemonMode</string>
+      <key>label</key>
+      <string>Daemon mode</string>
+    </dict>
+		<dict>
 			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>default</key>

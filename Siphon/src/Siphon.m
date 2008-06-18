@@ -316,7 +316,7 @@ typedef enum
     [text setText:NSLocalizedString(@"Press the Home button", @"Intro page greeting")];
     [_mainView addSubview:text];
 
-    [_buttonBar setAlpha: 0];
+    [self hideButtonBar: nil];
     _currentView = 0;
   }
   else
@@ -327,7 +327,7 @@ typedef enum
       [self sipConnect];
       [_transition transition:UITransitionShiftImmediate toView:_phoneView];
       [_buttonBar showSelectionForButton: 3];
-      [_buttonBar setAlpha: 1];
+      [self showButtonBar: nil];
        _currentView = 3;
     }
   }
@@ -483,7 +483,7 @@ typedef enum
     case PJSIP_INV_STATE_INCOMING: // After INVITE is received.
       [_callView setState: state callId: callId];
       [_transition transition:UITransitionShiftImmediate toView:_callView];
-      [_buttonBar setAlpha: 0];
+      [self hideButtonBar: nil];
        _currentView = 10;
       break;
     case PJSIP_INV_STATE_EARLY: // After response with To tag.
@@ -495,7 +495,7 @@ typedef enum
       [_callView setState: state callId: callId];
       [_transition transition:UITransitionShiftImmediate toView:_phoneView];
       [_buttonBar showSelectionForButton: 3];
-      [_buttonBar setAlpha: 1];
+      [self showButtonBar: nil];
       _currentView = 3;
       break;
   }
@@ -504,11 +504,11 @@ typedef enum
 /*** ***/
 - (void)hideButtonBar:(UIView *)view
 {
-  [_buttonBar setAlpha: 0];
+  [_buttonBar removeFromSuperview];
 }
 - (void)showButtonBar:(UIView *)view
 {
-  [_buttonBar setAlpha: 1];
+  [_mainView addSubview: _buttonBar];
 }
 
 @end

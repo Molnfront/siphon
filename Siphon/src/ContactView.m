@@ -79,9 +79,12 @@
     //TODO throw exception!!
     return;
   }
-  if ( [_delegate respondsToSelector:@selector(dialup:)]) 
+  if (_phoneNumber != nil &&
+  	  [_delegate respondsToSelector:@selector(dialup:)]) 
   {
     [_delegate dialup:_phoneNumber];
+    [_phoneNumber release];
+    _phoneNumber = nil;
   }
   else 
   {
@@ -94,12 +97,15 @@
 {
   [UIApp hideButtonBar: view];
 }
-//- (void)peoplePicker:(id)fp8 willTransitionFromFullScreenViewToView:(id)view
-
-- (void)peoplePicker:(id)fp8 didTransitionFromFullScreenViewToView:(id)view
+- (void)peoplePicker:(id)fp8 willTransitionFromFullScreenViewToView:(id)view
 {
   [UIApp showButtonBar: view];
 }
+
+//- (void)peoplePicker:(id)fp8 didTransitionFromFullScreenViewToView:(id)view
+//{
+//  [UIApp showButtonBar: view];
+//}
 
 - (void)setDelegate:(id)delegate 
 {

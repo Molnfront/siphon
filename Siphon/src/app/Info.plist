@@ -15,8 +15,8 @@
     <key>CFBundleSignature</key>
     <string>MBSC</string>
     <key>CFBundleVersion</key>
-    <string>1.9.7</string>
-	  <key>SBUsesNetwork</key>
-		<integer>3</integer>
+    <string>1.9.8</string>
+	<key>SBUsesNetwork</key>
+	<integer>3</integer>
 	</dict>
 </plist>

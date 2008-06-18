@@ -3,7 +3,7 @@ CXX=arm-apple-darwin-g++
 LD=$(CC)
 
 TARGET=Siphon
-VERSION=1.9.7
+VERSION=1.9.8
 
 PRODUCT_NAME = Siphon
 PRODUCT_APP=$(PRODUCT_NAME).app

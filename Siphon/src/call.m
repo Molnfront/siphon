@@ -70,6 +70,7 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e)
     break;
   case PJSIP_INV_STATE_CALLING:      // After INVITE is sent.
   case PJSIP_INV_STATE_INCOMING:     // After INVITE is received.
+	  pjsua_set_snd_dev(-1, -1); 	
   case PJSIP_INV_STATE_EARLY:        // After response with To tag.
   case PJSIP_INV_STATE_CONNECTING:   // After 2xx is sent/received.
   case PJSIP_INV_STATE_CONFIRMED:    // After ACK is sent/received.
@@ -82,6 +83,7 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e)
     [[NSNotificationCenter defaultCenter] 
       postNotificationOnMainThreadWithName:kSIPCallState object:nil
       userInfo: userinfo];
+    pjsua_set_null_snd_dev();
     break;
   }
   [ autoreleasePool release ];
@@ -363,10 +365,8 @@ pj_status_t sip_connect(pj_pool_t *pool, pjsua_acc_id *acc_id)
     return PJ_EINVAL;
   }
 
-//{
-//  pjmedia_port *media_port = pjsua_set_no_snd_dev();
-//}
-
+  pjsua_set_null_snd_dev();
+  
   status = pjsua_acc_add(&acc_cfg, PJ_TRUE, acc_id);
   if (status != PJ_SUCCESS) 
   {

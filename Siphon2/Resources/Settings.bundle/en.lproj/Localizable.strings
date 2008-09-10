@@ -1,0 +1,19 @@
+﻿"Account" = "Account";
+
+/* SIP parameters */
+"Username" = "Username";
+"Server" = "Server";
+"Password" = "Password";
+
+"Advanced settings" = "Advanced settings";
+
+/* Enable/Disable log file */
+"Debugging log file" = "Debugging log file";
+/* Logging Verbosity */
+"Disabled" = "Disabled";
+"Error" = "Error";
+"Warning" = "Warning";
+"Info" = "Info";
+"Important" = "Important";
+"Detailed" = "Detailed";
+"Very detailed" = "Very detailed";

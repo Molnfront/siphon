@@ -1,0 +1,10 @@
+/* Register Time-out */
+"Reg. Timeout" = "Reg. Timeout";
+
+"Local Port" = "Puerto Local";
+"RTP Port" = "Puerto RTP";
+
+/* Enable/Disable NAT */
+"Enable NAT" = "Usar NAT";
+"STUN Domain" = "STUN Domain";
+"STUN Server" = "Servidor STUN";

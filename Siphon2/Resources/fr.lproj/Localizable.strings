@@ -1,0 +1,32 @@
+﻿/* 
+   Localizable.strings
+   Siphon
+
+   Created by Samuel Vinson on 04/08/08.
+   Copyright 2008 __MyCompanyName__. All rights reserved.
+ */
+/* Siphon */
+"Numpad" = "Clavier";
+"Favorites" = "Favoris";
+
+/* PhoneView */
+"Create New Contact" = "Créer un nouveau contact";
+"Add to Existing Contact" = "Ajouter à un contact";
+
+/* OK */
+"OK" = "OK";
+"Cancel" = "Annuler";
+
+/* Intro page greeting */
+"Press the Home button" = "Pressez le bouton Home";
+
+/* Intro page greeting */
+"Siphon requires a valid\nSIP account.\n\nTo enter this information, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "Siphon nécessite un compte\nSIP valide.\n\nPour saisir cette information, sélectionnez \"Réglages\" sur le bureau, puis sélectionnez \"Siphon\".";
+
+/* Call View */
+"Answer" = "Répondre";
+"Decline" = "Refuser";
+"End call" = "Raccrocher";
+
+"calling..." = "appel en cours...";
+"call ended" = "appel terminé";

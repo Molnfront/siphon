@@ -30,3 +30,15 @@
 
 "calling..." = "appel en cours...";
 "call ended" = "appel terminé";
+
+"Settings" = "Réglages";
+
+/* SIP */
+"\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "\nPour corriger ce paramètre, sélectionnez \"Réglages\" sur le bureau, puis sélectionnez \"Siphon\".";
+"Invalid value for Local Port (expecting 1-65535)." = "Valeur incorrecte pour le paramètre Port Local (1-65535).";
+"Invalid value for RTP port (expecting 1-65535)." = "Valeur incorrecte pour le paramètre port RTP (1-65535).";
+"Invalid value for username or server." = "Valeur incorrecte pour le paramètre Nom ou Serveur.";
+"Invalid value for server parameter." = "Valeur incorrecte pour le paramètre Serveur.";
+"Invalid value for timeout (expecting 1-3600)." = "Valeur incorrecte pour le paramètre Reg. Timeout (1-3600).";
+"Invalid value for proxy parameter." = "Valeur incorrecte pour le paramètre paramètre Proxy.";
+"Error adding new account." = "Erreur lors de l'ajout du compte.";

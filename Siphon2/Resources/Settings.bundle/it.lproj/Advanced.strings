@@ -3,14 +3,13 @@
 /* Register Time-out */
 "Reg. Timeout" = "Reg. Timeout";
 "Proxy Server" = "Proxy Server";
-"Enable NAT" = "Enable NAT";
+"Enable NAT" = "Abilita NAT";
 "Contact" = "Contact";
-
 
 /* Transport Options */
 "Transport Options" = "Transport Options";
 
-"Local Port" = "Local Port";
-"RTP Port" = "RTP Port";
-"STUN Domain" = "STUN Domain";
-"STUN Server" = "STUN Server";
+"Local Port" = "Porta locale";
+"RTP Port" = "Porta RTP";
+"STUN Domain" = "Dominio STUN";
+"STUN Server" = "Server STUN";

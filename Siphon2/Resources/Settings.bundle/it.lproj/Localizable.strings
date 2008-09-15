@@ -1,7 +1,7 @@
 ﻿"Account" = "Account";
 
 /* SIP parameters */
-"Username" = "Username";
+"Username" = "Nome utente";
 "Server" = "Server";
 "Password" = "Password";
 

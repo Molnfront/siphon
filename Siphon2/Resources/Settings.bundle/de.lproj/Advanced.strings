@@ -1,10 +1,15 @@
+"SIP Account Options" = "SIP Account Options";
+
 /* Register Time-out */
 "Reg. Timeout" = "Reg. Timeout";
+"Proxy Server" = "Proxy Server";
+"Enable NAT" = "Aktiviere NAT";
+"Contact" = "Contact";
+
+/* Transport Options */
+"Transport Options" = "Transport Options";
 
 "Local Port" = "Local Port";
 "RTP Port" = "RTP Port";
-
-/* Enable/Disable NAT */
-"Enable NAT" = "Aktiviere NAT";
 "STUN Domain" = "STUN Domain";
 "STUN Server" = "STUN Server";

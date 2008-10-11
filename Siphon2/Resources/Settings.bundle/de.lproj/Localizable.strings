@@ -1,4 +1,4 @@
-﻿/**
+/**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
  *  Copyright (C) 2008 Samuel <siphon@laposte.net>
  *
@@ -30,9 +30,9 @@
 "Debugging log file" = "Schreibe logfile";
 /* Logging Verbosity */
 "Disabled" = "Deaktiviert";
-"Error" = "Error";
-"Warning" = "Warning";
+"Error" = "Fehler";
+"Warning" = "Warnung";
 "Info" = "Info";
-"Important" = "Important";
-"Detailed" = "Detailed";
-"Very detailed" = "Very detailed";
+"Important" = "Wichtig";
+"Detailed" = "Detailliert";
+"Very detailed" = "Sehr detailliert";

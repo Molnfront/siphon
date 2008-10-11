@@ -1,4 +1,4 @@
-/**
+﻿/**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
  *  Copyright (C) 2008 Samuel <siphon@laposte.net>
  *
@@ -17,19 +17,22 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-"SIP Account Options" = "SIP Account Options";
+"Account" = "Conta";
 
-/* Register Time-out */
-"Reg. Timeout" = "Reg. Timeout";
-"Proxy Server" = "Proxy Server";
-"Enable NAT" = "Enable NAT";
-"Contact" = "Contact";
+/* SIP parameters */
+"Username" = "Nome de utilizador";
+"Server" = "Servidor";
+"Password" = "Palavra-passe";
 
+"Advanced settings" = "Ajustes Avançados";
 
-/* Transport Options */
-"Transport Options" = "Transport Options";
-
-"Local Port" = "Local Port";
-"RTP Port" = "RTP Port";
-"STUN Domain" = "STUN Domain";
-"STUN Server" = "STUN Server";
+/* Enable/Disable log file */
+"Debugging log file" = "Ficheiro de depuramento";
+/* Logging Verbosity */
+"Disabled" = "Desactivado";
+"Error" = "Erro";
+"Warning" = "Aviso";
+"Info" = "Info";
+"Important" = "Importante";
+"Detailed" = "Detalhado";
+"Very detailed" = "Muito detalhado";

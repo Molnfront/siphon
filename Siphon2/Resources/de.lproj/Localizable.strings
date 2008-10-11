@@ -1,27 +1,39 @@
-﻿/* 
-   Localizable.strings
-   Siphon
-
-   Created by Samuel Vinson on 04/08/08.
-   Copyright 2008 __MyCompanyName__. All rights reserved.
+/**
+ *  Siphon SIP-VoIP for iPhone and iPod Touch
+ *  Copyright (C) 2008 Samuel <siphon@laposte.net>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 /* Siphon */
 "Numpad" = "Ziffernblock";
 "Favorites" = "Favoriten";
 
 /* PhoneView */
-"Create New Contact" = "Create New Contact";
-"Add to Existing Contact" = "Add to Existing Contact";
+"Create New Contact" = "Neuen Kontakt erstellen";
+"Add to Existing Contact" = "Zu einen Kontakt hinzufügen";
 
 /* OK */
 "OK" = "OK";
 "Cancel" = "Abbrechen";
 
 /* Intro page greeting */
-"Press the Home button" = "Press the Home button";
+"Press the Home button" = "Drücke Sie den Home Button";
 
 /* Intro page greeting */
-"Siphon requires a valid\nSIP account.\n\nTo enter this information, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "Siphon requires a valid\nSIP account.\n\nTo enter this information, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry.";
+"Siphon requires a valid\nSIP account.\n\nTo enter this information, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "Siphon braucht einen gültigen\nSIP Account.\n\nUm Ihre SIP Accountdaten einzugeben, selektieren Sie im Programmmenü \"Einstellungen\" und wählen dort den \"Siphon\" Eintrag aus.";
 
 /* Call View */
 "Answer" = "Annehmen";
@@ -34,12 +46,12 @@
 "Settings" = "Einstellungen";
 
 /* SIP */
-"\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry.";
-"Invalid value for Local Port (expecting 1-65535)." = "Invalid value for Local Port (expecting 1-65535).";
-"Invalid value for RTP port (expecting 1-65535)." = "Invalid value for RTP port (expecting 1-65535).";
-"Invalid value for username or server." = "Invalid value for username or server.";
-"Invalid value for server parameter." = "Invalid value for server parameter.";
-"Invalid value for timeout (expecting 1-3600)." = "Invalid value for timeout (expecting 1-3600).";
-"Invalid value for proxy parameter." = "Invalid value for proxy parameter.";
-"Error adding new account." = "Error adding new account.";
+"\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "\nUm die Parameter zu vervollständigen, selektieren Sie im Programmmenü\"Einstellungen\" und wählen dort den \"Siphon\" Eintrag aus.";
+"Invalid value for Local Port (expecting 1-65535)." = "Ungültiger Eintrag des Local Port (Bereich: 1-65535).";
+"Invalid value for RTP port (expecting 1-65535)." = "Ungültiger Eintrag des RTP port (Bereich: 1-65535).";
+"Invalid value for username or server." = "Ungültiger Username oder Server Eintrag.";
+"Invalid value for server parameter." = "Ungültige Server- Parameter.";
+"Invalid value for timeout (expecting 1-3600)." = "Ungültiger Bereich des Timeouts (Bereich: 1-3600).";
+"Invalid value for proxy parameter." = "Ungültiger Eintrag der Proxy-Parameter.";
+"Error adding new account." = "Fehler beim anlegen eines neuen Accounts.";
 

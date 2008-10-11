@@ -1,4 +1,4 @@
-/**
+﻿/**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
  *  Copyright (C) 2008 Samuel <siphon@laposte.net>
  *
@@ -16,23 +16,23 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
- 
-"Account" = "Account";
 
-/* SIP parameters */
-"Username" = "Nome utente";
+"Account" = "Konto";
+
+/* SIP parametre */
+"Username" = "Brugernavn";
 "Server" = "Server";
-"Password" = "Password";
+"Password" = "Adgangskode";
 
-"Advanced settings" = "Impostazioni avanzate";
+"Advanced settings" = "Avancerede indstillinger";
 
 /* Enable/Disable log file */
-"Debugging log file" = "File di debug";
+"Debugging log file" = "Debugging log fil";
 /* Logging Verbosity */
-"Disabled" = "Disattivato";
-"Error" = "Errore";
-"Warning" = "Attenzione";
-"Info" = "Informazione";
-"Important" = "Importante";
-"Detailed" = "Dettagliato";
-"Very detailed" = "Molto dettagliato";
+"Disabled" = "Disabled";
+"Error" = "Fejl";
+"Warning" = "Advarsel!";
+"Info" = "Info";
+"Important" = "Vigtigt";
+"Detailed" = "Detaljerede";
+"Very detailed" = "Meget detaljerede";

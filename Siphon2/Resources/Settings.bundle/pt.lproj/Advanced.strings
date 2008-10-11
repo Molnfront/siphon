@@ -17,19 +17,19 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-"SIP Account Options" = "SIP Account Options";
+"SIP Account Options" = "Opções de conta SIP";
 
 /* Register Time-out */
 "Reg. Timeout" = "Reg. Timeout";
-"Proxy Server" = "Proxy Server";
-"Enable NAT" = "Enable NAT";
-"Contact" = "Contact";
+"Proxy Server" = "Servidor Proxy";
+"Enable NAT" = "Activar NAT";
+"Contact" = "Contacto";
 
 
 /* Transport Options */
-"Transport Options" = "Transport Options";
+"Transport Options" = "Opções de transporte";
 
-"Local Port" = "Local Port";
-"RTP Port" = "RTP Port";
-"STUN Domain" = "STUN Domain";
-"STUN Server" = "STUN Server";
+"Local Port" = "Porta Local";
+"RTP Port" = "Porta RTP";
+"STUN Domain" = "Dominio STUN";
+"STUN Server" = "Servidor STUN";

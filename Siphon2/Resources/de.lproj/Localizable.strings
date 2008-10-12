@@ -30,10 +30,10 @@
 "Cancel" = "Abbrechen";
 
 /* Intro page greeting */
-"Press the Home button" = "Drücke Sie den Home Button";
+"Press the Home button" = "Home Button drücken";
 
 /* Intro page greeting */
-"Siphon requires a valid\nSIP account.\n\nTo enter this information, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "Siphon braucht einen gültigen\nSIP Account.\n\nUm Ihre SIP Accountdaten einzugeben, selektieren Sie im Programmmenü \"Einstellungen\" und wählen dort den \"Siphon\" Eintrag aus.";
+"Siphon requires a valid\nSIP account.\n\nTo enter this information, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "Siphon braucht einen gültigen\nSIP Konto.\n\nUm Ihre SIP Konto Daten einzugeben, wählen Sie im Programmmenü \"Einstellungen\" und dann den \"Siphon\" Eintrag aus.";
 
 /* Call View */
 "Answer" = "Annehmen";
@@ -46,10 +46,10 @@
 "Settings" = "Einstellungen";
 
 /* SIP */
-"\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "\nUm die Parameter zu vervollständigen, selektieren Sie im Programmmenü\"Einstellungen\" und wählen dort den \"Siphon\" Eintrag aus.";
+"\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "\nUm die Parameter zu vervollständigen, wählen Sie im Programmmenü\"Einstellungen\" und wählen dort den \"Siphon\" Eintrag.";
 "Invalid value for Local Port (expecting 1-65535)." = "Ungültiger Eintrag des Local Port (Bereich: 1-65535).";
 "Invalid value for RTP port (expecting 1-65535)." = "Ungültiger Eintrag des RTP port (Bereich: 1-65535).";
-"Invalid value for username or server." = "Ungültiger Username oder Server Eintrag.";
+"Invalid value for username or server." = "Ungültiger Benutzername oder Server Eintrag.";
 "Invalid value for server parameter." = "Ungültige Server- Parameter.";
 "Invalid value for timeout (expecting 1-3600)." = "Ungültiger Bereich des Timeouts (Bereich: 1-3600).";
 "Invalid value for proxy parameter." = "Ungültiger Eintrag der Proxy-Parameter.";

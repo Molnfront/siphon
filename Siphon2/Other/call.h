@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008 Samuel <siphon@laposte.net>
+ *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,11 @@
 #define __SIPHON_CALL_H__
 
 #include <pjsua-lib/pjsua.h>
+#import <AudioToolbox/AudioToolbox.h>
 //#import <Foundation/NSString.h>
+
+#import "constants.h"
+
 
 #define VOLUME_MULT 8.0f
 
@@ -37,12 +41,33 @@ typedef struct app_config_t
   pjsua_transport_config rtp_cfg;
   
 //  pjsua_acc_config       acc_cfg;
-  
+//#if SETTINGS
+//  unsigned          acc_cnt;
+//  pjsua_acc_config  acc_cfg[PJSUA_MAX_ACC];
+//#endif
+
 //  float mic_level;
 //  float speaker_level;
+  
+  pj_bool_t		    ringback_on;
+  pj_bool_t		    ring_on;
+  
+  int           ringback_slot;
+  int           ringback_cnt;
+  pjmedia_port *ringback_port;
+#if !RING_FILE
+  int           ring_slot;
+  int           ring_cnt;
+  pjmedia_port *ring_port;
+#else
+  int               ring_cnt;
+  SystemSoundID     ring_id;
+  CFRunLoopTimerRef ring_timer;
+#endif
 } app_config_t;
 
-extern NSString *kSIPCallState;
+//extern NSString *kSIPCallState;
+//extern NSString *kSIPRegState;
 
 PJ_BEGIN_DECL
 
@@ -58,6 +83,12 @@ pj_status_t sip_dial         (pjsua_acc_id acc_id, const char *number,
                               pjsua_call_id *call_id);
 pj_status_t sip_answer        ();
 pj_status_t sip_hangup        (pjsua_call_id *call_id);
+
+#if SETTINGS
+
+pj_status_t sip_add_account(NSDictionary *account, pjsua_acc_id *acc_id);
+
+#endif
 
 PJ_END_DECL
 

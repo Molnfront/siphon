@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008 Samuel <siphon@laposte.net>
+ *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -50,7 +50,8 @@ struct my_call_data *call_init_tonegen(pjsua_call_id call_id)
 
   	pjsua_call_get_info(call_id, &ci);
   	pjsua_conf_connect(cd->toneslot, ci.conf_slot);
-//	pjsua_conf_connect(cd->toneslot, 0); // sortie haut parleur.
+    // Now keyboard plays dtmf sound on speaker/earphone
+  	//pjsua_conf_connect(cd->toneslot, 0); // speaker/earphone.
 
   	pjsua_call_set_user_data(call_id, (void*) cd);
   }
@@ -68,25 +69,36 @@ struct my_call_data *call_init_tonegen(pjsua_call_id call_id)
  */
 void sip_call_play_digit(pjsua_call_id call_id, char digit)
 {
-  pjmedia_tone_digit d[1];
-  struct my_call_data *cd;
-
-  cd = (struct my_call_data*) pjsua_call_get_user_data(call_id);
-  if (cd == NULL)
+  pj_status_t status;
+  char buf[2];
+  pj_str_t digits;
+  
+  buf[0] = digit;
+  buf[1] = 0;
+  digits = pj_str(buf);
+  status = pjsua_call_dial_dtmf(call_id, &digits);
+  if (status == PJMEDIA_RTP_EREMNORFC2833)
   {
-    cd = call_init_tonegen(call_id);
+    pjmedia_tone_digit d[1];
+    struct my_call_data *cd;
+
+    cd = (struct my_call_data*) pjsua_call_get_user_data(call_id);
     if (cd == NULL)
-      return;
+    {
+      cd = call_init_tonegen(call_id);
+      if (cd == NULL)
+        return;
+    }
+    //else if (pjmedia_tonegen_is_busy(cd->tonegen))
+    pjmedia_tonegen_stop(cd->tonegen);
+
+    d[0].digit = digit;
+    d[0].on_msec = 100;
+    d[0].off_msec = 100;
+    d[0].volume = 16383;
+
+    pjmedia_tonegen_play_digits(cd->tonegen, 1, d, 0);
   }
-  //else if (pjmedia_tonegen_is_busy(cd->tonegen))
-  pjmedia_tonegen_stop(cd->tonegen);
-
-  d[0].digit = digit;
-  d[0].on_msec = 100;
-  d[0].off_msec = 100;
-  d[0].volume = 16383;
-
-  pjmedia_tonegen_play_digits(cd->tonegen, 1, d, 0);
 }
 
 /**
@@ -104,4 +116,25 @@ void sip_call_deinit_tonegen(pjsua_call_id call_id)
   pj_pool_release(cd->pool);
 
   pjsua_call_set_user_data(call_id, NULL);
+}
+/**
+ */
+void sip_call_play_info_digit(pjsua_call_id call_id, char digit)
+{
+  const pj_str_t SIP_INFO = pj_str("INFO");
+  pj_status_t status;
+  pjsua_msg_data msg_data;
+  char body[80];
+  
+  pjsua_msg_data_init(&msg_data);
+  msg_data.content_type = pj_str("application/dtmf-relay");
+  
+  pj_ansi_snprintf(body, sizeof(body),
+                   "Signal=%c\r\n"
+                   "Duration=160",
+                   digit);
+  msg_data.msg_body = pj_str(body);
+  
+  status = pjsua_call_send_request(call_id, &SIP_INFO, 
+                                   &msg_data);
 }

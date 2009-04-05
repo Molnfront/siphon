@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008 Samuel <siphon@laposte.net>
+ *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,13 +20,21 @@
 #ifndef __SIPHON_RING_H__
 #define __SIPHON_RING_H__
 
-#include <pjsua-lib/pjsua.h>
+//#include <pjsua-lib/pjsua.h>
+#include "call.h"
 
 PJ_BEGIN_DECL
 
+#if 0
 void sip_ring_startup(pjsua_call_id call_id);
 void sip_ring_cleanup(pjsua_call_id call_id);
-
+#else
+void sip_ring_init(app_config_t *app_config);
+void sip_ring_deinit(app_config_t *app_config);
+void sip_ring_start(app_config_t *app_config);
+void sip_ringback_start(app_config_t *app_config);
+void sip_ring_stop(app_config_t *app_config);
+#endif
 
 PJ_END_DECL
 

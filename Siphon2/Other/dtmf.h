@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008 Samuel <siphon@laposte.net>
+ *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ PJ_BEGIN_DECL
 
 void sip_call_play_digit(pjsua_call_id call_id, char digit);
 void sip_call_deinit_tonegen(pjsua_call_id call_id);
+void sip_call_play_info_digit(pjsua_call_id call_id, char digit);
 
 PJ_END_DECL
 

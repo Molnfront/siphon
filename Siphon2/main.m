@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008 Samuel <siphon@laposte.net>
+ *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,12 +19,75 @@
 
 #import <UIKit/UIKit.h>
 
+#if defined(CYDIA) && (CYDIA==1)
+
+static
+void insertPrefBundle(NSString *settingsFile)
+{
+  int i;
+  NSMutableDictionary *settings =
+  [NSMutableDictionary dictionaryWithContentsOfFile: settingsFile];
+  for(i = 0; i < [[settings objectForKey:@"items"] count]; i++)
+  {
+    NSDictionary *entry = [[settings objectForKey:@"items"] objectAtIndex: i];
+    if([[entry objectForKey:@"bundle"] isEqualToString:@"SiphonSettings"])
+    {
+      return;
+    }
+  }
+  [[settings objectForKey:@"items"] insertObject:
+   [NSDictionary dictionaryWithObjectsAndKeys:
+    @"PSLinkCell", @"cell",
+    @"SiphonSettings", @"bundle",
+    @"Siphon", @"label",
+    [NSNumber numberWithInt: 1], @"isController",
+    [NSNumber numberWithInt: 1], @"hasIcon",
+    nil] atIndex: [[settings objectForKey:@"items"] count] - 1];
+  [settings writeToFile:settingsFile atomically:YES];
+}
+
+static
+void removePrefBundle(NSString *settingsFile)
+{
+  int i;
+  NSMutableDictionary *settings =
+  [NSMutableDictionary dictionaryWithContentsOfFile: settingsFile];
+
+  for(i = 0; i < [[settings objectForKey:@"items"] count]; i++)
+  {
+    NSDictionary *entry = [[settings objectForKey:@"items"] objectAtIndex: i];
+    if([[entry objectForKey:@"bundle"] isEqualToString:@"SiphonSettings"])
+    {
+      [[settings objectForKey:@"items"] removeObjectAtIndex: i];
+    }
+  }
+  [settings writeToFile:settingsFile atomically:YES];
+}
+#endif
+
+
 int main(int argc, char **argv)
 {
   int returnCode = 0;
   NSAutoreleasePool *autoreleasePool;
 
   autoreleasePool = [[ NSAutoreleasePool alloc ] init];
+
+#if defined(CYDIA) && (CYDIA==1)
+  if(argc > 1 && !strcmp(argv[1],"--installPrefBundle"))
+  {
+    insertPrefBundle(@"/Applications/Preferences.app/Settings-iPhone.plist");
+    insertPrefBundle(@"/Applications/Preferences.app/Settings-iPod.plist");
+    return 0;
+  }
+  else if(argc > 1 && !strcmp(argv[1],"--removePrefBundle"))
+  {
+    removePrefBundle(@"/Applications/Preferences.app/Settings-iPhone.plist");
+    removePrefBundle(@"/Applications/Preferences.app/Settings-iPod.plist");
+    return 0;
+  }
+#endif
+
   returnCode = UIApplicationMain( argc, argv, @"SiphonApplication", @"SiphonApplication" );
   [ autoreleasePool release ];
 

@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008 Samuel <siphon@laposte.net>
+ *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,11 +19,31 @@
 
 /* Siphon */
 "Numpad" = "Tastiera";
+"Keypad" = "Keypad";
 "Favorites" = "Preferiti";
+"Recents" = "Recenti";
 
 /* PhoneView */
 "Create New Contact" = "Crea un nuovo contatto";
 "Add to Existing Contact" = "Aggiungi ad un contatto esistente";
+"The Wi-Fi network is unavailable!" = "Rete WiFi indisponibile !";
+"The SIP server is unreachable!" = "Il server SIP non è raggiungibile !";
+"You must enable Wi-Fi or SIP account to place a call." = "Devi attivare il Wi-Fi o l'account SIP per chiamare.";
+"Cellular call" = "Chiamata GSM";
+
+"Connected" = "Connesso"; /* 200 */
+
+"Bad Request" = "Richiesta errata"; /* 400 */
+"Unauthorized" = "Non autorizzato"; /* 401 */
+"Payment Required" = "Richiesto pagamento"; /* 402 */
+"Forbidden" = "Proibito"; /* 403 */
+"Not Found" = "Non trovato"; /* 404 */
+"Method Not Allowed" = "Metodo non permesso"; /* 405 */
+"Not Acceptable" = "Non accettabile"; /* 406 */
+"Proxy Authentication Required" = "E' necessario autentificarsi al proxy"; /* 407 */
+"Request Timeout" = "Richiesta scaduta"; /* 408 */
+
+"Service Unavailable" = "Servizio indisponibile"; /* 503 */
 
 /* OK */
 "OK" = "OK";
@@ -39,9 +59,35 @@
 "Answer" = "Rispondi";
 "Decline" = "Rifiuta";
 "End call" = "Fine chiamata";
+"Small end call" = "Termina";
+"Hold Call + Answer" = "In attesa + Rispondi";
+"End Call + Answer" = "Termina + Rispondi";
+"Ignore" = "Ignora";
 
 "calling..." = "sto chiamando...";
 "call ended" = "chiamata terminata";
+
+"Hide Keypad" = "Nascondi tasti";
+"mute" = "mute";
+"keypad" = "tastierino";
+"speaker" = "vivavoce";
+"add call" = "altra chiamata";
+"hold" = "in attesa";
+"contacts" = "contatti";
+
+/* Recent calls */
+"Recent Calls" = "Recenti";
+"Missed Call" = "Chiamata in uscita";
+"Clear" = "Cancella";
+"All" = "Tutte";
+"Missed" = "Perse";
+"Clear All Recents" = "Cancella recenti";
+"Unknown Caller" = "Chiamante sconosciuto";
+"Unknown" = "Sconosciuto";
+"Incoming Call" = "Chiamata in entrata";
+"Outgoing Call" = "Chiamata in uscita";
+
+"Settings" = "Impostazioni";
 
 /* SIP */
 "\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "\nPer correggere questo parametro, seleziona \"Impostazioni\" nella schermata Home, e premi \"Siphon\".";

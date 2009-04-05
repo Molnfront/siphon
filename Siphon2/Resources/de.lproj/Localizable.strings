@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008 Samuel <siphon@laposte.net>
+ *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,11 +19,31 @@
 
 /* Siphon */
 "Numpad" = "Ziffernblock";
+"Keypad" = "Keypad";
 "Favorites" = "Favoriten";
+"Recents" = "Anrufliste";
 
 /* PhoneView */
 "Create New Contact" = "Neuen Kontakt erstellen";
-"Add to Existing Contact" = "Zu einen Kontakt hinzufügen";
+"Add to Existing Contact" = "Zu Kontakt hinzufügen";
+"The Wi-Fi network is unavailable!" = "Keine Wi-Fi Verbindung vorhanden!";
+"The SIP server is unreachable!" = "Der SIP Server ist unerreichbar!";
+"You must enable Wi-Fi or SIP account to place a call." = "Wi-Fi einschalten oder SIP Konto überprüfen um telefonieren zu können.";
+"Cellular call" = "Mobilfunktelefonie";
+
+"Connected" = "Verbunden"; /* 200 */
+
+"Bad Request" = "Fehler in Anforderung"; /* 400 */
+"Unauthorized" = "Nicht autorisiert"; /* 401 */
+"Payment Required" = "Zahlung erforderlich"; /* 402 */
+"Forbidden" = "Verboten"; /* 403 */
+"Not Found" = "Nicht gefunden"; /* 404 */
+"Method Not Allowed" = "Diese Methode ist nicht erlaubt"; /* 405 */
+"Not Acceptable" = "Nicht akzeptabel"; /* 406 */
+"Proxy Authentication Required" = "Proxy Authentifizierung erforderlich"; /* 407 */
+"Request Timeout" = "Zeitüberschreitung in der Anforderung"; /* 408 */
+
+"Service Unavailable" = "Service nicht verfügbar"; /* 503 */
 
 /* OK */
 "OK" = "OK";
@@ -33,15 +53,39 @@
 "Press the Home button" = "Home Button drücken";
 
 /* Intro page greeting */
-"Siphon requires a valid\nSIP account.\n\nTo enter this information, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "Siphon braucht einen gültigen\nSIP Konto.\n\nUm Ihre SIP Konto Daten einzugeben, wählen Sie im Programmmenü \"Einstellungen\" und dann den \"Siphon\" Eintrag aus.";
+"Siphon requires a valid\nSIP account.\n\nTo enter this information, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "Siphon braucht ein gültiges\nSIP Konto.\n\nUm Ihre SIP Konto Daten einzugeben, wählen Sie im Programmmenü \"Einstellungen\" und dann den \"Siphon\" Eintrag aus.";
 
 /* Call View */
 "Answer" = "Annehmen";
 "Decline" = "Ablehnen";
 "End call" = "Anruf beenden";
+"Small end call" = "Beenden";
+"Hold Call + Answer" = "Halten+Neuer Anruf";
+"End Call + Answer" = "Ende+Neuer Anruf";
+"Ignore" = "Keine Aktion";
 
 "calling..." = "Anrufen...";
 "call ended" = "Anruf beendet";
+
+"Hide Keypad" = "Zurück";
+"mute" = "Stumm";
+"keypad" = "Ziffernblock";
+"speaker" = "Lautsprecher";
+"add call" = "Anruf hinzufügen";
+"hold" = "Anruf halten";
+"contacts" = "Kontakte";
+
+/* Recent calls */
+"Recent Calls" = "Anrufliste";
+"Missed Call" = "Verpasster Anruf";
+"Clear" = "Löschen";
+"All" = "Alle";
+"Missed" = "Verpasst";
+"Clear All Recents" = "Alle löschen";
+"Unknown Caller" = "Unbekannter Anrufer";
+"Unknown" = "Unbekannt";
+"Incoming Call" = "Eingehender Anruf";
+"Outgoing Call" = "Ausgehender Anruf";
 
 "Settings" = "Einstellungen";
 
@@ -50,7 +94,7 @@
 "Invalid value for Local Port (expecting 1-65535)." = "Ungültiger Eintrag des Local Port (Bereich: 1-65535).";
 "Invalid value for RTP port (expecting 1-65535)." = "Ungültiger Eintrag des RTP port (Bereich: 1-65535).";
 "Invalid value for username or server." = "Ungültiger Benutzername oder Server Eintrag.";
-"Invalid value for server parameter." = "Ungültige Server- Parameter.";
+"Invalid value for server parameter." = "Ungültige Server-Parameter.";
 "Invalid value for timeout (expecting 1-3600)." = "Ungültiger Bereich des Timeouts (Bereich: 1-3600).";
 "Invalid value for proxy parameter." = "Ungültiger Eintrag der Proxy-Parameter.";
 "Error adding new account." = "Fehler beim anlegen eines neuen Accounts.";

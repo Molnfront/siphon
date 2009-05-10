@@ -25,6 +25,7 @@
 #include "call.h"
 #include "ring.h"
 #include "dtmf.h"
+//#include "mwi.h"
 
 #define THIS_FILE "call.m"
 
@@ -308,7 +309,7 @@ pj_status_t sip_startup(app_config_t *app_config)
   app_config->log_cfg.level = val;
   if (val != 0)
   {
-#if CYDIA
+#if defined(CYDIA) && (CYDIA == 1)
     NSArray *filePaths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
     NSString *path = [NSString stringWithFormat:@"%@/Siphon", [filePaths objectAtIndex:0]];
 #else
@@ -408,6 +409,10 @@ pj_status_t sip_startup(app_config_t *app_config)
   if (status != PJ_SUCCESS)
     goto error;
 
+  /* Initialize Message Summary and Message Waiting Indication Event Package */
+  /*status = pjsip_mwi_init_module( pjsua_get_pjsip_endpt(), 
+                                  pjsip_evsub_instance());*/
+  
   /* Initialize Ring and Ringback */
   sip_ring_init(app_config);
   
@@ -437,12 +442,13 @@ pj_status_t sip_startup(app_config_t *app_config)
   
   /* Initialization is done, now start pjsua */
   status = pjsua_start();
+  if (status != PJ_SUCCESS)
+    goto error;
   
   return status;
 
 error:
-  pj_pool_release(app_config->pool);
-  app_config->pool = NULL;
+  sip_cleanup(app_config);
   return status;
 }
 

@@ -19,8 +19,8 @@
 
 #import "FavoritesListController.h"
 #import <AddressBook/AddressBook.h>
-#import "AddressBookUI/ABFavoritesList.h"
-#import "AddressBookUI/ABFavoritesEntry.h"
+#import <AddressBookUI/ABFavoritesList.h>
+#import <AddressBookUI/ABFavoritesEntry.h>
 
 #import "FavoritesCell.h"
 

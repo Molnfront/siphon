@@ -19,63 +19,36 @@
 
 #import "FavoritesListController.h"
 #import <AddressBook/AddressBook.h>
+#import "AddressBookUI/ABFavoritesList.h"
+#import "AddressBookUI/ABFavoritesEntry.h"
 
 #import "FavoritesCell.h"
 
 // define to 1, if you want to allow reodering of favorites.
 #define REORDER 1
 
-@interface ABFavoritesList : NSObject
-{
-}
-+ (id)  sharedInstance;
-- (BOOL) addEntryForPerson: (ABRecordRef)person 
-                  property: (ABPropertyID)property
-            withIdentifier: (ABMultiValueIdentifier)identifier;
-- (BOOL) containsEntryWithIdentifier: (ABMultiValueIdentifier)identifier
-                           forPerson: (ABRecordRef)person;	 
-- (id) entries;
-- (id) entryWithIdentifier: (ABMultiValueIdentifier)identifier
-                 forPerson: (ABRecordRef)person;
-- (BOOL) isFull;
-- (void) removeEntryAtIndex:(int)index;
-- (void) moveEntryAtIndex:(int)fromIndex toIndex:(int)toIndex;
-- (void) save;
-@end
-@interface ABFavoritesEntry : NSObject
-{
-}
-- (NSString *)  displayName;
-- (NSString *)  label;
-- (NSString *)  value;
-- (ABPropertyID) property;
-- (ABMultiValueIdentifier) identifier;
-- (ABRecordRef)  ABPerson;
-@end
-
-
 
 @implementation FavoritesListController
 
 @synthesize phoneCallDelegate;
 
-- (id)initWithStyle:(UITableViewStyle)style 
+- (id)initWithStyle:(UITableViewStyle)style
 {
-	if (self = [super initWithStyle:style]) 
+	if (self = [super initWithStyle:style])
   {
     //[self setEditing:YES animated:YES];
     self.title = NSLocalizedString(@"Favorites", @"Favorites View");
 #if defined(CYDIA) && (CYDIA == 1)
-    self.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem: 
+    self.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:
                        UITabBarSystemItemFavorites tag:0];
 #else
     self.tabBarItem.title = NSLocalizedString(@"Favorites", @"Favorites View");
     self.tabBarItem.image = [UIImage imageNamed:@"Favorites.png"];
 #endif
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-                                              initWithBarButtonSystemItem:UIBarButtonSystemItemAdd 
+                                              initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                               target:self action:@selector(addContact:)];
-    
+
     peopleCtrl = [[ABPeoplePickerNavigationController alloc] init];
     peopleCtrl.navigationBar.barStyle = UIBarStyleBlackOpaque;
     peopleCtrl.peoplePickerDelegate = self;
@@ -88,13 +61,13 @@
   [self presentModalViewController:peopleCtrl animated:YES];
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
 	return 1;
 }
 
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
   return [[[ABFavoritesList sharedInstance] entries] count];
 }
@@ -103,8 +76,8 @@
 #define NAME_TAG 1
 #define LABEL_TAG 2
 
-- (UITableViewCell *)tableviewCellWithReuseIdentifier:(NSString *)identifier 
-{	
+- (UITableViewCell *)tableviewCellWithReuseIdentifier:(NSString *)identifier
+{
 	/*
 	 Create an instance of UITableViewCell and add tagged subviews for the name, local time, and quarter image of the time zone.
 	 */
@@ -113,7 +86,7 @@
   UILabel *label;
 
   // Create a new cell. CGRectZero allows the cell to determine the appropriate size.
-  cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero  
+  cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero
                                  reuseIdentifier:identifier] autorelease];
   cell.autoresizingMask = UIViewAutoresizingNone;
 
@@ -124,11 +97,11 @@
 #define RIGHT_COLUMN_WIDTH   80.0
 
 #define LABEL_HEIGHT 25.0
-	
+
 	/*
 	 Create labels for the text fields; set the highlight color so that when the cell is selected it changes appropriately.
    */
-	rect = CGRectMake(LEFT_COLUMN_OFFSET, LABEL_HEIGHT / 2, 
+	rect = CGRectMake(LEFT_COLUMN_OFFSET, LABEL_HEIGHT / 2,
                     LEFT_COLUMN_WIDTH, LABEL_HEIGHT);
 	label = [[UILabel alloc] initWithFrame:rect];
 	label.tag = NAME_TAG;
@@ -140,8 +113,8 @@
   label.highlightedTextColor = [UIColor whiteColor];
 	[cell.contentView addSubview:label];
 	[label release];
-	
-	rect = CGRectMake(RIGHT_COLUMN_OFFSET, LABEL_HEIGHT / 2, 
+
+	rect = CGRectMake(RIGHT_COLUMN_OFFSET, LABEL_HEIGHT / 2,
                     RIGHT_COLUMN_WIDTH, LABEL_HEIGHT);
 	label = [[UILabel alloc] initWithFrame:rect];
 	label.tag = LABEL_TAG;
@@ -158,26 +131,26 @@
 }
 #endif
 
-- (void)tableView:(UITableView *)tableView 
-didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
+- (void)tableView:(UITableView *)tableView
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
   NSUInteger row = indexPath.row;
 
-  if (row != NSNotFound) 
+  if (row != NSNotFound)
   {
-   
-    ABFavoritesEntry *entry = [[[ABFavoritesList sharedInstance] entries] 
+
+    ABFavoritesEntry *entry = [[[ABFavoritesList sharedInstance] entries]
                                objectAtIndex: row];
 #if 0
     // person can be deleted from Address Book
     ABRecordRef person = [entry ABPerson];
     multiValue = ABRecordCopyValue(person, [entry property]);
     valueIdx = ABMultiValueGetIndexForIdentifier(multiValue, [entry identifier]);
-    NSString *phoneNumber = (NSString *) ABMultiValueCopyValueAtIndex(multiValue, 
+    NSString *phoneNumber = (NSString *) ABMultiValueCopyValueAtIndex(multiValue,
                                                                       valueIdx);
 #endif
     NSString *phoneNumber = [entry value];
-    if ([phoneNumber length] && 
+    if ([phoneNumber length] &&
         [phoneCallDelegate respondsToSelector:@selector(dialup:number:)])
     {
       // Don't maintain the selection.
@@ -185,7 +158,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
       [phoneCallDelegate dialup: phoneNumber number:YES];
     }
     else
-      // This will give the user visual feedback that the cell was selected but 
+      // This will give the user visual feedback that the cell was selected but
       // fade out to indicate that no action is taken.
       [tableView deselectRowAtIndexPath:indexPath animated:YES];
   }
@@ -196,16 +169,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 	static NSString *cellIdentifier = @"FavoritesCell";
 #if 0
   UILabel *label;
-	
+
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-	if (cell == nil) 
+	if (cell == nil)
   {
     cell = [self tableviewCellWithReuseIdentifier:cellIdentifier];
     //cell.hidesAccessoryWhenEditing = NO;
     cell.showsReorderControl = YES;
 	}
 	// Configure the cell
-  ABFavoritesEntry *entry = [[[ABFavoritesList sharedInstance] entries] 
+  ABFavoritesEntry *entry = [[[ABFavoritesList sharedInstance] entries]
                              objectAtIndex: indexPath.row];
   label = (UILabel *)[cell viewWithTag:NAME_TAG];
   label.text = [entry displayName];
@@ -213,36 +186,36 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
   label.text = [entry label];
 #else
   FavoritesCell *cell = (FavoritesCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-  if (cell == nil) 
+  if (cell == nil)
   {
     cell = [[[FavoritesCell alloc] initWithFrame:CGRectZero reuseIdentifier:cellIdentifier] autorelease];
     cell.hidesAccessoryWhenEditing = YES;
   }
   // Configure the cell
-  ABFavoritesEntry *entry = [[[ABFavoritesList sharedInstance] entries] 
+  ABFavoritesEntry *entry = [[[ABFavoritesList sharedInstance] entries]
                              objectAtIndex: indexPath.row];
-  
+
   cell.name.text = [entry displayName];
   cell.label.text = [entry label];
 #endif
 	return cell;
 }
 
-- (UITableViewCellAccessoryType)tableView:(UITableView *)tableView 
+- (UITableViewCellAccessoryType)tableView:(UITableView *)tableView
          accessoryTypeForRowWithIndexPath:(NSIndexPath *)indexPath
 
 {
   return UITableViewCellAccessoryDetailDisclosureButton;
 }
 
-- (void)tableView:(UITableView *)tableView 
+- (void)tableView:(UITableView *)tableView
          accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
   NSUInteger row = indexPath.row;
-  
-  if (row != NSNotFound) 
+
+  if (row != NSNotFound)
   {
-    ABFavoritesEntry *entry = [[[ABFavoritesList sharedInstance] entries] 
+    ABFavoritesEntry *entry = [[[ABFavoritesList sharedInstance] entries]
                                objectAtIndex: row];
     ABRecordRef person = [entry ABPerson];
     if (person)
@@ -251,7 +224,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
       personCtrl.displayedPerson = person;
       personCtrl.allowsEditing = NO;
       personCtrl.personViewDelegate = self;
-      [personCtrl setHighlightedItemForProperty:[entry property] 
+      [personCtrl setHighlightedItemForProperty:[entry property]
                                  withIdentifier:[entry identifier]];
       [self.navigationController pushViewController:personCtrl animated:YES];
       [personCtrl release];
@@ -260,17 +233,17 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
       CFErrorRef *error = NULL;
       person = ABPersonCreate ();
-      
+
       // Add Name
       if ([[entry displayName] length])
-        ABRecordSetValue(person, kABPersonFirstNameProperty, [entry displayName], 
+        ABRecordSetValue(person, kABPersonFirstNameProperty, [entry displayName],
                          error);
-      
+
       // Add Number
       if ([[entry value] length])
       {
         ABMutableMultiValueRef multiValue = ABMultiValueCreateMutable(kABStringPropertyType);
-        ABMultiValueAddValueAndLabel(multiValue, [entry value], kABPersonPhoneMainLabel, 
+        ABMultiValueAddValueAndLabel(multiValue, [entry value], kABPersonPhoneMainLabel,
                                      NULL);
         ABRecordSetValue(person, kABPersonPhoneProperty, multiValue, error);
       }
@@ -284,60 +257,60 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
       CFRelease(person);
       [self.navigationController pushViewController:unknownCtrl animated:YES];
       [unknownCtrl release];
-      
+
     }
   }
 }
 
 
-- (void)tableView:(UITableView *)tableView 
-      commitEditingStyle:(UITableViewCellEditingStyle)editingStyle 
-      forRowAtIndexPath:(NSIndexPath *)indexPath 
+- (void)tableView:(UITableView *)tableView
+      commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
+      forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	
-	if (editingStyle == UITableViewCellEditingStyleDelete) 
+
+	if (editingStyle == UITableViewCellEditingStyleDelete)
   {
     NSUInteger row = indexPath.row;
     NSArray *array = [NSArray arrayWithObjects: indexPath, nil];
-    
+
     [[ABFavoritesList sharedInstance] removeEntryAtIndex:row];
     [[ABFavoritesList sharedInstance] save];
-    
-    [tableView deleteRowsAtIndexPaths:array 
+
+    [tableView deleteRowsAtIndexPaths:array
                      withRowAnimation:UITableViewRowAnimationLeft];
 	}
 //	if (editingStyle == UITableViewCellEditingStyleInsert) {
 //	}
 }
 
-- (BOOL)tableView:(UITableView *)tableView 
-canMoveRowAtIndexPath:(NSIndexPath *)indexPath 
+- (BOOL)tableView:(UITableView *)tableView
+canMoveRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	return YES;
 }
 
 - (void)tableView:(UITableView *)tableView
-moveRowAtIndexPath:(NSIndexPath *)fromIndexPath 
+moveRowAtIndexPath:(NSIndexPath *)fromIndexPath
       toIndexPath:(NSIndexPath *)toIndexPath
 {
-  [[ABFavoritesList sharedInstance] moveEntryAtIndex:fromIndexPath.row 
+  [[ABFavoritesList sharedInstance] moveEntryAtIndex:fromIndexPath.row
                                              toIndex:toIndexPath.row];
   [[ABFavoritesList sharedInstance] save];
 }
 
-- (void)dealloc 
+- (void)dealloc
 {
 	[super dealloc];
 }
 
 // Set up the user interface.
-//- (void)viewDidLoad 
+//- (void)viewDidLoad
 //{
 //  [super viewDidLoad];
 //}
 
 // Update the table before the view displays.
-- (void)viewWillAppear:(BOOL)animated 
+- (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
   [self.tableView reloadData];
@@ -347,31 +320,31 @@ moveRowAtIndexPath:(NSIndexPath *)fromIndexPath
     self.navigationItem.leftBarButtonItem = nil;
 }
 
-//- (void)viewDidAppear:(BOOL)animated 
+//- (void)viewDidAppear:(BOOL)animated
 //{
 //	[super viewDidAppear:animated];
 //}
 
-//- (void)viewWillDisappear:(BOOL)animated 
+//- (void)viewWillDisappear:(BOOL)animated
 //{
 //}
 
-//- (void)viewDidDisappear:(BOOL)animated 
+//- (void)viewDidDisappear:(BOOL)animated
 //{
 //}
 
 // Invoked when the user touches Edit.
-- (void)setEditing:(BOOL)editing animated:(BOOL)animated 
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated
 {
   // Updates the appearance of the Edit|Done button as necessary.
   [super setEditing:editing animated:animated];
 
   // Disable the add button while editing.
-  if (editing) 
+  if (editing)
   {
     self.navigationItem.rightBarButtonItem.enabled = NO;
-  } 
-  else 
+  }
+  else
   {
     self.navigationItem.rightBarButtonItem.enabled = YES;
     if (![[[ABFavoritesList sharedInstance] entries] count])
@@ -383,51 +356,51 @@ moveRowAtIndexPath:(NSIndexPath *)fromIndexPath
 //	[super didReceiveMemoryWarning];
 //}
 
-- (BOOL)insertPerson:(ABRecordRef)person 
+- (BOOL)insertPerson:(ABRecordRef)person
           identifier:(ABMultiValueIdentifier)identifier
 {
   ABFavoritesList *list = [ABFavoritesList sharedInstance];
-  
+
   if ([list containsEntryWithIdentifier: identifier forPerson: person] == NO)
   {
-    [list addEntryForPerson:person property:kABPersonPhoneProperty 
+    [list addEntryForPerson:person property:kABPersonPhoneProperty
              withIdentifier:identifier];
     [list save];
     [self.tableView reloadData];
-    
+
     return YES;
   }
   return NO;
 }
-  
-- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker 
+
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
       shouldContinueAfterSelectingPerson:(ABRecordRef)person
 {
   // Si un seul numéro de téléphone associer à la liste des favoris.
   // sinon continuer
   CFTypeRef multiValue;
-  
+
   if (person)
   {
     multiValue = ABRecordCopyValue(person, kABPersonPhoneProperty);
     if (ABMultiValueGetCount (multiValue) == 1)
     {
-      ABMultiValueIdentifier identifier = 
+      ABMultiValueIdentifier identifier =
           ABMultiValueGetIdentifierAtIndex (multiValue, 0);
       [self insertPerson:person identifier:identifier];
       [self dismissModalViewControllerAnimated:YES];
       return NO;
     }
   }
-  
+
   return YES;
 }
 
-- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker 
-      shouldContinueAfterSelectingPerson:(ABRecordRef)person 
-                                property:(ABPropertyID)property 
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
+      shouldContinueAfterSelectingPerson:(ABRecordRef)person
+                                property:(ABPropertyID)property
                               identifier:(ABMultiValueIdentifier)identifier
-{  
+{
   if (kABPersonPhoneProperty == property)
   {
     [self insertPerson:person identifier:identifier];
@@ -442,14 +415,14 @@ moveRowAtIndexPath:(NSIndexPath *)fromIndexPath
   [self dismissModalViewControllerAnimated:YES];
 }
 
-- (BOOL)personViewController:(ABPersonViewController *)personViewController 
-shouldPerformDefaultActionForPerson:(ABRecordRef)person 
+- (BOOL)personViewController:(ABPersonViewController *)personViewController
+shouldPerformDefaultActionForPerson:(ABRecordRef)person
                     property:(ABPropertyID)property
                   identifier:(ABMultiValueIdentifier)identifier
 {
   CFTypeRef multiValue;
   CFIndex valueIdx;
-  
+
   // FIXME duplicate code from ContactViewController.peoplePickerNavigationController
   if (kABPersonPhoneProperty == property)
   {
@@ -457,13 +430,13 @@ shouldPerformDefaultActionForPerson:(ABRecordRef)person
     valueIdx = ABMultiValueGetIndexForIdentifier(multiValue,identifier);
     NSString *phoneNumber = (NSString *)
             ABMultiValueCopyValueAtIndex(multiValue, valueIdx);
-    
-    if (phoneNumber && 
+
+    if (phoneNumber &&
         [phoneCallDelegate respondsToSelector:@selector(dialup:number:)])
     {
       [phoneCallDelegate dialup: phoneNumber number:YES];
     }
-    
+
     return NO;
   }
   return YES;

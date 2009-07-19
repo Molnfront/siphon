@@ -288,9 +288,9 @@ void pit_pst_filt(
     temp = ener0;
   }
   j = norm_l(temp);
-  cmax = round(L_shl(cor_max, j));
-  en = round(L_shl(ener, j));
-  en0 = round(L_shl(ener0, j));
+  cmax = g_round(L_shl(cor_max, j));
+  en = g_round(L_shl(ener, j));
+  en0 = g_round(L_shl(ener0, j));
 
   /* prediction gain (dB)= -10 log(1-cor_max*cor_max/(ener*ener0)) */
 
@@ -407,7 +407,7 @@ void agc(
     return;
   }
   exp = sub(norm_l(s), 1);
-  gain_out = round(L_shl(s, exp));
+  gain_out = g_round(L_shl(s, exp));
 
   /* calculate gain_in with exponent */
 
@@ -423,7 +423,7 @@ void agc(
   }
   else {
     i = norm_l(s);
-    gain_in = round(L_shl(s, i));
+    gain_in = g_round(L_shl(s, i));
     exp = sub(exp, i);
 
    /*---------------------------------------------------*
@@ -436,7 +436,7 @@ void agc(
 
     /* i(Q12) = s(Q19) = 1 / sqrt(s(Q22)) */
     s = Inv_sqrt(s);           /* Q19 */
-    i = round(L_shl(s,9));     /* Q12 */
+    i = g_round(L_shl(s,9));     /* Q12 */
 
     /* g0(Q12) = i(Q12) * (1-AGC_FAC)(Q15) */
     g0 = mult(i, AGC_FAC1);       /* Q12 */

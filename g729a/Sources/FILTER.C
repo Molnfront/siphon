@@ -83,7 +83,7 @@ void Syn_filt(
       s = L_msu(s, a[j], yy[-j]);
 
     s = L_shl(s, 3);
-    *yy++ = round(s);
+    *yy++ = g_round(s);
   }
 
   for(i=0; i<lg; i++)
@@ -125,7 +125,7 @@ void Residu(
       s = L_mac(s, a[j], x[i-j]);
 
     s = L_shl(s, 3);
-    y[i] = round(s);
+    y[i] = g_round(s);
   }
   return;
 }

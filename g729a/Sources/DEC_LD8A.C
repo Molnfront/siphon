@@ -245,7 +245,7 @@ void Decod_ld8a(
        L_temp = L_mult(exc[i+i_subfr], gain_pitch);
        L_temp = L_mac(L_temp, code[i], gain_code);
        L_temp = L_shl(L_temp, 1);
-       exc[i+i_subfr] = round(L_temp);
+       exc[i+i_subfr] = g_round(L_temp);
     }
 
     Overflow = 0;

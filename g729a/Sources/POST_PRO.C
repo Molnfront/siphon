@@ -79,7 +79,7 @@ void Post_Process(
      L_tmp     = L_shl(L_tmp, 2);      /* Q29 --> Q31 (Q13 --> Q15) */
 
      /* Multiplication by two of output speech with saturation. */
-     signal[i] = round(L_shl(L_tmp, 1));
+     signal[i] = g_round(L_shl(L_tmp, 1));
 
      y2_hi = y1_hi;
      y2_lo = y1_lo;

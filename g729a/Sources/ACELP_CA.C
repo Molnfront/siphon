@@ -606,7 +606,7 @@ static Word16 D4i40_17_fast(/*(o) : Index of pulses positions.               */
         alp2 = L_mac(alp2, *p1++, _1_4);
 
         sq2 = mult(ps2, ps2);
-        alp_16 = round(alp2);
+        alp_16 = g_round(alp2);
 
         s = L_msu(L_mult(alp,sq2),sq,alp_16);
         if (s > 0)
@@ -647,7 +647,7 @@ static Word16 D4i40_17_fast(/*(o) : Index of pulses positions.               */
       s = L_mult(*p0, _1_4);        p0 += NB_POS;
       s = L_mac(s, *p1, _1_4);      p1 += NB_POS;
       s = L_mac(s, *p2++, _1_8);
-      *p3++ = round(s);
+      *p3++ = g_round(s);
     }
 
     /* i2 loop: 8 positions in track 0 */
@@ -679,7 +679,7 @@ static Word16 D4i40_17_fast(/*(o) : Index of pulses positions.               */
         alp2 = L_mac(alp2, *p4++, _1_2);
 
         sq2 = mult(ps2, ps2);
-        alp_16 = round(alp2);
+        alp_16 = g_round(alp2);
 
         s = L_msu(L_mult(alp,sq2),sq,alp_16);
         if (s > 0)
@@ -752,7 +752,7 @@ static Word16 D4i40_17_fast(/*(o) : Index of pulses positions.               */
         alp2 = L_mac(alp2, *p1++, _1_4);
 
         sq2 = mult(ps2, ps2);
-        alp_16 = round(alp2);
+        alp_16 = g_round(alp2);
 
         s = L_msu(L_mult(alp,sq2),sq,alp_16);
         if (s > 0)
@@ -793,7 +793,7 @@ static Word16 D4i40_17_fast(/*(o) : Index of pulses positions.               */
       s = L_mult(*p0, _1_4);         p0 += NB_POS;
       s = L_mac(s, *p1++, _1_4);
       s = L_mac(s, *p2++, _1_8);
-      *p3++ = round(s);
+      *p3++ = g_round(s);
     }
 
     /* i2 loop: 8 positions in track 1 */
@@ -825,7 +825,7 @@ static Word16 D4i40_17_fast(/*(o) : Index of pulses positions.               */
         alp2 = L_mac(alp2, *p4++, _1_2);
 
         sq2 = mult(ps2, ps2);
-        alp_16 = round(alp2);
+        alp_16 = g_round(alp2);
 
         s = L_msu(L_mult(alp,sq2),sq,alp_16);
         if (s > 0)

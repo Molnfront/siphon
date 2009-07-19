@@ -32,7 +32,8 @@
 #define  GAMMA1       24576   /* Bandwitdh factor = 0.75   in Q15           */
 
 #define  PRM_SIZE     11      /* Size of vector of analysis parameters.     */
-#define  SERIAL_SIZE  (80+2)  /* bfi+ number of speech bits                 */
+//#define  SERIAL_SIZE  (80+2)  /* bfi+ number of speech bits                 */
+#define  SERIAL_SIZE  80 /* bfi+ number of speech bits                 */
 
 #define SHARPMAX  13017   /* Maximum value of pitch sharpening     0.8  Q14 */
 #define SHARPMIN  3277    /* Minimum value of pitch sharpening     0.2  Q14 */
@@ -536,8 +537,10 @@ void Corr_xy2(
  * Bitstream function    *
  *-----------------------*/
 
-void  prm2bits_ld8k(Word16 prm[], Word16 bits[]);
-void  bits2prm_ld8k(Word16 bits[], Word16 prm[]);
+//void  prm2bits_ld8k(Word16 prm[], Word16 bits[]);
+//void  bits2prm_ld8k(Word16 bits[], Word16 prm[]);
+void  prm2bits_ld8k(Word16 prm[], UWord8 *bits);
+void  bits2prm_ld8k(UWord8 *bits, Word16 prm[]);
 #define BIT_0     (short)0x007f /* definition of zero-bit in bit-stream      */
 #define BIT_1     (short)0x0081 /* definition of one-bit in bit-stream       */
 #define SYNC_WORD (short)0x6b21 /* definition of frame erasure flag          */

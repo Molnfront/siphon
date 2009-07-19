@@ -1,12 +1,21 @@
-/* ITU-T G.729 Software Package Release 2 (November 2006) */
-/*
-   ITU-T G.729A Speech Coder    ANSI-C Source Code
-   Version 1.1    Last modified: September 1996
-
-   Copyright (c) 1996,
-   AT&T, France Telecom, NTT, Universite de Sherbrooke
-   All rights reserved.
-*/
+/**
+ *  g729a codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 /*------------------------------------------------------------------------*
  * Function Post_Process()                                                *
@@ -17,11 +26,9 @@
  *-----------------------------------------------------------------------*/
 
 #include "typedef.h"
-#include "basic_op.h"
-#include "oper_32b.h"
-
 #include "ld8a.h"
-#include "tab_ld8a.h"
+
+#include "libavutil_common.h"
 
 /*------------------------------------------------------------------------*
  * 2nd order high pass filter with cut off frequency at 100 Hz.           *
@@ -35,56 +42,40 @@
  *     b[3] = {0.93980581E+00, -0.18795834E+01, 0.93980581E+00};          *
  *     a[3] = {0.10000000E+01, 0.19330735E+01, -0.93589199E+00};          *
  *-----------------------------------------------------------------------*/
-
-/* Static values to be preserved between calls */
-/* y[] values is keep in double precision      */
-
-static Word16 y2_hi, y2_lo, y1_hi, y1_lo, x0, x1;
-
-
-/* Initialization of static values */
+static Word32 y1, y2;
+static Word16 x1, x2;
 
 void Init_Post_Process(void)
 {
-  y2_hi = 0;
-  y2_lo = 0;
-  y1_hi = 0;
-  y1_lo = 0;
-  x0   = 0;
-  x1   = 0;
+  y1 = 0LL;
+  y2 = 0LL;
+  x1 = 0;
+  x2 = 0;
 }
 
-
+/* acelp_high_pass_filter */
 void Post_Process(
-  Word16 signal[],    /* input/output signal */
-  Word16 lg)          /* length of signal    */
+                  Word16 signal[],    /* input/output signal */
+                  Word16 lg)          /* length of signal    */
 {
-  Word16 i, x2;
-  Word32 L_tmp;
+  Word16 i;
+  Word32 tmp;
 
-  for(i=0; i<lg; i++)
+  for (i = 0; i < lg; i++)
   {
-     x2 = x1;
-     x1 = x0;
-     x0 = signal[i];
+    tmp  = (y1 * 15836LL) >> 13;
+    tmp += (y2 * -7667LL) >> 13;
+    tmp += 7699 * (signal[i] - 2*x1/*signal[i-1]*/ + x2/*signal[i-2]*/);
 
-     /*  y[i] = b[0]*x[i]   + b[1]*x[i-1]   + b[2]*x[i-2]    */
-     /*                     + a[1]*y[i-1] + a[2] * y[i-2];      */
+    x2 = x1;
+    x1 = signal[i];
 
-     L_tmp     = Mpy_32_16(y1_hi, y1_lo, a100[1]);
-     L_tmp     = L_add(L_tmp, Mpy_32_16(y2_hi, y2_lo, a100[2]));
-     L_tmp     = L_mac(L_tmp, x0, b100[0]);
-     L_tmp     = L_mac(L_tmp, x1, b100[1]);
-     L_tmp     = L_mac(L_tmp, x2, b100[2]);
-     L_tmp     = L_shl(L_tmp, 2);      /* Q29 --> Q31 (Q13 --> Q15) */
+    /* With "+0x800" rounding, clipping is needed
+     for ALGTHM and SPEECH tests. */
+    signal[i] = av_clip_int16((tmp + 0x800) >> 12);
 
-     /* Multiplication by two of output speech with saturation. */
-     signal[i] = g_round(L_shl(L_tmp, 1));
-
-     y2_hi = y1_hi;
-     y2_lo = y1_lo;
-     L_Extract(L_tmp, &y1_hi, &y1_lo);
+    y2 = y1;
+    y1 = tmp;
   }
-  return;
 }
 

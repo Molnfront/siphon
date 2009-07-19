@@ -497,11 +497,6 @@ Word16 imap2[NCODE2] = {
  | Tables for routines post_pro() & pre_proc().        |
  -----------------------------------------------------*/
 
-/* filter coefficients (fc = 100 Hz) */
-
-Word16 b100[3] = {7699, -15398, 7699};      /* Q13 */
-Word16 a100[3] = {8192, 15836, -7667};      /* Q13 */
-
 /* filter coefficients (fc = 140 Hz, coeff. b[] is divided by 2) */
 
 Word16 b140[3] = {1899, -3798, 1899};      /* 1/2 in Q12 */

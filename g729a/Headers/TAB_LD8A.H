@@ -34,8 +34,6 @@ extern Word16 thr1[NCODE1-NCAN1];
 extern Word16 thr2[NCODE2-NCAN2];
 extern Word16 imap1[NCODE1];
 extern Word16 imap2[NCODE2];
-extern Word16 b100[3];
-extern Word16 a100[3];
 extern Word16 b140[3];
 extern Word16 a140[3];
 extern Word16 bitsno[PRM_SIZE];

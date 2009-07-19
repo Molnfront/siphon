@@ -537,8 +537,6 @@ void Corr_xy2(
  * Bitstream function    *
  *-----------------------*/
 
-//void  prm2bits_ld8k(Word16 prm[], Word16 bits[]);
-//void  bits2prm_ld8k(Word16 bits[], Word16 prm[]);
 void  prm2bits_ld8k(Word16 prm[], UWord8 *bits);
 void  bits2prm_ld8k(UWord8 *bits, Word16 prm[]);
 #define BIT_0     (short)0x007f /* definition of zero-bit in bit-stream      */
@@ -611,16 +609,9 @@ Word16 test_err(Word16 t0, Word16 t0_frac);
  * Prototypes for auxiliary functions.                                      *
  *--------------------------------------------------------------------------*/
 
-void Copy(
-  Word16 x[],      /* (i)   : input vector   */
-  Word16 y[],      /* (o)   : output vector  */
-  Word16 L         /* (i)   : vector length  */
-);
-
-void Set_zero(
-  Word16 x[],       /* (o)    : vector to clear     */
-  Word16 L          /* (i)    : length of vector    */
-);
+#include <strings.h>
+#define Copy(x,y,L)    memcpy((y), (x), (L)*sizeof(Word16))
+#define Set_zero(x, L) bzero((x), (L)*sizeof(Word16))
 
 Word16 Random(void);
 

@@ -1,0 +1,20 @@
+19/07/2009
+
+coder g729a ITU
+---------------
+sample.pcm      speech.pcm
+Frame =1969     Frame =3749
+real	0m8.580s  real	0m15.902s
+user	0m7.990s  user	0m15.110s
+sys	  0m0.140s  sys	  0m0.190s
+
+
+decoder g729a ITU
+-----------------
+sample.out.g729   speech.out.g729
+Frame =1969       Frame =3749
+real	0m1.865s    real	0m3.498s
+user	0m1.740s    user	0m3.250s
+sys	0m0.050s      sys	  0m0.080s
+
+

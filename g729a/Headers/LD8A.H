@@ -171,13 +171,6 @@ void Syn_filt(
   Word16 update   /* (i)     : 0=no update, 1=update of memory.         */
 );
 
-void Convolve(
-  Word16 x[],      /* (i)     : input vector                           */
-  Word16 h[],      /* (i) Q12 : impulse response                       */
-  Word16 y[],      /* (o)     : output vector                          */
-  Word16 L         /* (i)     : vector size                            */
-);
-
 /*--------------------------------------------------------------------------*
  *       LTP constant parameters                                            *
  *--------------------------------------------------------------------------*/

@@ -1,48 +1,25 @@
-/* ITU-T G.729 Software Package Release 2 (November 2006) */
-/*
-   ITU-T G.729A Speech Coder    ANSI-C Source Code
-   Version 1.1    Last modified: September 1996
-
-   Copyright (c) 1996,
-   AT&T, France Telecom, NTT, Universite de Sherbrooke
-   All rights reserved.
-*/
-
-/*-------------------------------------------------------------------*
- * Function  Convolve:                                               *
- *           ~~~~~~~~~                                               *
- *-------------------------------------------------------------------*
- * Perform the convolution between two vectors x[] and h[] and       *
- * write the result in the vector y[].                               *
- * All vectors are of length N.                                      *
- *-------------------------------------------------------------------*/
+/**
+ *  g729a codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 #include "typedef.h"
 #include "basic_op.h"
 #include "ld8a.h"
-
-void Convolve(
-  Word16 x[],      /* (i)     : input vector                           */
-  Word16 h[],      /* (i) Q12 : impulse response                       */
-  Word16 y[],      /* (o)     : output vector                          */
-  Word16 L         /* (i)     : vector size                            */
-)
-{
-   Word16 i, n;
-   Word32 s;
-
-   for (n = 0; n < L; n++)
-   {
-     s = 0;
-     for (i = 0; i <= n; i++)
-       s = L_mac(s, x[i], h[n-i]);
-
-     s    = L_shl(s, 3);                   /* h is in Q12 and saturation */
-     y[n] = extract_h(s);
-   }
-
-   return;
-}
 
 /*-----------------------------------------------------*
  * procedure Syn_filt:                                 *
@@ -50,7 +27,7 @@ void Convolve(
  * Do the synthesis filtering 1/A(z).                  *
  *-----------------------------------------------------*/
 
-
+/* ff_celp_lp_synthesis_filter */
 void Syn_filt(
   Word16 a[],     /* (i) Q12 : a[m+1] prediction coefficients   (m=10)  */
   Word16 x[],     /* (i)     : input signal                             */
@@ -68,38 +45,32 @@ void Syn_filt(
   /* Copy mem[] to yy[] */
 
   yy = tmp;
-
-  for(i=0; i<M; i++)
-  {
-    *yy++ = mem[i];
-  }
+  Copy(mem, yy, M);
+  yy += M;
 
   /* Do the filtering. */
 
   for (i = 0; i < lg; i++)
   {
-    s = L_mult(x[i], a[0]);
+    s = x[i] * a[0];
     for (j = 1; j <= M; j++)
-      s = L_msu(s, a[j], yy[-j]);
+      s -= a[j] * yy[-j];
 
-    s = L_shl(s, 3);
+    s <<= 4;
     *yy++ = g_round(s);
+    /*s >>= 12;
+    if(s + 0x8000 > 0xFFFFU)
+    {
+      s = (s >> 31) ^ 32767;
+    }
+    *yy++ = s;*/
   }
 
-  for(i=0; i<lg; i++)
-  {
-    y[i] = tmp[i+M];
-  }
+  Copy(&tmp[M], y, lg);
 
   /* Update of memory if update==1 */
-
-  if(update != 0)
-     for (i = 0; i < M; i++)
-     {
-       mem[i] = y[lg-M+i];
-     }
-
- return;
+  if(update)
+    Copy(&y[lg-M], mem, M);
 }
 
 /*-----------------------------------------------------------------------*
@@ -120,11 +91,11 @@ void Residu(
 
   for (i = 0; i < lg; i++)
   {
-    s = L_mult(x[i], a[0]);
+    s = x[i] * a[0];
     for (j = 1; j <= M; j++)
-      s = L_mac(s, a[j], x[i-j]);
+      s += a[j] * x[i-j];
 
-    s = L_shl(s, 3);
+    s <<= 4;
     y[i] = g_round(s);
   }
   return;

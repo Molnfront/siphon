@@ -34,8 +34,6 @@ Word16 extract_l(Word32 L_var1);          /* Extract low,         1 */
 Word16 g_round(Word32 L_var1);              /* Round,               1 */
 Word32 L_mac(Word32 L_var3, Word16 var1, Word16 var2); /* Mac,    1 */
 Word32 L_msu(Word32 L_var3, Word16 var1, Word16 var2); /* Msu,    1 */
-Word32 L_macNs(Word32 L_var3, Word16 var1, Word16 var2);/* Mac without sat, 1*/
-Word32 L_msuNs(Word32 L_var3, Word16 var1, Word16 var2);/* Msu without sat, 1*/
 
 Word32 L_add(Word32 L_var1, Word32 L_var2);   /* Long add,        2 */
 Word32 L_sub(Word32 L_var1, Word32 L_var2);   /* Long sub,        2 */
@@ -53,8 +51,6 @@ Word32 L_deposit_l(Word16 var1);       /* 16 bit var1 -> LSB,     2 */
 
 Word32 L_shr_r(Word32 L_var1, Word16 var2);/* Long shift right with round,  3*/
 Word32 L_abs(Word32 L_var1);            /* Long abs,              3 */
-
-Word32 L_sat(Word32 L_var1);            /* Long saturation,       4 */
 
 Word16 norm_s(Word16 var1);             /* Short norm,           15 */
 

@@ -1,12 +1,21 @@
-/* ITU-T G.729 Software Package Release 2 (November 2006) */
-/*
-   ITU-T G.729A Speech Coder    ANSI-C Source Code
-   Version 1.1    Last modified: September 1996
-
-   Copyright (c) 1996,
-   AT&T, France Telecom, NTT, Universite de Sherbrooke
-   All rights reserved.
-*/
+/**
+ *  g729a codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 /*-------------------------------------------------------------------*
  * Function  Pred_lt_3()                                             *
@@ -24,6 +33,8 @@
 #include "ld8a.h"
 #include "tab_ld8a.h"
 
+
+/*ff_acelp_interpolate / ff_acelp_weighted_vector_sum */
 void Pred_lt_3(
   Word16   exc[],       /* in/out: excitation buffer */
   Word16   T0,          /* input : integer pitch lag */
@@ -37,30 +48,28 @@ void Pred_lt_3(
 
   x0 = &exc[-T0];
 
-  frac = negate(frac);
-  if (frac < 0)
+  if (frac > 0)
   {
-    frac = add(frac, UP_SAMP);
+    frac = UP_SAMP - frac;
     x0--;
   }
+  else
+    frac = -frac;
 
   for (j=0; j<L_subfr; j++)
   {
     x1 = x0++;
     x2 = x0;
     c1 = &inter_3l[frac];
-    c2 = &inter_3l[sub(UP_SAMP,frac)];
+    c2 = &inter_3l[UP_SAMP - frac];
 
     s = 0;
     for(i=0, k=0; i< L_INTER10; i++, k+=UP_SAMP)
     {
-      s = L_mac(s, x1[-i], c1[k]);
-      s = L_mac(s, x2[i],  c2[k]);
+      s += x1[-i] * c1[k];
+      s += x2[i]  * c2[k];
     }
-
-    exc[j] = g_round(s);
+    exc[j] = (s + 0x4000L) >> 15;
   }
-
-  return;
 }
 

@@ -58,6 +58,7 @@ void Syn_filt(
 
     s <<= 4;
     *yy++ = g_round(s);
+    //*y++ = (Word16)((s + 0x8000L) >> 16);
     /*s >>= 12;
     if(s + 0x8000 > 0xFFFFU)
     {

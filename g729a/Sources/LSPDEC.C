@@ -62,9 +62,9 @@ void Lsp_iqua_cs(
   Word16 buf[M];     /* Q13 */
 
   if( erase==0 ) {  /* Not frame erasure */
-    mode_index = shr(prm[0] ,NC0_B) & (Word16)1;
+    mode_index = (prm[0] >> NC0_B) & (Word16)1;
     code0 = prm[0] & (Word16)(NC0 - 1);
-    code1 = shr(prm[1] ,NC1_B) & (Word16)(NC1 - 1);
+    code1 = (prm[1] >> NC1_B) & (Word16)(NC1 - 1);
     code2 = prm[1] & (Word16)(NC1 - 1);
 
     /* compose quantized LSP (lsp_q) from indexes */

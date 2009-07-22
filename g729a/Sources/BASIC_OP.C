@@ -457,44 +457,6 @@ Word32 L_mult(Word16 var1,Word16 var2)
    return(L_var_out);
   }
 
-
-/*___________________________________________________________________________
- |                                                                           |
- |   Function Name : negate                                                  |
- |                                                                           |
- |   Purpose :                                                               |
- |                                                                           |
- |   Negate var1 with saturation, saturate in the case where input is -32768:|
- |                negate(var1) = sub(0,var1).                                |
- |                                                                           |
- |   Complexity weight : 1                                                   |
- |                                                                           |
- |   Inputs :                                                                |
- |                                                                           |
- |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
- |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
- |                                                                           |
- |   Outputs :                                                               |
- |                                                                           |
- |    none                                                                   |
- |                                                                           |
- |   Return Value :                                                          |
- |                                                                           |
- |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
- |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
- |___________________________________________________________________________|
-*/
-
-Word16 negate(Word16 var1)
-  {
-   Word16 var_out;
-
-   var_out = (var1 == MIN_16) ? MAX_16 : -var1;
-   return(var_out);
-  }
-
 /*___________________________________________________________________________
  |                                                                           |
  |   Function Name : g_round                                                   |
@@ -925,42 +887,6 @@ Word32 L_sub_c(Word32 L_var1, Word32 L_var2)
         }
      }
 
-   return(L_var_out);
-  }
-
-/*___________________________________________________________________________
- |                                                                           |
- |   Function Name : L_negate                                                |
- |                                                                           |
- |   Purpose :                                                               |
- |                                                                           |
- |   Negate the 32 bit variable L_var1 with saturation; saturate in the case |
- |   where input is -2147483648 (0x8000 0000).                               |
- |                                                                           |
- |   Complexity weight : 2                                                   |
- |                                                                           |
- |   Inputs :                                                                |
- |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
- |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
- |                                                                           |
- |   Outputs :                                                               |
- |                                                                           |
- |    none                                                                   |
- |                                                                           |
- |   Return Value :                                                          |
- |                                                                           |
- |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
- |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
- |___________________________________________________________________________|
-*/
-
-Word32 L_negate(Word32 L_var1)
-  {
-   Word32 L_var_out;
-
-   L_var_out = (L_var1 == MIN_32) ? MAX_32 : -L_var1;
    return(L_var_out);
   }
 

@@ -1,12 +1,21 @@
-/* ITU-T G.729 Software Package Release 2 (November 2006) */
-/*
-   ITU-T G.729A Speech Coder    ANSI-C Source Code
-   Version 1.1    Last modified: September 1996
-
-   Copyright (c) 1996,
-   AT&T, France Telecom, NTT, Universite de Sherbrooke
-   All rights reserved.
-*/
+/**
+ *  g729a codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 /*-----------------------------------------------------------------*
  *   Functions Init_Decod_ld8a  and Decod_ld8a                     *
@@ -151,40 +160,20 @@ void Decod_ld8a(
     index = *parm++;            /* pitch index */
 
     if(i_subfr == 0)
+      bad_pitch = bfi + *parm++; /* get parity check result */
+    else
+      bad_pitch = bfi;
+    if( bad_pitch == 0)
     {
-      i = *parm++;              /* get parity check result */
-      bad_pitch = add(bfi, i);
-      if( bad_pitch == 0)
-      {
-        Dec_lag3(index, PIT_MIN, PIT_MAX, i_subfr, &T0, &T0_frac);
-        old_T0 = T0;
-      }
-      else        /* Bad frame, or parity error */
-      {
-        T0  =  old_T0;
-        T0_frac = 0;
-        old_T0 = add( old_T0, 1);
-        if( sub(old_T0, PIT_MAX) > 0) {
-            old_T0 = PIT_MAX;
-        }
-      }
+      Dec_lag3(index, PIT_MIN, PIT_MAX, i_subfr, &T0, &T0_frac);
+      old_T0 = T0;
     }
-    else                  /* second subframe */
+    else        /* Bad frame, or parity error */
     {
-      if( bfi == 0)
-      {
-        Dec_lag3(index, PIT_MIN, PIT_MAX, i_subfr, &T0, &T0_frac);
-        old_T0 = T0;
-      }
-      else
-      {
-        T0  =  old_T0;
-        T0_frac = 0;
-        old_T0 = add( old_T0, 1);
-        if( sub(old_T0, PIT_MAX) > 0) {
-            old_T0 = PIT_MAX;
-        }
-      }
+      T0  =  old_T0++;
+      T0_frac = 0;
+      if( old_T0 > PIT_MAX)
+          old_T0 = PIT_MAX;
     }
     *T2++ = T0;
 
@@ -209,9 +198,10 @@ void Decod_ld8a(
     parm +=2;
 
     j = shl(sharp, 1);          /* From Q14 to Q15 */
-    if(sub(T0, L_SUBFR) <0 ) {
+    if(T0 < L_SUBFR ) {
         for (i = T0; i < L_SUBFR; i++) {
-          code[i] = add(code[i], mult(code[i-T0], j));
+          //code[i] = add(code[i], mult(code[i-T0], j));
+          code[i] += ((Word32)code[i-T0] * (Word32)j) >> 15;
         }
     }
 
@@ -228,8 +218,8 @@ void Decod_ld8a(
     *-------------------------------------------------------------*/
 
     sharp = gain_pitch;
-    if (sub(sharp, SHARPMAX) > 0) { sharp = SHARPMAX;  }
-    if (sub(sharp, SHARPMIN) < 0) { sharp = SHARPMIN;  }
+    if (sharp > SHARPMAX) { sharp = SHARPMAX;  }
+    if (sharp < SHARPMIN) { sharp = SHARPMIN;  }
 
    /*-------------------------------------------------------*
     * - Find the total excitation.                          *
@@ -269,7 +259,5 @@ void Decod_ld8a(
   *--------------------------------------------------*/
 
   Copy(&old_exc[L_FRAME], &old_exc[0], PIT_MAX+L_INTERPOL);
-
-  return;
 }
 

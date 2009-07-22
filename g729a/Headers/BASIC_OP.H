@@ -28,7 +28,6 @@ Word16 shl(Word16 var1, Word16 var2);     /* Short shift left,    1 */
 Word16 shr(Word16 var1, Word16 var2);     /* Short shift right,   1 */
 Word16 mult(Word16 var1, Word16 var2);    /* Short mult,          1 */
 Word32 L_mult(Word16 var1, Word16 var2);  /* Long mult,           1 */
-Word16 negate(Word16 var1);               /* Short negate,        1 */
 Word16 g_round(Word32 L_var1);              /* Round,               1 */
 Word32 L_mac(Word32 L_var3, Word16 var1, Word16 var2); /* Mac,    1 */
 Word32 L_msu(Word32 L_var3, Word16 var1, Word16 var2); /* Msu,    1 */
@@ -37,7 +36,6 @@ Word32 L_add(Word32 L_var1, Word32 L_var2);   /* Long add,        2 */
 Word32 L_sub(Word32 L_var1, Word32 L_var2);   /* Long sub,        2 */
 Word32 L_add_c(Word32 L_var1, Word32 L_var2); /*Long add with c,  2 */
 Word32 L_sub_c(Word32 L_var1, Word32 L_var2); /*Long sub with c,  2 */
-Word32 L_negate(Word32 L_var1);               /* Long negate,     2 */
 Word16 mult_r(Word16 var1, Word16 var2);  /* Mult with round,     2 */
 Word32 L_shl(Word32 L_var1, Word16 var2); /* Long shift left,     2 */
 Word32 L_shr(Word32 L_var1, Word16 var2); /* Long shift right,    2 */
@@ -60,4 +58,7 @@ Word16 norm_l(Word32 L_var1);           /* Long norm,            30 */
 
 #define L_shr_r(L_var1, var2) (((L_var1) >> (var2)) + ((L_var1) & ((Word32)1 << ((var2) - 1) ) ? 1 : 0))
 
+#define negate(var1) (((var1) == MIN_16) ? MAX_16 : -(var1))
+#define L_negate(L_var1) (((L_var1) == MIN_32) ? MAX_32 : -(L_var1))
 
+//#define g_round(L_var1) (Word16)(((L_var1) + 0x8000L) >> 16)

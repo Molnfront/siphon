@@ -224,11 +224,9 @@ void Int_qlpc(
   Word16 lsp[M];
 
   /*  lsp[i] = lsp_new[i] * 0.5 + lsp_old[i] * 0.5 */
+  for (i = 0; i < M; i++)
+    lsp[i] = (lsp_new[i] >> 1) + (lsp_old[i] >> 1);
 
-  for (i = 0; i < M; i++) {
-    lsp[i] = add(shr(lsp_new[i], 1), shr(lsp_old[i], 1));
-    //lsp[i] = lsp_new[i]>>1 + lsp_old[i] >> 1;
-  }
 
   Lsp_Az(lsp, Az);              /* Subframe 1 */
 

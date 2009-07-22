@@ -8,6 +8,14 @@ real	0m8.580s  real	0m15.902s
 user	0m7.990s  user	0m15.110s
 sys	  0m0.140s  sys	  0m0.190s
 
+Revision 494
+sample.pcm      speech.pcm
+Frame =1969     Frame =3749
+real  0m6.803s  real  0m12.907s
+user  0m6.660s  user  0m12.590s
+sys   0m0.050s  sys   0m0.080s
+
+
 
 decoder g729a ITU
 -----------------
@@ -31,3 +39,9 @@ real  0m1.135s    real  0m2.195s
 user  0m1.020s    user  0m1.860s
 sys   0m0.020s    sys   0m0.140s
 
+Revision 494
+sample.out.g729   speech.out.g729
+Frame =1969       Frame =3749
+real  0m0.956s    real  0m1.766s
+user  0m0.810s    user  0m1.510s
+sys   0m0.070s    sys   0m0.090s

@@ -45,7 +45,6 @@ Word16 shr_r(Word16 var1, Word16 var2);/* Shift right with round, 2 */
 Word16 mac_r(Word32 L_var3, Word16 var1, Word16 var2);/* Mac with rounding, 2*/
 Word16 msu_r(Word32 L_var3, Word16 var1, Word16 var2);/* Msu with rounding, 2*/
 
-Word32 L_shr_r(Word32 L_var1, Word16 var2);/* Long shift right with round,  3*/
 Word32 L_abs(Word32 L_var1);            /* Long abs,              3 */
 
 Word16 norm_s(Word16 var1);             /* Short norm,           15 */
@@ -59,5 +58,6 @@ Word16 norm_l(Word32 L_var1);           /* Long norm,            30 */
 #define extract_h(L_var1) ((Word16)((L_var1) >> 16))
 #define extract_l(L_var1) ((Word16)(L_var1))
 
+#define L_shr_r(L_var1, var2) (((L_var1) >> (var2)) + ((L_var1) & ((Word32)1 << ((var2) - 1) ) ? 1 : 0))
 
 

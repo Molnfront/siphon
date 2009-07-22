@@ -1313,65 +1313,6 @@ Word16 msu_r(Word32 L_var3, Word16 var1, Word16 var2)
 
 /*___________________________________________________________________________
  |                                                                           |
- |   Function Name : L_shr_r                                                 |
- |                                                                           |
- |   Purpose :                                                               |
- |                                                                           |
- |   Same as L_shr(L_var1,var2)but with rounding. Saturate the result in case|
- |   of underflows or overflows :                                            |
- |    If var2 is greater than zero :                                         |
- |       L_shr_r(var1,var2) = L_shr(L_add(L_var1,2**(var2-1)),var2)          |
- |    If var2 is less than zero :                                            |
- |       L_shr_r(var1,var2) = L_shr(L_var1,var2).                            |
- |                                                                           |
- |   Complexity weight : 3                                                   |
- |                                                                           |
- |   Inputs :                                                                |
- |                                                                           |
- |    L_var1                                                                 |
- |             32 bit long signed integer (Word32) whose value falls in the  |
- |             range : 0x8000 0000 <= var1 <= 0x7fff ffff.                   |
- |                                                                           |
- |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
- |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
- |                                                                           |
- |   Outputs :                                                               |
- |                                                                           |
- |    none                                                                   |
- |                                                                           |
- |   Return Value :                                                          |
- |                                                                           |
- |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
- |             range : 0x8000 0000 <= var_out <= 0x7fff ffff.                |
- |___________________________________________________________________________|
-*/
-
-Word32 L_shr_r(Word32 L_var1,Word16 var2)
-  {
-   Word32 L_var_out;
-
-   if (var2 > 31)
-     {
-      L_var_out = 0;
-     }
-   else
-     {
-      L_var_out = L_shr(L_var1,var2);
-      if (var2 > 0)
-        {
-         if ( (L_var1 & ( (Word32)1 << (var2-1) )) != 0)
-           {
-            L_var_out++;
-           }
-        }
-     }
-   return(L_var_out);
-  }
-
-/*___________________________________________________________________________
- |                                                                           |
  |   Function Name : L_abs                                                   |
  |                                                                           |
  |   Purpose :                                                               |

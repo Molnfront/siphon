@@ -36,8 +36,6 @@
 
 static void Get_lsp_pol(Word16 *lsp, Word32 *f);
 
-#define my_L_shr_r(L_var1, var2) (((L_var1) >> (var2)) + ((L_var1) & ((Word32)1 << 12 ) ? 1 : 0))
-
 /* ff_acelp_lsp2lpc */
 void Lsp_Az(
   Word16 lsp[],    /* (i) Q15 : line spectral frequencies            */
@@ -57,8 +55,8 @@ void Lsp_Az(
     ff1 = f1[i] + f1[i-1];
     ff2 = f2[i] - f2[i-1];
 
-    a[i]    = my_L_shr_r(ff1 + ff2, 13);
-    a[11-i] = my_L_shr_r(ff1 - ff2, 13);
+    a[i]    = L_shr_r(ff1 + ff2, 13);
+    a[11-i] = L_shr_r(ff1 - ff2, 13);
   }
 
   return;

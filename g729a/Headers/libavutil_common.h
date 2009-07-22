@@ -26,6 +26,11 @@
 #ifndef AVUTIL_COMMON_H
 #define AVUTIL_COMMON_H
 
+#define FFMAX(a,b) ((a) > (b) ? (a) : (b))
+#define FFMIN(a,b) ((a) > (b) ? (b) : (a))
+
+#define FFSWAP(type,a,b) do{type SWAP_tmp= b; b= a; a= SWAP_tmp;}while(0)
+
 /**
  * Clips a signed integer value into the amin-amax range.
  * @param a value to clip
@@ -64,4 +69,4 @@ static inline Word16 av_clip_int16(Word32 a)
 
 
 #endif /* AVUTIL_COMMON_H */
-  
+

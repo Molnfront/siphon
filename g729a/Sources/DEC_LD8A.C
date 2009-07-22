@@ -241,10 +241,7 @@ void Decod_ld8a(
        /* exc[i] = gain_pitch*exc[i] + gain_code*code[i]; */
        /* exc[i]  in Q0   gain_pitch in Q14               */
        /* code[i] in Q13  gain_codeode in Q1              */
-
-       L_temp = L_mult(exc[i+i_subfr], gain_pitch);
-       L_temp = L_mac(L_temp, code[i], gain_code);
-       L_temp = L_shl(L_temp, 1);
+       L_temp = (exc[i+i_subfr] * gain_pitch + code[i] * gain_code) << 2;
        exc[i+i_subfr] = g_round(L_temp);
     }
 
@@ -256,7 +253,7 @@ void Decod_ld8a(
       /* -> Scale down vector exc[] and redo synthesis */
 
       for(i=0; i<PIT_MAX+L_INTERPOL+L_FRAME; i++)
-        old_exc[i] = shr(old_exc[i], 2);
+        old_exc[i] >>= 2;
 
       Syn_filt(Az, &exc[i_subfr], &synth[i_subfr], L_SUBFR, mem_syn, 1);
     }

@@ -1,12 +1,21 @@
-/* ITU-T G.729 Software Package Release 2 (November 2006) */
-/*
-   ITU-T G.729A Speech Coder    ANSI-C Source Code
-   Version 1.1    Last modified: September 1996
-
-   Copyright (c) 1996,
-   AT&T, France Telecom, NTT, Universite de Sherbrooke
-   All rights reserved.
-*/
+/**
+ *  g729a codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 /*-------------------------------------------------------------*
  *  Procedure Lsp_Az:                                          *
@@ -21,37 +30,35 @@
 #include "ld8a.h"
 #include "tab_ld8a.h"
 
+#include "libavcodec_mathops.h"
+
 /* local function */
 
 static void Get_lsp_pol(Word16 *lsp, Word32 *f);
 
+#define my_L_shr_r(L_var1, var2) (((L_var1) >> (var2)) + ((L_var1) & ((Word32)1 << 12 ) ? 1 : 0))
+
+/* ff_acelp_lsp2lpc */
 void Lsp_Az(
   Word16 lsp[],    /* (i) Q15 : line spectral frequencies            */
   Word16 a[]       /* (o) Q12 : predictor coefficients (order = 10)  */
 )
 {
-  Word16 i, j;
+  Word16 i;
   Word32 f1[6], f2[6];
-  Word32 t0;
+  Word32 ff1, ff2;
 
   Get_lsp_pol(&lsp[0],f1);
   Get_lsp_pol(&lsp[1],f2);
 
-  for (i = 5; i > 0; i--)
-  {
-    f1[i] = L_add(f1[i], f1[i-1]);        /* f1[i] += f1[i-1]; */
-    f2[i] = L_sub(f2[i], f2[i-1]);        /* f2[i] -= f2[i-1]; */
-  }
-
   a[0] = 4096;
-  for (i = 1, j = 10; i <= 5; i++, j--)
+  for (i = 1; i <= 5; i++)
   {
-    t0   = L_add(f1[i], f2[i]);                 /* f1[i] + f2[i]             */
-    a[i] = extract_l( L_shr_r(t0, 13) );        /* from Q24 to Q12 and * 0.5 */
+    ff1 = f1[i] + f1[i-1];
+    ff2 = f2[i] - f2[i-1];
 
-    t0   = L_sub(f1[i], f2[i]);                 /* f1[i] - f2[i]             */
-    a[j] = extract_l( L_shr_r(t0, 13) );        /* from Q24 to Q12 and * 0.5 */
-
+    a[i]    = my_L_shr_r(ff1 + ff2, 13);
+    a[11-i] = my_L_shr_r(ff1 - ff2, 13);
   }
 
   return;
@@ -68,16 +75,15 @@ void Lsp_Az(
  *  f[]     : the coefficients of F1 or F2           in Q24  *
  *-----------------------------------------------------------*/
 
+ /* lsp2poly */
 static void Get_lsp_pol(Word16 *lsp, Word32 *f)
 {
-  Word16 i,j, hi, lo;
-  Word32 t0;
+  Word16 i,j;
 
    /* All computation in Q24 */
-
-   *f = L_mult(4096, 2048);             /* f[0] = 1.0;             in Q24  */
+   *f = 0x1000000;           /* f[0] = 1.0;             in Q24  */
    f++;
-   *f = L_msu((Word32)0, *lsp, 512);    /* f[1] =  -2.0 * lsp[0];  in Q24  */
+   *f = -*lsp << 10;         /* f[1] =  -2.0 * lsp[0];  in Q24  */
 
    f++;
    lsp += 2;                            /* Advance lsp pointer             */
@@ -87,19 +93,12 @@ static void Get_lsp_pol(Word16 *lsp, Word32 *f)
      *f = f[-2];
 
      for(j=1; j<i; j++, f--)
-     {
-       L_Extract(f[-1] ,&hi, &lo);
-       t0 = Mpy_32_16(hi, lo, *lsp);         /* t0 = f[-1] * lsp    */
-       t0 = L_shl(t0, 1);
-       *f = L_add(*f, f[-2]);                /* *f += f[-2]         */
-       *f = L_sub(*f, t0);                   /* *f -= t0            */
-     }
-     *f   = L_msu(*f, *lsp, 512);            /* *f -= lsp<<9        */
+       *f += f[-2] - (MULL(f[-1], *lsp, 16) << 2);
+
+     *f -= *lsp << 10;                       /* *f -= lsp<<9        */
      f   += i;                               /* Advance f pointer   */
      lsp += 2;                               /* Advance lsp pointer */
    }
-
-   return;
 }
 
 /*___________________________________________________________________________
@@ -116,99 +115,28 @@ static void Get_lsp_pol(Word16 *lsp, Word32 *f)
  |___________________________________________________________________________|
 */
 
-
-void Lsf_lsp(
-  Word16 lsf[],    /* (i) Q15 : lsf[m] normalized (range: 0.0<=val<=0.5) */
-  Word16 lsp[],    /* (o) Q15 : lsp[m] (range: -1<=val<1)                */
-  Word16 m         /* (i)     : LPC order                                */
-)
-{
-  Word16 i, ind, offset;
-  Word32 L_tmp;
-
-  for(i=0; i<m; i++)
-  {
-    ind    = shr(lsf[i], 8);               /* ind    = b8-b15 of lsf[i] */
-    offset = lsf[i] & (Word16)0x00ff;      /* offset = b0-b7  of lsf[i] */
-
-    /* lsp[i] = table[ind]+ ((table[ind+1]-table[ind])*offset) / 256 */
-
-    L_tmp   = L_mult(sub(table[ind+1], table[ind]), offset);
-    lsp[i] = add(table[ind], extract_l(L_shr(L_tmp, 9)));
-  }
-  return;
-}
-
-
-void Lsp_lsf(
-  Word16 lsp[],    /* (i) Q15 : lsp[m] (range: -1<=val<1)                */
-  Word16 lsf[],    /* (o) Q15 : lsf[m] normalized (range: 0.0<=val<=0.5) */
-  Word16 m         /* (i)     : LPC order                                */
-)
-{
-  Word16 i, ind, tmp;
-  Word32 L_tmp;
-
-  ind = 63;    /* begin at end of table -1 */
-
-  for(i= m-(Word16)1; i >= 0; i--)
-  {
-    /* find value in table that is just greater than lsp[i] */
-    while( sub(table[ind], lsp[i]) < 0 )
-    {
-      ind = sub(ind,1);
-    }
-
-    /* acos(lsp[i])= ind*256 + ( ( lsp[i]-table[ind] ) * slope[ind] )/4096 */
-
-    L_tmp  = L_mult( sub(lsp[i], table[ind]) , slope[ind] );
-    tmp = g_round(L_shl(L_tmp, 3));     /*(lsp[i]-table[ind])*slope[ind])>>12*/
-    lsf[i] = add(tmp, shl(ind, 8));
-  }
-  return;
-}
-
-/*___________________________________________________________________________
- |                                                                           |
- |   Functions : Lsp_lsf and Lsf_lsp                                         |
- |                                                                           |
- |      Lsp_lsf   Transformation lsp to lsf                                  |
- |      Lsf_lsp   Transformation lsf to lsp                                  |
- |---------------------------------------------------------------------------|
- |  Algorithm:                                                               |
- |                                                                           |
- |   The transformation from lsp[i] to lsf[i] and lsf[i] to lsp[i] are       |
- |   approximated by a look-up table and interpolation.                      |
- |___________________________________________________________________________|
-*/
-
+/* ff_acelp_lsf2lsp */
 void Lsf_lsp2(
   Word16 lsf[],    /* (i) Q13 : lsf[m] (range: 0.0<=val<PI) */
   Word16 lsp[],    /* (o) Q15 : lsp[m] (range: -1<=val<1)   */
   Word16 m         /* (i)     : LPC order                   */
 )
 {
-  Word16 i, ind;
-  Word16 offset;   /* in Q8 */
+  Word16 i;
+  UWord8 ind, offset;   /* in Q8 */
   Word16 freq;     /* normalized frequency in Q15 */
-  Word32 L_tmp;
 
   for(i=0; i<m; i++)
   {
-/*    freq = abs_s(freq);*/
-    freq = mult(lsf[i], 20861);          /* 20861: 1.0/(2.0*PI) in Q17 */
-    ind    = shr(freq, 8);               /* ind    = b8-b15 of freq */
-    offset = freq & (Word16)0x00ff;      /* offset = b0-b7  of freq */
+    freq = lsf[i] * 20861 >> 15;  /* 20861: 1.0/(2.0*PI) in Q17 */
+    ind    = freq >> 8;           /* ind    = b8-b15 of freq */
+    offset = freq;                /* offset = b0-b7  of freq */
 
-    if ( sub(ind, 63)>0 ){
+    if ( ind > 63){
       ind = 63;                 /* 0 <= ind <= 63 */
     }
 
-    /* lsp[i] = table2[ind]+ (slope_cos[ind]*offset >> 12) */
-
-    L_tmp   = L_mult(slope_cos[ind], offset);   /* L_tmp in Q28 */
-    lsp[i] = add(table2[ind], extract_l(L_shr(L_tmp, 13)));
-
+    lsp[i] = table2[ind]+ (slope_cos[ind]*offset >> 12);
   }
   return;
 }
@@ -301,6 +229,7 @@ void Int_qlpc(
 
   for (i = 0; i < M; i++) {
     lsp[i] = add(shr(lsp_new[i], 1), shr(lsp_old[i], 1));
+    //lsp[i] = lsp_new[i]>>1 + lsp_old[i] >> 1;
   }
 
   Lsp_Az(lsp, Az);              /* Subframe 1 */

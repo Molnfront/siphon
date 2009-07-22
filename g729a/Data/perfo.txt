@@ -15,6 +15,19 @@ sample.out.g729   speech.out.g729
 Frame =1969       Frame =3749
 real	0m1.865s    real	0m3.498s
 user	0m1.740s    user	0m3.250s
-sys	0m0.050s      sys	  0m0.080s
+sys	  0m0.050s    sys	  0m0.080s
 
+Revision 490
+sample.out.g729   speech.out.g729
+Frame =1969       Frame =3749
+real	0m1.328s    real	0m2.343s
+user	0m1.110s    user	0m2.200s
+sys	  0m0.050s    sys	  0m0.060s
+
+Revision 492
+sample.out.g729   speech.out.g729
+Frame =1969       Frame =3749
+real  0m1.135s    real  0m2.195s
+user  0m1.020s    user  0m1.860s
+sys   0m0.020s    sys   0m0.140s
 

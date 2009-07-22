@@ -20,9 +20,10 @@
 #ifndef __TYPE_DEF_H__
 #define __TYPE_DEF_H__
 
-typedef short         Word16;
-typedef int           Word32;
-typedef int           Flag;
-typedef unsigned char UWord8;
+typedef short          Word16;
+typedef int            Word32;
+typedef int            Flag;
+typedef unsigned char  UWord8;
+typedef unsigned short UWord16;
 
 #endif

@@ -130,18 +130,6 @@ void Lsp_Az(
   Word16 a[]       /* (o) Q12 : predictor coefficients (order = 10)  */
 );
 
-void Lsf_lsp(
-  Word16 lsf[],    /* (i) Q15 : lsf[m] normalized (range: 0.0<=val<=0.5) */
-  Word16 lsp[],    /* (o) Q15 : lsp[m] (range: -1<=val<1)                */
-  Word16 m         /* (i)     : LPC order                                */
-);
-
-void Lsp_lsf(
-  Word16 lsp[],    /* (i) Q15 : lsp[m] (range: -1<=val<1)                */
-  Word16 lsf[],    /* (o) Q15 : lsf[m] normalized (range: 0.0<=val<=0.5) */
-  Word16 m         /* (i)     : LPC order                                */
-);
-
 void Int_qlpc(
  Word16 lsp_old[], /* input : LSP vector of past frame              */
  Word16 lsp_new[], /* input : LSP vector of present frame           */
@@ -442,14 +430,6 @@ void Lsp_iqua_cs(
  Word16 prm[],          /* input : codes of the selected LSP*/
  Word16 lsp_q[],        /* output: Quantized LSP parameters*/
  Word16 erase           /* input : frame erase information */
-);
-
-void Lsp_prev_compose(
-  Word16 lsp_ele[],             /* Q13 */
-  Word16 lsp[],                 /* Q13 */
-  Word16 fg[][M],            /* Q15 */
-  Word16 freq_prev[][M],     /* Q13 */
-  Word16 fg_sum[]               /* Q15 */
 );
 
 void Lsp_prev_extract(

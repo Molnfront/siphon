@@ -11,7 +11,6 @@
 		2207C7B60DF9EFE700B5CFBD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2207C7B40DF9EFE700B5CFBD /* UIKit.framework */; };
 		2207C7C00DF9F09600B5CFBD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2207C6F50DF9EB2400B5CFBD /* main.m */; };
 		2207C7C10DF9F09E00B5CFBD /* SiphonApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 2207C6F70DF9EB3C00B5CFBD /* SiphonApplication.m */; };
-		2207C7C90DF9F0B800B5CFBD /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 2207C6E90DF9EA9800B5CFBD /* Default.png */; };
 		2207C7CA0DF9F0B800B5CFBD /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 2207C6EA0DF9EA9800B5CFBD /* icon.png */; };
 		2207C7CC0DF9F0B800B5CFBD /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = 2207C6EC0DF9EA9800B5CFBD /* settings.png */; };
 		7E0723960E522F9D00BA1961 /* BottomButtonBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E0723950E522F9D00BA1961 /* BottomButtonBar.m */; };
@@ -35,6 +34,9 @@
 		7E3845B60E3A8C02007296FC /* delete.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E3845B30E3A8C02007296FC /* delete.png */; };
 		7E3845B70E3A8C02007296FC /* delete_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E3845B40E3A8C02007296FC /* delete_pressed.png */; };
 		7E3845EF0E3A90F8007296FC /* lcd_top.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E3845EE0E3A90F8007296FC /* lcd_top.png */; };
+		7E391791104C851500CE9CEC /* libg729a.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E39178F104C851500CE9CEC /* libg729a.a */; };
+		7E3917D6104F24FC00CE9CEC /* default-iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E3917D4104F24FC00CE9CEC /* default-iphone.png */; };
+		7E3917D7104F24FC00CE9CEC /* default-ipod.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E3917D5104F24FC00CE9CEC /* default-ipod.png */; };
 		7E477EC80E80512200EFDA76 /* keypad.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E477EC60E80512200EFDA76 /* keypad.png */; };
 		7E477EC90E80512200EFDA76 /* keypad_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E477EC70E80512200EFDA76 /* keypad_pressed.png */; };
 		7E6799F20E2FCD05009A3AE6 /* ContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E6799F10E2FCD05009A3AE6 /* ContactViewController.m */; };
@@ -42,18 +44,17 @@
 		7E679A400E2FE425009A3AE6 /* Dial.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E679A3F0E2FE425009A3AE6 /* Dial.png */; };
 		7E679AE40E2FEC49009A3AE6 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E679AE30E2FEC49009A3AE6 /* AddressBookUI.framework */; };
 		7E73709B0E55D91B0010EBD7 /* LCDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E73709A0E55D91B0010EBD7 /* LCDView.m */; };
+		7E747C6E104B2FE900F67F72 /* message.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E747C6D104B2FE900F67F72 /* message.png */; };
+		7E747C70104B306000F67F72 /* lcd_top_simple.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E747C6F104B306000F67F72 /* lcd_top_simple.png */; };
 		7E7CE2240EA327F3005583DA /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E7CE2230EA327F3005583DA /* Reachability.m */; };
 		7E7CE3690EA3FBDB005583DA /* libpjmedia-codec-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E7CE3680EA3FBDB005583DA /* libpjmedia-codec-arm-apple-darwin9.a */; };
 		7E7CE36D0EA3FC25005583DA /* libgsmcodec-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E7CE36C0EA3FC25005583DA /* libgsmcodec-arm-apple-darwin9.a */; };
 		7E95B6030E955D170072ECC5 /* RecentCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E95B6020E955D170072ECC5 /* RecentCall.m */; };
 		7E986F8D0F89659B00930F9C /* callblue.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E986F890F89659B00930F9C /* callblue.png */; };
-		7E986F8E0F89659B00930F9C /* hidekeyboard.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E986F8A0F89659B00930F9C /* hidekeyboard.png */; };
-		7E986F8F0F89659B00930F9C /* showkeyboard.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E986F8B0F89659B00930F9C /* showkeyboard.png */; };
 		7E986F960F89664300930F9C /* AbsLCDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E986F940F89664300930F9C /* AbsLCDView.m */; };
 		7EA0F2430E7F0B86004A6F7D /* PhonePad.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EA0F2420E7F0B86004A6F7D /* PhonePad.m */; };
 		7EA3CF600E731E28000A3055 /* lcd_call_bottom.png in Resources */ = {isa = PBXBuildFile; fileRef = 7EA3CF5E0E731E28000A3055 /* lcd_call_bottom.png */; };
 		7EA3CF610E731E28000A3055 /* lcd_call_top.png in Resources */ = {isa = PBXBuildFile; fileRef = 7EA3CF5F0E731E28000A3055 /* lcd_call_top.png */; };
-		7EA8E6950E942C3600BD7294 /* Distribution.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7EA8E6940E942C3600BD7294 /* Distribution.plist */; };
 		7EB591250E3A9B9C007B48AC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EB591240E3A9B9C007B48AC /* Foundation.framework */; };
 		7EB591620E3A9DD2007B48AC /* PhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EB591610E3A9DD2007B48AC /* PhoneViewController.m */; };
 		7EBEBAD30F1D63C300252639 /* addcall.png in Resources */ = {isa = PBXBuildFile; fileRef = 7EBEBAC10F1D63C300252639 /* addcall.png */; };
@@ -95,6 +96,7 @@
 		7EDAB6240E426A3300882D34 /* libpjsip-simple-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EDAB6200E426A3300882D34 /* libpjsip-simple-arm-apple-darwin9.a */; };
 		7EDAB6250E426A3300882D34 /* libpjsip-ua-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EDAB6210E426A3300882D34 /* libpjsip-ua-arm-apple-darwin9.a */; };
 		7EDAB6260E426A3300882D34 /* libpjsua-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EDAB6220E426A3300882D34 /* libpjsua-arm-apple-darwin9.a */; };
+		7EE0DB22102C953500831291 /* VoicemailController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EE0DB21102C953500831291 /* VoicemailController.m */; };
 		7EE412940EE2110F008D26D1 /* dtmf-s.aif in Resources */ = {isa = PBXBuildFile; fileRef = 7EE412930EE2110F008D26D1 /* dtmf-s.aif */; };
 		7EE7A4830EB8B67600DA96DC /* recentcalldb.sql in Resources */ = {isa = PBXBuildFile; fileRef = 7EE7A4820EB8B67600DA96DC /* recentcalldb.sql */; };
 		7EE7A98C0EBF0AD400DA96DC /* dtmf-#.aif in Resources */ = {isa = PBXBuildFile; fileRef = 7EE7A9800EBF0AD400DA96DC /* dtmf-#.aif */; };
@@ -113,7 +115,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2207C6E90DF9EA9800B5CFBD /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = Resources/Default.png; sourceTree = "<group>"; };
 		2207C6EA0DF9EA9800B5CFBD /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = Resources/icon.png; sourceTree = "<group>"; };
 		2207C6EC0DF9EA9800B5CFBD /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = settings.png; path = Resources/settings.png; sourceTree = "<group>"; };
 		2207C6F50DF9EB2400B5CFBD /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -154,6 +155,9 @@
 		7E3845B30E3A8C02007296FC /* delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = delete.png; path = Resources/delete.png; sourceTree = "<group>"; };
 		7E3845B40E3A8C02007296FC /* delete_pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = delete_pressed.png; path = Resources/delete_pressed.png; sourceTree = "<group>"; };
 		7E3845EE0E3A90F8007296FC /* lcd_top.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = lcd_top.png; path = Resources/lcd_top.png; sourceTree = "<group>"; };
+		7E39178F104C851500CE9CEC /* libg729a.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libg729a.a; path = "../pjproject-1.0.x/third_party/lib/libg729a.a"; sourceTree = SOURCE_ROOT; };
+		7E3917D4104F24FC00CE9CEC /* default-iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "default-iphone.png"; path = "Resources/default-iphone.png"; sourceTree = "<group>"; };
+		7E3917D5104F24FC00CE9CEC /* default-ipod.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "default-ipod.png"; path = "Resources/default-ipod.png"; sourceTree = "<group>"; };
 		7E477EC60E80512200EFDA76 /* keypad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = keypad.png; path = Resources/keypad.png; sourceTree = "<group>"; };
 		7E477EC70E80512200EFDA76 /* keypad_pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = keypad_pressed.png; path = Resources/keypad_pressed.png; sourceTree = "<group>"; };
 		7E49156E0F89515D00A0CF44 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = Resources/ru.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -166,16 +170,17 @@
 		7E679AE30E2FEC49009A3AE6 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		7E7370990E55D91B0010EBD7 /* LCDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LCDView.h; path = Classes/LCDView.h; sourceTree = "<group>"; };
 		7E73709A0E55D91B0010EBD7 /* LCDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LCDView.m; path = Classes/LCDView.m; sourceTree = "<group>"; };
+		7E747C6D104B2FE900F67F72 /* message.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = message.png; path = Resources/message.png; sourceTree = "<group>"; };
+		7E747C6F104B306000F67F72 /* lcd_top_simple.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = lcd_top_simple.png; path = Resources/lcd_top_simple.png; sourceTree = "<group>"; };
 		7E7CE2220EA327F3005583DA /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reachability.h; path = Classes/Reachability.h; sourceTree = "<group>"; };
 		7E7CE2230EA327F3005583DA /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = Classes/Reachability.m; sourceTree = "<group>"; };
 		7E7CE3680EA3FBDB005583DA /* libpjmedia-codec-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjmedia-codec-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/pjmedia/lib/libpjmedia-codec-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
 		7E7CE36C0EA3FC25005583DA /* libgsmcodec-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgsmcodec-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/third_party/lib/libgsmcodec-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7E92659B1052704900F94C25 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = Resources/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7E9431DF0F48B0C200EE69FC /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = Resources/cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7E95B6010E955D170072ECC5 /* RecentCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RecentCall.h; path = Classes/RecentCall.h; sourceTree = "<group>"; };
 		7E95B6020E955D170072ECC5 /* RecentCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RecentCall.m; path = Classes/RecentCall.m; sourceTree = "<group>"; };
 		7E986F890F89659B00930F9C /* callblue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = callblue.png; path = Resources/callblue.png; sourceTree = "<group>"; };
-		7E986F8A0F89659B00930F9C /* hidekeyboard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hidekeyboard.png; path = Resources/hidekeyboard.png; sourceTree = "<group>"; };
-		7E986F8B0F89659B00930F9C /* showkeyboard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = showkeyboard.png; path = Resources/showkeyboard.png; sourceTree = "<group>"; };
 		7E986F930F89664300930F9C /* AbsLCDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbsLCDView.h; path = Classes/AbsLCDView.h; sourceTree = "<group>"; };
 		7E986F940F89664300930F9C /* AbsLCDView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AbsLCDView.m; path = Classes/AbsLCDView.m; sourceTree = "<group>"; };
 		7EA0F1FE0E7EFF16004A6F7D /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = Resources/it.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -183,7 +188,6 @@
 		7EA0F2420E7F0B86004A6F7D /* PhonePad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PhonePad.m; path = Classes/PhonePad.m; sourceTree = "<group>"; };
 		7EA3CF5E0E731E28000A3055 /* lcd_call_bottom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = lcd_call_bottom.png; path = Resources/lcd_call_bottom.png; sourceTree = "<group>"; };
 		7EA3CF5F0E731E28000A3055 /* lcd_call_top.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = lcd_call_top.png; path = Resources/lcd_call_top.png; sourceTree = "<group>"; };
-		7EA8E6940E942C3600BD7294 /* Distribution.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Distribution.plist; sourceTree = "<group>"; };
 		7EB591240E3A9B9C007B48AC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		7EB591610E3A9DD2007B48AC /* PhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PhoneViewController.m; path = Classes/PhoneViewController.m; sourceTree = "<group>"; };
 		7EBEBAC10F1D63C300252639 /* addcall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = addcall.png; path = Resources/Menu/addcall.png; sourceTree = "<group>"; };
@@ -217,6 +221,8 @@
 		7EBF2F210E47A69C0018FB48 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		7EC38E560E9C10B0006C8D19 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		7EC38FC20E9D701F006C8D19 /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = Resources/pt.lproj/Localizable.strings; sourceTree = "<group>"; };
+		7EC42472102838F7005EDE22 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = Resources/hr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		7EC42474102839A0005EDE22 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = Resources/ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7EC5580E0E75F0850055785E /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Resources/de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7EC558110E75F0B60055785E /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = Resources/es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7EDAB1820E3B5F7700882D34 /* DialerPhonePad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DialerPhonePad.h; path = Classes/DialerPhonePad.h; sourceTree = "<group>"; };
@@ -235,6 +241,8 @@
 		7EDAB6200E426A3300882D34 /* libpjsip-simple-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsip-simple-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/pjsip/lib/libpjsip-simple-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
 		7EDAB6210E426A3300882D34 /* libpjsip-ua-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsip-ua-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/pjsip/lib/libpjsip-ua-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
 		7EDAB6220E426A3300882D34 /* libpjsua-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsua-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/pjsip/lib/libpjsua-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7EE0DB20102C953500831291 /* VoicemailController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VoicemailController.h; path = Classes/VoicemailController.h; sourceTree = "<group>"; };
+		7EE0DB21102C953500831291 /* VoicemailController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VoicemailController.m; path = Classes/VoicemailController.m; sourceTree = "<group>"; };
 		7EE412930EE2110F008D26D1 /* dtmf-s.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = "dtmf-s.aif"; path = "Sounds/dtmf-s.aif"; sourceTree = "<group>"; };
 		7EE7A4820EB8B67600DA96DC /* recentcalldb.sql */ = {isa = PBXFileReference; lastKnownFileType = file; name = recentcalldb.sql; path = Resources/recentcalldb.sql; sourceTree = "<group>"; };
 		7EE7A9800EBF0AD400DA96DC /* dtmf-#.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = "dtmf-#.aif"; path = "Sounds/dtmf-#.aif"; sourceTree = "<group>"; };
@@ -248,7 +256,7 @@
 		7EE7A9890EBF0AD400DA96DC /* dtmf-7.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = "dtmf-7.aif"; path = "Sounds/dtmf-7.aif"; sourceTree = "<group>"; };
 		7EE7A98A0EBF0AD400DA96DC /* dtmf-8.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = "dtmf-8.aif"; path = "Sounds/dtmf-8.aif"; sourceTree = "<group>"; };
 		7EE7A98B0EBF0AD400DA96DC /* dtmf-9.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = "dtmf-9.aif"; path = "Sounds/dtmf-9.aif"; sourceTree = "<group>"; };
-		7EE7AAE00EC08C3C00DA96DC /* phone.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = phone.caf; path = Sounds/phone.caf; sourceTree = "<group>"; };
+		7EE7AAE00EC08C3C00DA96DC /* phone.caf */ = {isa = PBXFileReference; lastKnownFileType = text; name = phone.caf; path = Sounds/phone.caf; sourceTree = "<group>"; };
 		7EECB0260EF857130044293F /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constants.h; path = Classes/constants.h; sourceTree = "<group>"; };
 		7EF132D80E4921C7005680B1 /* CallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CallViewController.h; path = Classes/CallViewController.h; sourceTree = "<group>"; };
 		7EF132D90E4921C7005680B1 /* CallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CallViewController.m; path = Classes/CallViewController.m; sourceTree = "<group>"; };
@@ -278,6 +286,7 @@
 				7E7CE3690EA3FBDB005583DA /* libpjmedia-codec-arm-apple-darwin9.a in Frameworks */,
 				7E7CE36D0EA3FC25005583DA /* libgsmcodec-arm-apple-darwin9.a in Frameworks */,
 				7E21FB1B0F2BD59C00AD2C7C /* CFNetwork.framework in Frameworks */,
+				7E391791104C851500CE9CEC /* libg729a.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,7 +296,6 @@
 		2207C6DA0DF9E9B200B5CFBD = {
 			isa = PBXGroup;
 			children = (
-				7EA8E6940E942C3600BD7294 /* Distribution.plist */,
 				7E95B5F80E955CC90072ECC5 /* Database Interactions */,
 				2207C6F30DF9EAF400B5CFBD /* Classes */,
 				2207C6F40DF9EAFF00B5CFBD /* Other Sources */,
@@ -300,9 +308,11 @@
 		2207C6E80DF9EA5D00B5CFBD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				7E3917D4104F24FC00CE9CEC /* default-iphone.png */,
+				7E3917D5104F24FC00CE9CEC /* default-ipod.png */,
+				7E747C6F104B306000F67F72 /* lcd_top_simple.png */,
+				7E747C6D104B2FE900F67F72 /* message.png */,
 				7E986F890F89659B00930F9C /* callblue.png */,
-				7E986F8A0F89659B00930F9C /* hidekeyboard.png */,
-				7E986F8B0F89659B00930F9C /* showkeyboard.png */,
 				7EBEBB070F1D6A7B00252639 /* bottombarblue.png */,
 				7EBEBB080F1D6A7B00252639 /* bottombarblue_pressed.png */,
 				7EBEBAC10F1D63C300252639 /* addcall.png */,
@@ -359,7 +369,6 @@
 				7E21FB170F2BD53C00AD2C7C /* Recents.png */,
 				2207C6FF0DF9EB7000B5CFBD /* Info.plist */,
 				2207C6EA0DF9EA9800B5CFBD /* icon.png */,
-				2207C6E90DF9EA9800B5CFBD /* Default.png */,
 				2207C6EC0DF9EA9800B5CFBD /* settings.png */,
 				7EBF2E310E466C8D0018FB48 /* Localizable.strings */,
 			);
@@ -369,6 +378,8 @@
 		2207C6F30DF9EAF400B5CFBD /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				7EE0DB20102C953500831291 /* VoicemailController.h */,
+				7EE0DB21102C953500831291 /* VoicemailController.m */,
 				7E986F930F89664300930F9C /* AbsLCDView.h */,
 				7E986F940F89664300930F9C /* AbsLCDView.m */,
 				7EBEBAFD0F1D648400252639 /* MenuCallView.m */,
@@ -476,6 +487,7 @@
 		7EDAB6160E4269C100882D34 /* Device */ = {
 			isa = PBXGroup;
 			children = (
+				7E39178F104C851500CE9CEC /* libg729a.a */,
 				7E7CE36C0EA3FC25005583DA /* libgsmcodec-arm-apple-darwin9.a */,
 				7E7CE3680EA3FBDB005583DA /* libpjmedia-codec-arm-apple-darwin9.a */,
 				7EDAB6170E4269D600882D34 /* libpj-arm-apple-darwin9.a */,
@@ -535,6 +547,10 @@
 				zh_CN,
 				zh_TW,
 				ru,
+				hr,
+				ko,
+				il,
+				he,
 			);
 			mainGroup = 2207C6DA0DF9E9B200B5CFBD;
 			productRefGroup = 2207C6FD0DF9EB7000B5CFBD /* Products */;
@@ -551,7 +567,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2207C7C90DF9F0B800B5CFBD /* Default.png in Resources */,
 				2207C7CA0DF9F0B800B5CFBD /* icon.png in Resources */,
 				2207C7CC0DF9F0B800B5CFBD /* settings.png in Resources */,
 				7E679A400E2FE425009A3AE6 /* Dial.png in Resources */,
@@ -574,7 +589,6 @@
 				7E477EC80E80512200EFDA76 /* keypad.png in Resources */,
 				7E477EC90E80512200EFDA76 /* keypad_pressed.png in Resources */,
 				7E32C0060E866476008E7EC8 /* dialerkeypad_pressed.png in Resources */,
-				7EA8E6950E942C3600BD7294 /* Distribution.plist in Resources */,
 				7EE7A4830EB8B67600DA96DC /* recentcalldb.sql in Resources */,
 				7EE7A98C0EBF0AD400DA96DC /* dtmf-#.aif in Resources */,
 				7EE7A98E0EBF0AD400DA96DC /* dtmf-0.aif in Resources */,
@@ -611,8 +625,10 @@
 				7EBEBB0A0F1D6A7B00252639 /* bottombarblue_pressed.png in Resources */,
 				7E21FB180F2BD53C00AD2C7C /* Recents.png in Resources */,
 				7E986F8D0F89659B00930F9C /* callblue.png in Resources */,
-				7E986F8E0F89659B00930F9C /* hidekeyboard.png in Resources */,
-				7E986F8F0F89659B00930F9C /* showkeyboard.png in Resources */,
+				7E747C6E104B2FE900F67F72 /* message.png in Resources */,
+				7E747C70104B306000F67F72 /* lcd_top_simple.png in Resources */,
+				7E3917D6104F24FC00CE9CEC /* default-iphone.png in Resources */,
+				7E3917D7104F24FC00CE9CEC /* default-ipod.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -645,6 +661,7 @@
 				7EBEBAF20F1D644B00252639 /* BottomBar.m in Sources */,
 				7EBEBAFE0F1D648400252639 /* MenuCallView.m in Sources */,
 				7E986F960F89664300930F9C /* AbsLCDView.m in Sources */,
+				7EE0DB22102C953500831291 /* VoicemailController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -660,12 +677,15 @@
 				7EC5580E0E75F0850055785E /* de */,
 				7EC558110E75F0B60055785E /* es */,
 				7EBF2E340E466CC20018FB48 /* fr */,
+				7E92659B1052704900F94C25 /* he */,
+				7EC42472102838F7005EDE22 /* hr */,
 				7EA0F1FE0E7EFF16004A6F7D /* it */,
+				7EC42474102839A0005EDE22 /* ko */,
 				7EC38FC20E9D701F006C8D19 /* pt */,
+				7E49156E0F89515D00A0CF44 /* ru */,
 				7E082D470F3DC4E4006E317E /* sl */,
 				7E188CA20F61E1610031D080 /* zh_CN */,
 				7E188CA30F61E1750031D080 /* zh_TW */,
-				7E49156E0F89515D00A0CF44 /* ru */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -695,7 +715,6 @@
 					"PJ_AUTOCONF=1",
 				);
 				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = 4.0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
@@ -712,10 +731,10 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E93B5C13-746A-4784-897F-160DCDF146CD";
-				SDKROOT = iphoneos2.2;
+				PROVISIONING_PROFILE = "8E45CE4A-9A3F-4DFF-BAB9-A61C3B1ECD21";
+				"PROVISIONING_PROFILE[sdk=iphoneos2.2]" = "8E45CE4A-9A3F-4DFF-BAB9-A61C3B1ECD21";
+				SDKROOT = iphoneos2.2.1;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				STRINGS_FILE_OUTPUT_ENCODING = binary;
 			};
 			name = Debug;
 		};
@@ -737,8 +756,9 @@
 				GCC_THUMB_SUPPORT = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 2.2;
 				ONLY_ACTIVE_ARCH = YES;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E93B5C13-746A-4784-897F-160DCDF146CD";
-				SDKROOT = iphoneos2.1;
+				PROVISIONING_PROFILE = "96E11ABB-3585-4E8B-ACAA-37203D5E69DF";
+				"PROVISIONING_PROFILE[sdk=iphoneos2.2]" = "96E11ABB-3585-4E8B-ACAA-37203D5E69DF";
+				SDKROOT = iphoneos2.2;
 			};
 			name = Release;
 		};
@@ -784,6 +804,7 @@
 					"../pjproject-1.0.x/third_party/lib",
 					"../pjproject-1.0.x/pjmedia/lib",
 					"../pjproject-1.0.x/third_party/lib",
+					"\"$(SRCROOT)/../pjproject-1.0.x/third_party/lib\"",
 				);
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -793,9 +814,8 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Siphon;
-				PROVISIONING_PROFILE = "96E11ABB-3585-4E8B-ACAA-37203D5E69DF";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E93B5C13-746A-4784-897F-160DCDF146CD";
-				"PROVISIONING_PROFILE[sdk=iphoneos2.2]" = "96E11ABB-3585-4E8B-ACAA-37203D5E69DF";
+				PROVISIONING_PROFILE = "8E45CE4A-9A3F-4DFF-BAB9-A61C3B1ECD21";
+				"PROVISIONING_PROFILE[sdk=iphoneos2.2]" = "8E45CE4A-9A3F-4DFF-BAB9-A61C3B1ECD21";
 				SDKROOT = iphoneos2.2;
 				STRINGS_FILE_OUTPUT_ENCODING = binary;
 			};
@@ -841,6 +861,7 @@
 					"../pjproject-1.0.x/third_party/lib",
 					"../pjproject-1.0.x/pjmedia/lib",
 					"../pjproject-1.0.x/third_party/lib",
+					"\"$(SRCROOT)/../pjproject-1.0.x/third_party/lib\"",
 				);
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -850,8 +871,8 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Siphon;
-				PROVISIONING_PROFILE = "96E11ABB-3585-4E8B-ACAA-37203D5E69DF";
-				"PROVISIONING_PROFILE[sdk=iphoneos2.2]" = "96E11ABB-3585-4E8B-ACAA-37203D5E69DF";
+				PROVISIONING_PROFILE = "8E45CE4A-9A3F-4DFF-BAB9-A61C3B1ECD21";
+				"PROVISIONING_PROFILE[sdk=iphoneos2.2]" = "8E45CE4A-9A3F-4DFF-BAB9-A61C3B1ECD21";
 				SDKROOT = iphoneos2.1;
 				ZERO_LINK = NO;
 			};

@@ -19,9 +19,9 @@
 
 /* Siphon */
 "Numpad" = "Klávesnice";
-"Keypad" = "Keypad";
 "Favorites" = "Oblíbené";
 "Recents" = "Hovory";
+"Voicemail" = "Voicemail";
 
 /* PhoneView */
 "Create New Contact" = "Nový kontakt";
@@ -44,6 +44,10 @@
 "Request Timeout" = "Timeout požadavku";   /* 408 */
 
 "Service Unavailable" = "Služba je nedostupná";
+
+"No Microphone Available" = "Chybí mikrofon";
+"Connect a microphone to phone" = "Connect a microphone to phone";
+//Chcete-li zaznamenat hlasovou poznámku, připojte mikrofon,
 
 /* OK */
 "OK" = "OK";
@@ -88,6 +92,9 @@
 "Outgoing Call" = "Odchozí hovory";
 
 "Settings" = "Nastavení";
+
+/* Voicemail */
+"Voicemail Number?" = "Voicemail Number?";
 
 /* SIP */
 "\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry.";

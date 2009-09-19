@@ -49,6 +49,10 @@
 
 "Service Unavailable" = "서비스 불가능"; /* 503 */
 
+"No Microphone Available" = "사용 가능한 마이크 없음";
+"Connect a microphone to phone" = "Connect a microphone to phone";
+//음성 메모를 녹음하려면 마이크를 연결하십시오.
+
 /* OK */
 "OK" = "확인";
 "Cancel" = "취소";

@@ -19,9 +19,9 @@
 
 /* Siphon */
 "Numpad" = "鍵盤";
-"Keypad" = "Keypad";
 "Favorites" = "最愛";
 "Recents" = "最近通話";
+"Voicemail" = "語音信箱";
 
 /* PhoneView */
 "Create New Contact" = "新增聯絡資訊";
@@ -45,6 +45,10 @@
 "Request Timeout" = "請求超時"; /* 408 */
 
 "Service Unavailable" = "服務無效"; /* 503 */
+
+"No Microphone Available" = "沒有可用的麥克風";
+"Connect a microphone to phone" = "Connect a microphone to phone";
+//連接麥克風來錄製語音備忘錄。
 
 /* OK */
 "OK" = "好";
@@ -89,6 +93,9 @@
 "Outgoing Call" = "撥出電話";
 
 "Settings" = "設定";
+
+/* Voicemail */
+"Voicemail Number?" = "Voicemail Number?";
 
 /* SIP */
 "\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "\n要糾正此參數，從您的主屏幕選擇 \"設定\"，然後按 \"Siphon\"";

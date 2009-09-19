@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <siphon@laposte.net>
+ *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 "Numpad" = "Številčnica";
 "Favorites" = "Priljubljeno";
 "Recents" = "Zadnji";
+"Voicemail" = "Voicemail";
 
 /* PhoneView */
 "Create New Contact" = "Ustvari nov stik";
@@ -44,6 +45,9 @@
 "Request Timeout" = "Zahteva potekla"; /* 408 */
 
 "Service Unavailable" = "Storitev ni dosegljiva"; /* 503 */
+
+"No Microphone Available" = "No Microphone Available";
+"Connect a microphone to phone" = "Connect a microphone to phone";
 
 /* OK */
 "OK" = "V redu";
@@ -88,6 +92,9 @@
 "Outgoing Call" = "Odhodni klic";
 
 "Settings" = "Nastavitve";
+
+/* Voicemail */
+"Voicemail Number?" = "Voicemail Number?";
 
 /* SIP */
 "\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "\nZa nastavitev parametra izberite \"Nastavitve\" naprave ter pritisnite \"Siphon\".";

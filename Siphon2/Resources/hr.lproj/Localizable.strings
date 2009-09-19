@@ -46,6 +46,10 @@
 
 "Service Unavailable" = "Usluga nije dostupna"; /* 503 */
 
+"No Microphone Available" = "Mikrofon nije dostupan";
+"Connect a microphone to phone" = "Connect a microphone to phone";
+//Spojite mikrofon za snimanje glasovnih poruka.
+
 /* OK */
 "OK" = "U redu";
 "Cancel" = "Odustani";

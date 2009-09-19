@@ -21,7 +21,7 @@
 "Numpad" = "לוח מספרים";
 "Favorites" = "מועדפים";
 "Recents" = "אחרונות";
-"Voicemail" = "Voicemail";
+"Voicemail" = "תא קולי";
 
 /* PhoneView */
 "Create New Contact" = "הוסף איש קשר חדש";
@@ -45,6 +45,10 @@
 
 "Service Unavailable" = "שירות לא זמין"; /* 503 */
 
+"No Microphone Available" = "המיקרופון אינו זמין";
+"Connect a microphone to phone" = "Connect a microphone to phone";
+//חבר/י מיקרפון להקלטת תזכורות קוליות.
+
 /* OK */
 "OK" = "אישור";
 "Cancel" = "ביטול";
@@ -53,7 +57,7 @@
 "Press the Home button" = "לחץ על מקש הבית";
 
 /* Intro page greeting */
-"Siphon requires a valid\nSIP account.\n\nTo enter this information, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = " דרוש חשבון סיפ Siphon על מנת להשתמש\nכדי להקיש את פרטי החשבון, בחר בתפריט הגדרות ממסך הבית, ואז לחץ על סיפון.";
+"Siphon requires a valid\nSIP account.\n\nTo enter this information, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "דרוש חשבון סיפ Siphon על מנת להשתמש\nכדי להקיש את פרטי החשבון, בחר בתפריט הגדרות ממסך הבית, ואז לחץ על סיפון.";
 
 /* Call View */
 "Answer" = "ענה";

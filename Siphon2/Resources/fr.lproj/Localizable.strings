@@ -19,9 +19,9 @@
 
 /* Siphon */
 "Numpad" = "Clavier";
-"Keypad" = "Clavier";
 "Favorites" = "Favoris";
 "Recents" = "Appels";
+"Voicemail" = "Messagerie";
 
 /* PhoneView */
 "Create New Contact" = "Créer un nouveau contact";
@@ -45,6 +45,9 @@
 "Request Timeout" = "Requête expirée"; /* 408 */
 
 "Service Unavailable" = "Service indisponible"; /* 503 */
+
+"No Microphone Available" = "Aucun Micro";
+"Connect a microphone to phone" = "Branchez un micro pour téléphoner";
 
 /* OK */
 "OK" = "OK";
@@ -89,6 +92,9 @@
 "Outgoing Call" = "Appel sortant";
 
 "Settings" = "Réglages";
+
+/* Voicemail */
+"Voicemail Number?" = "Numéro de messagerie ?";
 
 /* SIP */
 "\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "\nPour corriger ce paramètre, sélectionnez \"Réglages\" sur le bureau, puis sélectionnez \"Siphon\".";

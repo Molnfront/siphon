@@ -19,9 +19,9 @@
 
 /* Siphon */
 "Numpad" = "Num. blok";
-"Keypad" = "Keypad";
 "Favorites" = "Favoritter";
 "Recents" = "Seneste";
+"Voicemail" = "Besked";
 
 /* PhoneView */
 "Create New Contact" = "Opret ny kontakt";
@@ -44,6 +44,10 @@
 "Request Timeout" = "Bed Timeout"; /* 408 */
 
 "Service Unavailable" = "Tjenesten er ikke tilgængelig"; /* 503 */
+
+"No Microphone Available" = "Ingen tilgængelig mikrofon";
+"Connect a microphone to phone" = "Connect a microphone to phone";
+//Tilslut en mikrofon for at optage memoer.
 
 /* OK */
 "OK" = "OK";
@@ -88,6 +92,9 @@
 "Outgoing Call" = "Udgående opkald";
 
 "Settings" = "Indstillinger";
+
+/* Voicemail */
+"Voicemail Number?" = "Voicemail Number?";
 
 /* SIP */
 "\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "\nAt rette op på denne parameter, vælg \"Indstillinger\" fra din Home skærm, og derefter trykke på den \"Siphon\" entry.";

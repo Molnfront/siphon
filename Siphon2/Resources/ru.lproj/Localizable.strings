@@ -20,29 +20,34 @@
 /* Siphon */
 "Numpad" = "Клавиши";
 "Favorites" = "Избранное";
-"Recents" = "Recents";
+"Recents" = "Последние";
+"Voicemail" = "Aвтоответч.";
 
 /* PhoneView */
 "Create New Contact" = "Создать новый Контакт";
 "Add to Existing Contact" = "Добавить в существующий Контакт";
-"The Wi-Fi network is unavailable!" = "The Wi-Fi network is unavailable!";
-"The SIP server is unreachable!" = "The SIP server is unreachable!";
-"You must enable Wi-Fi or SIP account to place a call." = "You must enable Wi-Fi or SIP account to place a call.";
-"Cellular call" = "Cellular call";
+"The Wi-Fi network is unavailable!" = "Сеть Wi-Fi не доступна!";
+"The SIP server is unreachable!" = "SIP сервер не доступен!";
+"You must enable Wi-Fi or SIP account to place a call." = "Вам необходимо включить Wi-Fi или указать уч. запись SIP для совершения звонков.";
+"Cellular call" = "Мобильный вызов";
 
-"Connected" = "Connected"; /* 200 */
+"Connected" = "Соединен"; /* 200 */
 
-"Bad Request" = "Bad Request"; /* 400 */
-"Unauthorized" = "Unauthorized"; /* 401 */
-"Payment Required" = "Payment Required"; /* 402 */
-"Forbidden" = "Forbidden"; /* 403 */
-"Not Found" = "Not Found"; /* 404 */
-"Method Not Allowed" = "Method Not Allowed"; /* 405 */
-"Not Acceptable" = "Not Acceptable"; /* 406 */
-"Proxy Authentication Required" = "Proxy Authentication Required"; /* 407 */
-"Request Timeout" = "Request Timeout"; /* 408 */
+"Bad Request" = "Не верный запрос"; /* 400 */
+"Unauthorized" = "Не авторизован"; /* 401 */
+"Payment Required" = "Необходима оплата"; /* 402 */
+"Forbidden" = "Запрещен"; /* 403 */
+"Not Found" = "Не найден"; /* 404 */
+"Method Not Allowed" = "Метод не разрешен"; /* 405 */
+"Not Acceptable" = "Не приемлимо"; /* 406 */
+"Proxy Authentication Required" = "Необходима авторизация для прокси"; /* 407 */
+"Request Timeout" = "Время запроса исчерпно"; /* 408 */
 
-"Service Unavailable" = "Service Unavailable"; /* 503 */
+"Service Unavailable" = "Сервис не доступен"; /* 503 */
+
+"No Microphone Available" = "Нет микрофона";
+"Connect a microphone to phone" = "Connect a microphone to phone";
+//Подключите микрофон, чтобы произвести запись.
 
 /* OK */
 "OK" = "Ок";
@@ -57,35 +62,38 @@
 "Answer" = "Ответить";
 "Decline" = "Отклонить";
 "End call" = "Конец вызова";
-"Small end call" = "End call";
-"Hold Call + Answer" = "Hold Call + Answer";
-"End Call + Answer" = "End Call + Answer";
-"Ignore" = "Ignore";
+"Small end call" = "Конец вызова";
+"Hold Call + Answer" = "Удержать + Ответить";
+"End Call + Answer" = "Завершить + Ответить";
+"Ignore" = "Игнорировать";
 
 "calling..." = "Вызов...";
 "call ended" = "Звонок завершен";
 
-"Hide Keypad" = "Hide Keypad";
-"mute" = "mute";
-"keypad" = "keypad";
-"speaker" = "speaker";
-"add call" = "add call";
-"hold" = "hold";
-"contacts" = "contacts";
+"Hide Keypad" = "Скрыть клавиши";
+"mute" = "Выкл. звук";
+"keypad" = "клавиши";
+"speaker" = "Динамик";
+"add call" = "добавить вызов";
+"hold" = "удержать";
+"contacts" = "контакты";
 
 /* Recent calls */
-"Recent Calls" = "Recent Calls";
-"Missed Call" = "Missed Call";
-"Clear" = "Clear";
-"All" = "All";
-"Missed" = "Missed";
-"Clear All Recents" = "Clear All Recents";
-"Unknown Caller" = "Unknown Caller";
-"Unknown" = "Unknown";
-"Incoming Call" = "Incoming Call";
-"Outgoing Call" = "Outgoing Call";
+"Recent Calls" = "Последние вызовы";
+"Missed Call" = "Пропущенный вызовl";
+"Clear" = "Стереть";
+"All" = "Все";
+"Missed" = "Пропущенные";
+"Clear All Recents" = "Стереть все последние";
+"Unknown Caller" = "Аноним";
+"Unknown" = "Неизвестный";
+"Incoming Call" = "Входящий звонок";
+"Outgoing Call" = "Исходящий звонок";
 
 "Settings" = "Настройки";
+
+/* Voicemail */
+"Voicemail Number?" = "Voicemail Number?";
 
 /* SIP */
 "\nTo correct this parameter, select \"Settings\" from your Home screen, and then tap the \"Siphon\" entry." = "\nДля ввода этой информации, нажмите \"Настройки\" на вашем телефоне и затем выбирете пункт \"Siphon\".";

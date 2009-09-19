@@ -28,6 +28,6 @@
 
 @property (nonatomic, retain)  UIButton *button2;
 
-- (id) initForIncomingCall;
+- (id) initForIncomingCallWaiting;
 
 @end

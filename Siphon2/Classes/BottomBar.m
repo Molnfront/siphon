@@ -40,6 +40,7 @@
         // Initialization code
       UIImage *background = [UIImage imageNamed:@"lcd_call_bottom.png"];
       self.backgroundColor = [UIColor colorWithPatternImage: background];
+      self.alpha = 0.7f;
     }
     return self;
 }
@@ -50,7 +51,8 @@
 }*/
 
 
-- (void)dealloc {
+- (void)dealloc 
+{
     [super dealloc];
 }
 

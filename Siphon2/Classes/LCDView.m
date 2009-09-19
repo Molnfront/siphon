@@ -19,7 +19,6 @@
 
 #import "LCDView.h"
 
-
 @implementation LCDView
 
 //@synthesize image;
@@ -47,9 +46,14 @@
   {
 		// Initialization code
     //self.backgroundColor = [[UIColor alloc] initWithWhite:0.0f alpha:0.5f];
-    UIImage *background = [UIImage imageNamed:@"lcd_call_top.png"];
-    self.backgroundColor = [[UIColor colorWithPatternImage:background] 
-                            colorWithAlphaComponent:0.5f];
+    //UIImage *background = [UIImage imageNamed:@"lcd_call_top.png"];
+    //self.backgroundColor = [[UIColor colorWithPatternImage:background] 
+    //                        colorWithAlphaComponent:0.5f];
+    UIImage *background = [UIImage imageNamed:@"lcd_call_bottom.png"];
+    self.backgroundColor = [UIColor colorWithPatternImage: background];
+    self.alpha = 0.7f;
+    //self.backgroundColor = [[UIColor colorWithPatternImage:background] 
+    //                         colorWithAlphaComponent:0.5f];
     // FIXME: dimension !!!
     CGRect rect = frame;
     //rect.size.height = CGRectGetHeight(frame) / 2;
@@ -82,7 +86,7 @@
 }*/
 
 
-- (void)dealloc
+- (void)dealloc 
 {
   [_label release];
   [_text release];
@@ -105,6 +109,16 @@
   [_image.image release];
   _image.image = image;
   [_image.image retain];
+  if (image == nil)
+  {
+    _label.textAlignment = UITextAlignmentCenter;
+    _text.textAlignment = UITextAlignmentCenter;
+  }
+  else
+  {
+    _label.textAlignment =  UITextAlignmentLeft;
+    _text.textAlignment =  UITextAlignmentLeft;
+  }
 }
 
 @end

@@ -94,8 +94,23 @@
 
 - (id) initForIncomingCallWaiting
 {
-  CGRect rect = CGRectMake(0.0f, 460.0f - 96.0f, 320.0f, 96.0f);
-  return [self initForIncomingCallWaitingWithFrame: rect];
+  self = [super initWithDefaultSize];
+  if (self)
+  {
+    UIImage *buttonBackground = [UIImage imageNamed:@"bottombarred.png"];
+    UIImage *buttonBackgroundPressed = [UIImage imageNamed:@"bottombarred_pressed.png"];
+    UIImage *image = [UIImage imageNamed:@"decline.png"];
+    //[self setSmallTitle:NSLocalizedString(@"Decline", @"PhoneView")];
+    //[self setBigTitle:NSLocalizedString(@"Decline", @"PhoneView")];
+    //UIButton *declineCall = [BottomButtonBar createButtonWithTitle: NSLocalizedString(@"Decline", @"PhoneView")
+    UIButton *declineCall = [BottomButtonBar createButtonWithTitle: NSLocalizedString(@"End Call + Answer", @"PhoneView")
+                                                         image: image
+                                                         frame: CGRectZero
+                                                    background: buttonBackground
+                                             backgroundPressed: buttonBackgroundPressed];
+    [self setButton:declineCall];
+  }
+  return self;
 }
 
 /*- (void)drawRect:(CGRect)rect 

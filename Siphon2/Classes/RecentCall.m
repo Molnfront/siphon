@@ -123,7 +123,7 @@ static sqlite3_stmt *delete_statement = nil;
       self.compositeName = @"";
       self.type = 0;
       self.identifier = kABMultiValueInvalidIdentifier;
-      self.uid = kABRecordInvalidID;
+      self.uid = kABRecordInvalidID;      
     }
     // Reset the statement for future reuse.
     sqlite3_reset(init_statement);

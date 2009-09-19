@@ -89,7 +89,9 @@ NSString *forbiddenChars;
   _pad = [[DialerPhonePad alloc] initWithFrame:
           CGRectMake(0.0f, 74.0f, 320.0f, 273.0f)];
 
-  [_pad setPlaysSounds:YES];
+  //[_pad setPlaysSounds:YES];
+  [_pad setPlaysSounds:[[NSUserDefaults standardUserDefaults] 
+                        boolForKey:@"keypadPlaySound"]];
   [_pad setDelegate:self];
   
   SiphonApplication *app = (SiphonApplication *)[SiphonApplication sharedApplication];
@@ -166,7 +168,8 @@ NSString *forbiddenChars;
   [view addSubview:_pad];
   [view addSubview:_lcd];
   
-  if (app.isIpod)
+  if (app.isIpod || 
+      ![[NSUserDefaults standardUserDefaults] boolForKey:@"cellularButton"])
     [_container addSubview:_addContactButton];
   else
     [_container addSubview:_gsmCallButton];

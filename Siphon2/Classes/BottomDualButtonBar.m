@@ -28,12 +28,17 @@
 #define kStdButtonWidth			132.0
 #define kStdButtonHeight		48.0
 
-- (id) initForIncomingCall
+- (id) initForIncomingCallWaiting
 {
-  self = [super initForEndCall];
+  //self = [super initForEndCall];
+  self = [super initForIncomingCallWaiting];
   if (self)
   {
-    [[super button] setTitle:NSLocalizedString(@"Decline", @"PhoneView")
+    //[[super button] setTitle:NSLocalizedString(@"Decline", @"PhoneView")
+    //                forState:UIControlStateNormal];
+    [super setSmallTitle:NSLocalizedString(@"Decline", @"PhoneView")];
+    [super setBigTitle:NSLocalizedString(@"Decline", @"PhoneView")];
+    [[super button] setTitle:NSLocalizedString(@"Decline", @"PhoneView") 
                     forState:UIControlStateNormal];
 
     UIImage *buttonBackground = [UIImage imageNamed:@"bottombargreen.png"];

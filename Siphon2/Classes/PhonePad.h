@@ -23,6 +23,7 @@
 
 @optional
 - (void)phonePad:(id)phonepad appendString:(NSString *)string;
+//- (void)phonePadDeleteLastDigit:(id)phonepad;
 - (void)phonePad:(id)phonepad replaceLastDigitWithString:(NSString *)string;
 
 - (void)phonePad:(id)phonepad keyDown:(char)car;

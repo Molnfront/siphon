@@ -38,6 +38,8 @@
 
 @implementation CallViewController
 
+@synthesize dtmfCmd;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil 
 {
   int i;
@@ -55,7 +57,9 @@
 */
  - (void)loadView
 {
+  
   UIView *view = [[UIView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame];
+  //UIView *view = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
   [view setAutoresizingMask:UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth];
   
 #if defined(CYDIA) && (CYDIA == 1)
@@ -114,7 +118,7 @@
   [_menuButton addTarget:self action:@selector(flipKeypad) 
        forControlEvents:UIControlEventTouchUpInside];
 
-  _dualBottomBar = [[BottomDualButtonBar alloc] initForIncomingCall];
+  _dualBottomBar = [[BottomDualButtonBar alloc] initForIncomingCallWaiting];
   [[_dualBottomBar button] addTarget:self action:@selector(declineCallDown:)
                            forControlEvents:UIControlEventTouchUpInside];
   [[_dualBottomBar button2] addTarget:self action:@selector(answerCallDown:)
@@ -130,6 +134,17 @@
 }
  */
 
+/*- (void)viewWillAppear:(BOOL)animated
+{
+  [[UIApplication sharedApplication] setStatusBarStyle: UIStatusBarStyleBlackTranslucent];
+   self.wantsFullScreenLayout = YES;
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+   self.wantsFullScreenLayout = NO;
+  [[UIApplication sharedApplication] setStatusBarStyle: UIStatusBarStyleDefault];
+}*/
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	// Return YES for supported orientations
@@ -404,6 +419,15 @@
   return call;
 }
 
+- (void)composeDTMF
+{
+  pj_str_t dtmf = pj_str([dtmfCmd UTF8String]);
+
+  if ([[NSUserDefaults standardUserDefaults] boolForKey:@"dtmfWithInfo"])
+    sip_call_play_info_digits(_call_id, &dtmf);
+  else
+    sip_call_play_digits(_call_id, &dtmf);
+}
 - (void)processCall:(NSDictionary *)userInfo
 {
   int state, call_id;
@@ -456,6 +480,9 @@
       [_dualBottomBar removeFromSuperview];
       [self.view addSubview:_defaultBottomBar];
       [self.view addSubview:_containerView];
+      if ([dtmfCmd length] > 0)
+        [self performSelector:@selector(composeDTMF) 
+                   withObject:nil afterDelay:0.];
       _timer = [[NSTimer scheduledTimerWithTimeInterval:1.0
                                                  target:self
                                                selector:@selector(timeout:)
@@ -464,6 +491,7 @@
       [_timer fire];
       break;
     case PJSIP_INV_STATE_DISCONNECTED:
+      dtmfCmd = nil;
       [self setSpeakerPhoneEnabled:NO];
       [self setMute:NO];
 
@@ -525,6 +553,7 @@
   }
 }
 
+#pragma mark MenuCallView
 - (void)menuButtonClicked:(NSInteger)num
 {
   UIButton *button;

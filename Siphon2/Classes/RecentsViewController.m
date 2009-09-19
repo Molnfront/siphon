@@ -48,12 +48,13 @@ NSDateFormatter *dateFormatter;
     [self initializeDatabase];
     
     self.title = NSLocalizedString(@"Recent Calls", @"Recents View");
-
-//    self.tabBarItem = [[UITabBarItem alloc] 
-//                       initWithTabBarSystemItem: UITabBarSystemItemRecents tag:1];
+#if defined(CYDIA) && (CYDIA == 1)
+    self.tabBarItem = [[UITabBarItem alloc]
+                       initWithTabBarSystemItem: UITabBarSystemItemRecents tag:1];
+#else
     self.tabBarItem.title = NSLocalizedString(@"Recents", @"Recents View");
     self.tabBarItem.image = [UIImage imageNamed:@"Recents.png"];
-
+#endif
     //self.navigationItem.leftBarButtonItem = [self editButtonItem];
     self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc]
                                               initWithTitle:NSLocalizedString(@"Clear", @"Recents")

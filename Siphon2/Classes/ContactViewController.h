@@ -26,9 +26,9 @@
 @end
 
 @interface ContactViewController : ABPeoplePickerNavigationController
-    <ABPeoplePickerNavigationControllerDelegate
-//, ABNewPersonViewControllerDelegate
->
+    <ABPeoplePickerNavigationControllerDelegate,
+//ABNewPersonViewControllerDelegate,
+    UIActionSheetDelegate>
 {
    id phoneCallDelegate;
 }

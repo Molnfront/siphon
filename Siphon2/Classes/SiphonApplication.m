@@ -23,6 +23,7 @@
 #import "ContactViewController.h"
 #import "RecentsViewController.h"
 #import "FavoritesListController.h"
+#import "VoicemailController.h"
 
 #import "Reachability.h"
 
@@ -419,11 +420,23 @@ typedef enum ConnectionState {
                                                 init] autorelease];
     contactsViewCtrl.phoneCallDelegate = self;
 
+    /* Voicemail */
+    VoicemailController *voicemailController = [[VoicemailController alloc]
+                                                initWithStyle:UITableViewStyleGrouped];
+                                          //autorelease];
+    voicemailController.phoneCallDelegate = self;
+    UINavigationController *voicemailNavCtrl = [[[UINavigationController alloc]
+                                                initWithRootViewController:
+                                                voicemailController]
+                                               autorelease];
+    voicemailNavCtrl.navigationBar.barStyle = UIBarStyleBlackOpaque;
+    [voicemailController release];
+
     tabBarController = [[UITabBarController alloc] init];
     tabBarController.viewControllers = [NSArray arrayWithObjects:
                                         favoritesViewCtrl, recentsViewCtrl,
                                         phoneViewController,
-                                        contactsViewCtrl, nil];
+                                        contactsViewCtrl, voicemailNavCtrl, nil];
     tabBarController.selectedIndex = 2;
 
     [window addSubview:tabBarController.view];
@@ -597,32 +610,39 @@ typedef enum ConnectionState {
   pjsua_call_id call_id;
   pj_status_t status;
   NSString *number;
-#if 0
-  if (isNumber)
+  
+  UInt32 hasMicro, size;
+
+  // Verify if microphone is available (perhaps we should verify in another place ?)
+  size = sizeof(hasMicro);
+  AudioSessionGetProperty(kAudioSessionProperty_AudioInputAvailable,
+                          &size, &hasMicro);
+  if (!hasMicro)
   {
-  NSString *normNumber = [self normalizePhoneNumber:phoneNumber];
-  NSString *prefix = [[NSUserDefaults standardUserDefaults] stringForKey: 
-                      @"intlPrefix"];
-  if ([prefix length] > 0)
-  {
-    number = [normNumber stringByReplacingOccurrencesOfString:@"+"
-                                                  withString:prefix 
-                                                     options:0 
-                                                       range:NSMakeRange(0,1)];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"No Microphone Available", @"SiphonApp")
+                                                    message:NSLocalizedString(@"Connect a microphone to phone", @"SiphonApp")
+                                                   delegate:nil 
+                                          cancelButtonTitle:NSLocalizedString(@"OK", @"SiphonApp")
+                                          otherButtonTitles:nil];
+    [alert show];
+    [alert release];
+    return;
   }
-  else
-  {
-    number = normNumber; 
-  }
-  }
-  else
-    number = phoneNumber;
-#else
+  
   if (isNumber)
     number = [self normalizePhoneNumber:phoneNumber];
   else
     number = phoneNumber;
 
+  if ([[NSUserDefaults standardUserDefaults] boolForKey:@"removeIntlPrefix"])
+  {
+    number = [number stringByReplacingOccurrencesOfString:@"+"
+                                               withString:@"" 
+                                                     options:0 
+                                                       range:NSMakeRange(0,1)];
+  }
+  else
+  {
   NSString *prefix = [[NSUserDefaults standardUserDefaults] stringForKey: 
                       @"intlPrefix"];
   if ([prefix length] > 0)
@@ -632,8 +652,16 @@ typedef enum ConnectionState {
                                                       options:0 
                                                         range:NSMakeRange(0,1)];
   }
+  }
   
-#endif
+  // Manage pause symbol
+  NSArray * array = [number componentsSeparatedByString:@","];
+  [callViewController setDtmfCmd:@""];
+  if ([array count] > 1)
+  {
+    number = [array objectAtIndex:0];
+    [callViewController setDtmfCmd:[array objectAtIndex:1]];
+  }
 
 #if defined(CYDIA) && (CYDIA == 1)
   //NetworkStatus networkStatus = NotReachable;
@@ -713,21 +741,27 @@ typedef enum ConnectionState {
     case PJSIP_INV_STATE_NULL: // Before INVITE is sent or received.
       return;
     case PJSIP_INV_STATE_CALLING: // After INVITE is sent.
+      //[UIDevice currentDevice].proximityMonitoringEnabled = YES;
       self.proximitySensingEnabled = YES;
     case PJSIP_INV_STATE_INCOMING: // After INVITE is received.
       self.idleTimerDisabled = YES;
       self.statusBarStyle = UIStatusBarStyleBlackTranslucent;
+      //if (pjsua_call_get_count() == 1)
       [tabBarController presentModalViewController:callViewController animated:YES];
     case PJSIP_INV_STATE_EARLY: // After response with To tag.
     case PJSIP_INV_STATE_CONNECTING: // After 2xx is sent/received.
       break;
     case PJSIP_INV_STATE_CONFIRMED: // After ACK is sent/received.
+      //[UIDevice currentDevice].proximityMonitoringEnabled = YES;
       self.proximitySensingEnabled = YES;
       break;
     case PJSIP_INV_STATE_DISCONNECTED:
       self.idleTimerDisabled = NO;
+      //[UIDevice currentDevice].proximityMonitoringEnabled = NO;
       self.proximitySensingEnabled = NO;
       //[tabBarController dismissModalViewControllerAnimated: YES];
+      // TODO vérifier si c'est la dernière communication
+      
       [self performSelector:@selector(disconnected:) 
                  withObject:nil afterDelay:1.0];
       break;
@@ -775,8 +809,11 @@ typedef enum ConnectionState {
 
 - (void) disconnected:(id)fp8
 {
+  //if (pjsua_call_get_count() == 0)
+  //{
   self.statusBarStyle = UIStatusBarStyleDefault;
   [tabBarController dismissModalViewControllerAnimated: YES];
+	//}
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet 

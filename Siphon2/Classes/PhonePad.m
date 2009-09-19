@@ -71,6 +71,18 @@ static SystemSoundID sounds[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   return _pressedImage;
 }
 
+- (void)cancelTrackingWithEvent:(UIEvent *)event
+{
+  if (_keyValues[_downKey] == '0' || _keyValues[_downKey] == '*')
+  {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self 
+                                             selector:@selector(handleKeyPressAndHold:)
+                                               object:nil];
+  }
+  _downKey = 0;
+  [self setNeedsDisplayForKey:0];
+}
+
 - (void)handleKeyDown:(id)sender forEvent:(UIEvent *)event
 {
 
@@ -122,15 +134,7 @@ static SystemSoundID sounds[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     {
       [_delegate phonePad:self keyUp: _keyValues[_downKey]];
     }
-    if (_keyValues[_downKey] == '0' || _keyValues[_downKey] == '*')
-    {
-      [NSObject cancelPreviousPerformRequestsWithTarget:self 
-                                               selector:@selector(handleKeyPressAndHold:)
-                                                 object:nil];
-    }
-    
-    _downKey = 0;
-    [self setNeedsDisplayForKey:0];
+    [self cancelTrackingWithEvent:nil];
   }
 }
 
@@ -148,6 +152,13 @@ static SystemSoundID sounds[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   {
     [_delegate phonePad:self replaceLastDigitWithString: key];
   }
+  /*else 
+  {
+    if ([_delegate respondsToSelector:@selector(phonePadDeleteLastDigit:)])
+      [_delegate phonePadDeleteLastDigit:self];
+    if ([_delegate respondsToSelector:@selector(phonePad:appendString:)])
+      [_delegate phonePad:self appendString: key];
+  }*/
 }
 
 - (int)keyForPoint:(CGPoint)point

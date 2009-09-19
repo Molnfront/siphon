@@ -28,7 +28,7 @@
 @end
 
 @interface PhoneViewController : UIViewController <
-					UITextFieldDelegate,
+          UITextFieldDelegate,
 #if SPECIFIC_ADD_PERSON
           UIActionSheetDelegate,
 #endif

@@ -29,6 +29,7 @@
 {
     if (self = [super initWithFrame:frame]) 
     {
+      self.backgroundColor = [UIColor clearColor];
       // Initialization code
       _topLabel = [[UILabel alloc] initWithFrame:CGRectMake(frame.origin.x + 5.0f,
                                                             0.0f, 

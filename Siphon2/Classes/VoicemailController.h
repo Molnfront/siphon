@@ -18,22 +18,18 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <AddressBook/AddressBook.h>
-#import <AddressBookUI/AddressBookUI.h>
 
-@protocol FavoritesListController
+@protocol VoicemailController
 -(void) dialup:(NSString *)phoneNumber number:(BOOL)isNumber;
 @end
 
-@interface FavoritesListController : UITableViewController 
-    <ABPeoplePickerNavigationControllerDelegate,
-     ABPersonViewControllerDelegate,
-     UIActionSheetDelegate>
+@interface VoicemailController : UITableViewController <UIAlertViewDelegate> 
 {
-  ABPeoplePickerNavigationController *peopleCtrl;
+  //bool first;
+  
   id phoneCallDelegate;
 }
 
-@property (nonatomic, retain)  id phoneCallDelegate;
+@property (nonatomic, retain)   id phoneCallDelegate;
 
 @end

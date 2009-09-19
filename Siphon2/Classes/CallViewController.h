@@ -27,7 +27,9 @@
 
 #include <pjsua-lib/pjsua.h>
 
-@interface CallViewController : UIViewController<PhonePad>
+@interface CallViewController : UIViewController<PhonePad,
+	MenuCallView
+	>
 {
   LCDView             *_lcd;
   
@@ -41,6 +43,7 @@
   BottomDualButtonBar *_dualBottomBar;
 
   NSTimer *_timer;
+  NSString *dtmfCmd;
 
   pjsua_call_id  _call_id;
   RecentCall    *_call[PJSUA_MAX_CALLS];
@@ -51,4 +54,7 @@
 #else
 - (void)processCall:(NSDictionary *)userinfo;
 #endif
+
+@property (nonatomic, retain)  NSString *dtmfCmd;
+
 @end

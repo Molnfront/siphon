@@ -25,7 +25,11 @@
 #include "call.h"
 #include "ring.h"
 #include "dtmf.h"
-//#include "mwi.h"
+
+#if defined(MWI) && (MWI == 1)
+#include "message_summary.h"
+#include "pjsua_messum.h"
+#endif
 
 #define THIS_FILE "call.m"
 
@@ -236,14 +240,16 @@ static void on_reg_state(pjsua_acc_id acc_id)
 
 typedef struct struct_codecs {
   NSString *param;
-  char *pjsip_name;
+  pj_str_t pjsip_name;
 } Codecs;
 
 static const Codecs codecs[] = {
-  {@"enableG711u", "pcmu"},
-  {@"enableG711a", "pcma"},
-  {@"enableG722", "G722"},
-  {@"enableGSM", "GSM"}};
+{@"enableG711u", {"pcmu", 4}},
+{@"enableG711a", {"pcma", 4}},
+{@"enableG722", {"G722", 4}},
+//{@"enableiLBC", {"iLBC", 4}},
+{@"enableGSM", {"GSM", 3}},
+{@"enableG729", {"G729", 4}}};
 
 static void sip_manage_codec()
 {
@@ -256,8 +262,7 @@ static void sip_manage_codec()
   {
     if (![[NSUserDefaults standardUserDefaults] boolForKey:codecs[i].param])
     {
-      pj_str_t temp = pj_str(codecs[i].pjsip_name);
-      status = pjsua_codec_set_priority(&temp, PJMEDIA_CODEC_PRIO_DISABLED);
+      status = pjsua_codec_set_priority(&codecs[i].pjsip_name, PJMEDIA_CODEC_PRIO_DISABLED);
       if (status != PJ_SUCCESS)
         PJ_LOG(1,(THIS_FILE, "Error setting %s codec priority (Err. %d)", 
                   codecs[i].pjsip_name, status));
@@ -409,9 +414,17 @@ pj_status_t sip_startup(app_config_t *app_config)
   if (status != PJ_SUCCESS)
     goto error;
 
+#if defined(MWI) && (MWI == 1)
   /* Initialize Message Summary and Message Waiting Indication Event Package */
-  /*status = pjsip_mwi_init_module( pjsua_get_pjsip_endpt(), 
-                                  pjsip_evsub_instance());*/
+  status = pjsip_mwi_init_module( pjsua_get_pjsip_endpt()/*pjsua_var.endpt*/, 
+                                  pjsip_evsub_instance());
+  if (status != PJ_SUCCESS)
+    goto error;
+  /* Init pjsua message summary handler: */
+  status = pjsua_mwi_init();
+  if (status != PJ_SUCCESS)
+    goto error;
+#endif
   
   /* Initialize Ring and Ringback */
   sip_ring_init(app_config);
@@ -445,8 +458,13 @@ pj_status_t sip_startup(app_config_t *app_config)
   if (status != PJ_SUCCESS)
     goto error;
   
-  return status;
+#if defined(MWI) && (MWI == 1)
+  status = pjsua_mwi_start();
+  if (status != PJ_SUCCESS)
+    goto error;
+#endif
 
+  return status;
 error:
   sip_cleanup(app_config);
   return status;
@@ -467,6 +485,11 @@ pj_status_t sip_cleanup(app_config_t *app_config)
     app_config->pool = NULL;
   }
 
+#if defined(MWI) && ( MWI == 1)
+  /* Terminate all message summary subscriptions. */
+	pjsua_mwi_shutdown();
+#endif
+  
   /* Destroy pjsua */
   status = pjsua_destroy();
   

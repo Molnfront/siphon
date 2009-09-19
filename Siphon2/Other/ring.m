@@ -169,9 +169,9 @@ void sip_ring_start(app_config_t *app_config)
   if (++app_config->ring_cnt == 1) 
   {
     //AudioServicesPlayAlertSound(app_config->ring_id);
-    UInt32 route = kAudioSessionOverrideAudioRoute_Speaker;
-    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute, 
-                             sizeof(route), &route);
+    //UInt32 route = kAudioSessionOverrideAudioRoute_Speaker;
+    //AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute, 
+    //                         sizeof(route), &route);
     CFRunLoopTimerContext context = {0, (void *)app_config, NULL, NULL, NULL};
     app_config->ring_timer = CFRunLoopTimerCreate(kCFAllocatorDefault, 
                                                   CFAbsoluteTimeGetCurrent(),
@@ -237,9 +237,9 @@ void sip_ring_stop(app_config_t *app_config)
 #else
     if (--app_config->ring_cnt == 0) 
     {
-      UInt32 route = kAudioSessionOverrideAudioRoute_None;
-      AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute, 
-                               sizeof(route), &route);
+     // UInt32 route = kAudioSessionOverrideAudioRoute_None;
+     // AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute, 
+     //                          sizeof(route), &route);
       CFRunLoopTimerInvalidate(app_config->ring_timer);
       CFRelease(app_config->ring_timer);
       app_config->ring_timer = NULL;
@@ -270,8 +270,6 @@ void sip_ring_deinit(app_config_t *app_config)
     app_config->ring_port = NULL;
   }
 #else
-  if (app_config->ring_id != kSystemSoundID_Vibrate)
-    AudioServicesDisposeSystemSoundID (app_config->ring_id);
   if (app_config->ring_timer)
   {
     CFRunLoopRemoveTimer (CFRunLoopGetMain(), app_config->ring_timer, 
@@ -279,5 +277,7 @@ void sip_ring_deinit(app_config_t *app_config)
     CFRelease(app_config->ring_timer);
     app_config->ring_timer = NULL;
   }
+  if (app_config->ring_id != kSystemSoundID_Vibrate)
+    AudioServicesDisposeSystemSoundID (app_config->ring_id);
 #endif
 }

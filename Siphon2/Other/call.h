@@ -81,7 +81,7 @@ pj_status_t sip_dial_with_uri(pjsua_acc_id acc_id, const char *uri,
                               pjsua_call_id *call_id);
 pj_status_t sip_dial         (pjsua_acc_id acc_id, const char *number, 
                               pjsua_call_id *call_id);
-pj_status_t sip_answer        ();
+pj_status_t sip_answer        (pjsua_call_id *call_id);
 pj_status_t sip_hangup        (pjsua_call_id *call_id);
 
 #if SETTINGS

@@ -76,6 +76,11 @@ void sip_call_play_digit(pjsua_call_id call_id, char digit)
   buf[0] = digit;
   buf[1] = 0;
   digits = pj_str(buf);
+#if 1
+  PJ_UNUSED_ARG(status);
+  sip_call_play_digits(call_id, &digits);
+#else
+  
   status = pjsua_call_dial_dtmf(call_id, &digits);
   if (status == PJMEDIA_RTP_EREMNORFC2833)
   {
@@ -99,6 +104,44 @@ void sip_call_play_digit(pjsua_call_id call_id, char digit)
 
     pjmedia_tonegen_play_digits(cd->tonegen, 1, d, 0);
   }
+#endif
+}
+
+/**
+ */
+void sip_call_play_digits(pjsua_call_id call_id, pj_str_t *digits)
+{
+  pj_status_t status;
+  
+  status = pjsua_call_dial_dtmf(call_id, digits);
+  if (status == PJMEDIA_RTP_EREMNORFC2833)
+  {    
+    pjmedia_tone_digit *d;
+    struct my_call_data *cd;
+    pj_uint32_t i;
+    
+    cd = (struct my_call_data*) pjsua_call_get_user_data(call_id);
+    if (cd == NULL)
+    {
+      cd = call_init_tonegen(call_id);
+      if (cd == NULL)
+        return;
+    }
+    //else if (pjmedia_tonegen_is_busy(cd->tonegen))
+    //pjmedia_tonegen_stop(cd->tonegen);
+    
+    d = pj_pool_calloc (cd->pool, digits->slen, sizeof(pjmedia_tone_digit));
+    
+    for (i = 0; i < digits->slen; ++i)
+    {
+      d[i].digit = digits->ptr[i];
+      d[i].on_msec = 100;
+      d[i].off_msec = 100;
+      d[i].volume = 16383;
+    }
+    pjmedia_tonegen_stop(cd->tonegen);
+    pjmedia_tonegen_play_digits(cd->tonegen, digits->slen, d, 0);
+  }  
 }
 
 /**
@@ -121,6 +164,15 @@ void sip_call_deinit_tonegen(pjsua_call_id call_id)
  */
 void sip_call_play_info_digit(pjsua_call_id call_id, char digit)
 {
+#if 1
+  pj_str_t digits;
+  char buf[2];
+  
+  buf[0] = digit;
+  buf[1] = 0;
+  digits = pj_str(buf);
+  sip_call_play_info_digits(call_id, &digits);
+#else
   const pj_str_t SIP_INFO = pj_str("INFO");
   pj_status_t status;
   pjsua_msg_data msg_data;
@@ -137,4 +189,33 @@ void sip_call_play_info_digit(pjsua_call_id call_id, char digit)
   
   status = pjsua_call_send_request(call_id, &SIP_INFO, 
                                    &msg_data);
+#endif
+}
+/**
+ */
+void sip_call_play_info_digits(pjsua_call_id call_id, pj_str_t *digits)
+{
+  const pj_str_t SIP_INFO = pj_str("INFO");
+  pj_status_t status;
+  pjsua_msg_data msg_data;
+  char body[80];
+  pj_uint32_t i;
+  
+  for (i = 0; i < digits->slen; ++i) 
+  {    
+    pjsua_msg_data_init(&msg_data);
+    msg_data.content_type = pj_str("application/dtmf-relay");
+    
+    pj_ansi_snprintf(body, sizeof(body),
+                     "Signal=%c\r\n"
+                     "Duration=160",
+                     /*buf[i]*/digits->ptr[i]);
+    msg_data.msg_body = pj_str(body);
+    
+    status = pjsua_call_send_request(call_id, &SIP_INFO, &msg_data);
+    if (status != PJ_SUCCESS) 
+    {
+			break;
+    }
+  }
 }

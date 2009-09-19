@@ -23,11 +23,11 @@
 "Username" = "Имя пользователя";
 "Server" = "Сервер";
 "Password" = "Пароль";
+"Voicemail Number" = "Voicemail Number";
+"Advanced settings" = "Расш. настройки";
 
-"Advanced settings" = "Advanced settings";
-
-"Phone settings" = "Phone settings";
-"Network settings" = "Network settings";
+"Phone settings" = "Настройки";
+"Network settings" = "Сетевые настройки";
 
 /* Donate */
 "Donate" = "Donate";

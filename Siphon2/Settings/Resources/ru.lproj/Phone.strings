@@ -17,19 +17,22 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-"Phone" = "Phone";
+"Phone" = "Телефон";
 
 /* Media Options */
-"Media Options" = "Media Options";
-"Echo Canceller" = "Echo Canceller";
-"Silence Detector" = "Silence Detector";
-"Codec" = "Codec";
-"Send DTMF with INFO" = "Send DTMF with INFO";
+"Media Options" = "Медиа опции";
+"Echo Canceller" = "Подавлять эхо";
+"Silence Detector" = "Определять тишину";
+"Codec" = "Кодек";
+"Send DTMF with INFO" = "Отправлять DTMF с INFO";
 
 /* Dialing Options */
-"Dialing Options" = "Dialing Options";
+"Dialing Options" = "Опции набора";
+"Remove Intl Prefix" = "Remove Intl Prefix";
 "Intl Prefix Substitution" = "Intl Prefix Substitution";
 "You can define the substitution prefix for international prefix '+', if your SIP provider doesn't manage it." = "You can define the substitution prefix for international prefix '+', if your SIP provider doesn't manage it.";
+"Keypad play sound" = "Keypad sound";
+"Cellular button" = "Cellular button";
 
 /* Enable/Disable log file */
 "Debugging log file" = "Журнал отладки";

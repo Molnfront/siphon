@@ -28,8 +28,11 @@
 
 /* Dialing Options */
 "Dialing Options" = "Options de numérotation";
+"Remove Intl Prefix" = "Supprimer le préfixe Intl";
 "Intl Prefix Substitution" = "Substitution du préfixe Intl";
 "You can define the substitution prefix for international prefix '+', if your SIP provider doesn't manage it." = "Vous pouvez définir le préfixe de subsitution du préfix international '+', si votre fournisseur SIP ne le gère pas.";
+"Keypad play sound" = "Son du clavier";
+"Cellular button" = "Bouton GSM";
 
 /* Enable/Disable log file */
 "Debugging log file" = "Fichier Journal";

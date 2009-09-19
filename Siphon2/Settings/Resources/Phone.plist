@@ -65,6 +65,48 @@
 		<dict>
 			<key>defaults</key>
 			<string>com.googlecode.siphon</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>label</key>
+			<string>Keypad play sound</string>
+			<key>key</key>
+			<string>keypadPlaySound</string>
+			<key>default</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>defaults</key>
+			<string>com.googlecode.siphon</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>label</key>
+			<string>Cellular button</string>
+			<key>key</key>
+			<string>cellularButton</string>
+			<key>default</key>
+			<false/>
+			<key>set</key>
+			<string>setCellularButton:specifier:</string>
+			<key>requiredCapabilities</key>
+			<array>
+				<string>telephony</string>
+			</array>
+		</dict>
+		<dict>
+			<key>defaults</key>
+			<string>com.googlecode.siphon</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>label</key>
+			<string>Remove Intl Prefix</string>
+			<key>key</key>
+			<string>removeIntlPrefix</string>
+			<key>default</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>defaults</key>
+			<string>com.googlecode.siphon</string>
 			<key>default</key>
 			<string></string>
 			<key>key</key>

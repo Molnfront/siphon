@@ -28,8 +28,11 @@
 
 /* Dialing Options */
 "Dialing Options" = "拨号选项";
+"Remove Intl Prefix" = "Remove Intl Prefix";
 "Intl Prefix Substitution" = "国际拨号字首置换";
 "You can define the substitution prefix for international prefix '+', if your SIP provider doesn't manage it." = "如果你的网路供应商未有管制的话，你可以自行定义国际拨号'+'的字首置换。";
+"Keypad play sound" = "Keypad sound";
+"Cellular button" = "Cellular button";
 
 /* Enable/Disable log file */
 "Debugging log file" = "调试日志文件";

@@ -43,6 +43,26 @@
   NSArray *s = [self loadSpecifiersFromPlistName:@"Phone" target: self];
   return s;
 }
+
+-(void)setCellularButton:(id)value specifier:(id)specifier
+{
+  [self setPreferenceValue:value specifier:specifier];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+
+  unlink("/Applications/Siphon.app/Default.png");
+	if(value == kCFBooleanTrue)
+  {
+    symlink("/Applications/Siphon.app/default-iphone.png", 
+            "/Applications/Siphon.app/Default.png");
+	} 
+  else 
+  {
+    symlink("/Applications/Siphon.app/default-ipod.png", 
+            "/Applications/Siphon.app/Default.png");
+
+	}
+}
+
 @end
 
 @implementation NetworkSettings

@@ -23,7 +23,7 @@
 "Username" = "Nom";
 "Server" = "Serveur";
 "Password" = "Mot de passe";
-
+"Voicemail Number" = "Numéro de messagerie";
 "Advanced settings" = "Paramètres avancés";
 
 "Phone settings" = "Paramètres de téléphonie";

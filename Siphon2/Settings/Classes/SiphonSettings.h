@@ -43,6 +43,7 @@
 }
 
 -(NSArray *)specifiers;
+-(void)setCellularButton:(id)value specifier:(id)specifier;
 @end
 
 @interface NetworkSettings : PSListController

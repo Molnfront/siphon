@@ -17,7 +17,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-"Network" = "Network";
+"Network" = "Сеть";
 
 /* Transport Options */
 "Transport Options" = "Настройка потока";
@@ -25,12 +25,12 @@
 "Local Port" = "Локальный порт";
 "STUN Domain" = "STUN Домен";
 "STUN Server" = "STUN Сервер";
-"Keep Alive Interval" = "Keep Alive Interval";
+"Keep Alive Interval" = "Удерживать";
 
 /* Media Transport Options */
 "Media Transport Options" = "Media Transport Options";
 "RTP Port" = "RTP порт";
-"Enable ICE" = "Enable ICE";
+"Enable ICE" = "Включить ICE";
 
 "Siphon over EDGE/3G" = "Siphon over EDGE/3G";
 "You must read your mobile subscription agreement before activate this option. The author is not responsible of your \"Siphon\" usage." = "You must read your mobile subscription agreement before activating this option. The author is not responsible of your \"Siphon\" usage.";

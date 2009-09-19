@@ -43,6 +43,16 @@
 			<string>PSEditTextCell</string>
 		</dict>
 		<dict>
+			<key>defaults</key>
+			<string>com.googlecode.siphon</string>
+			<key>key</key>
+			<string>voicemail</string>
+			<key>label</key>
+			<string>Voicemail Number</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+		</dict>
+		<dict>
 			<key>detail</key>
 			<string>AdvancedSettings</string>
 			<key>label</key>
@@ -103,7 +113,7 @@
 			<key>cell</key>
 			<string>PSTitleViewCell</string>
 			<key>label</key>
-			<string>Version 2.0.8</string>
+			<string>Version 2.1.0</string>
 		</dict>
 		<dict>
 			<key>cell</key>

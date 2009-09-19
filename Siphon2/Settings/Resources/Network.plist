@@ -7,6 +7,10 @@
 	<key>items</key>
 	<array>
 		<dict>
+			<key>requiredCapabilities</key>
+			<array>
+				<string>telephony</string>
+			</array>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 		</dict>
@@ -27,12 +31,20 @@
 			</array>
 		</dict>
 		<dict>
+			<key>requiredCapabilities</key>
+			<array>
+				<string>telephony</string>
+			</array>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>isStaticText</key>
 			<true/>
 		</dict>
 		<dict>
+			<key>requiredCapabilities</key>
+			<array>
+				<string>telephony</string>
+			</array>
 			<key>cell</key>
 			<string>PSTitleValueCell</string>
 			<key>label</key>

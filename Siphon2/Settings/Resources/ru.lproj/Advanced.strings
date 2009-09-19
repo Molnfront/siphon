@@ -17,14 +17,14 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-"Advanced" = "Advanced";
+"Advanced" = "Дополнительно";
 
 "SIP Account Options" = "Опции учетной записи";
 
 /* Register Time-out */
 "Reg. Timeout" = "Макс. время регистрации";
 "Proxy Server" = "Прокси сервер";
-"Enable NAT" = "Поддержка NAT";
+"Enable NAT" = "Поддержка  NAT";
 /* authorization username, authentication username */
-"Auth. Username" = "Auth. Username";
+"Auth. Username" = "Имя пользователя";
 "Contact" = "Контакт";

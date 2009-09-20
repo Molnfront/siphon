@@ -23,7 +23,6 @@
 		7E0724F50E5357F100BA1961 /* bottombargreen_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E0724F20E5357F100BA1961 /* bottombargreen_pressed.png */; };
 		7E07257D0E53959600BA1961 /* NSNotificationAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E07257C0E53959600BA1961 /* NSNotificationAdditions.m */; };
 		7E150F070E539941007B5E98 /* dtmf.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E150F060E539941007B5E98 /* dtmf.m */; };
-		7E21FB180F2BD53C00AD2C7C /* Recents.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E21FB170F2BD53C00AD2C7C /* Recents.png */; };
 		7E21FB1B0F2BD59C00AD2C7C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E21FB1A0F2BD59B00AD2C7C /* CFNetwork.framework */; };
 		7E248E080EC618280027110F /* FavoritesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E248E070EC618280027110F /* FavoritesCell.m */; };
 		7E32C0060E866476008E7EC8 /* dialerkeypad_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E32C0050E866476008E7EC8 /* dialerkeypad_pressed.png */; };
@@ -142,7 +141,6 @@
 		7E150F060E539941007B5E98 /* dtmf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = dtmf.m; path = Other/dtmf.m; sourceTree = "<group>"; };
 		7E188CA20F61E1610031D080 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = Resources/zh_CN.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7E188CA30F61E1750031D080 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = Resources/zh_TW.lproj/Localizable.strings; sourceTree = "<group>"; };
-		7E21FB170F2BD53C00AD2C7C /* Recents.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Recents.png; path = Resources/Recents.png; sourceTree = "<group>"; };
 		7E21FB1A0F2BD59B00AD2C7C /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		7E2377A50EA0046900335581 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = Resources/da.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7E248E060EC618280027110F /* FavoritesCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FavoritesCell.h; path = Classes/FavoritesCell.h; sourceTree = "<group>"; };
@@ -366,7 +364,6 @@
 				7E3845AD0E3A8BB5007296FC /* addcontact.png */,
 				7E3845AE0E3A8BB5007296FC /* addcontact_pressed.png */,
 				7E679A3F0E2FE425009A3AE6 /* Dial.png */,
-				7E21FB170F2BD53C00AD2C7C /* Recents.png */,
 				2207C6FF0DF9EB7000B5CFBD /* Info.plist */,
 				2207C6EA0DF9EA9800B5CFBD /* icon.png */,
 				2207C6EC0DF9EA9800B5CFBD /* settings.png */,
@@ -512,6 +509,7 @@
 				2207C6F80DF9EB7000B5CFBD /* Resources */,
 				2207C6F90DF9EB7000B5CFBD /* Sources */,
 				2207C6FA0DF9EB7000B5CFBD /* Frameworks */,
+				7E432FB710661F8F00949182 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -623,7 +621,6 @@
 				7EBEBAE40F1D63C300252639 /* speaker.png in Resources */,
 				7EBEBB090F1D6A7B00252639 /* bottombarblue.png in Resources */,
 				7EBEBB0A0F1D6A7B00252639 /* bottombarblue_pressed.png in Resources */,
-				7E21FB180F2BD53C00AD2C7C /* Recents.png in Resources */,
 				7E986F8D0F89659B00930F9C /* callblue.png in Resources */,
 				7E747C6E104B2FE900F67F72 /* message.png in Resources */,
 				7E747C70104B306000F67F72 /* lcd_top_simple.png in Resources */,
@@ -633,6 +630,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7E432FB710661F8F00949182 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo \"Code Signing (jailbreak) ${PRODUCT_NAME}\"\nldid -S \"${TARGET_BUILD_DIR}/${EXECUTABLE_PATH}\"";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		2207C6F90DF9EB7000B5CFBD /* Sources */ = {
@@ -698,10 +711,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "Don't Code Sign";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos2.2]" = "Don't Code Sign";
-				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -731,8 +740,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
-				PROVISIONING_PROFILE = "8E45CE4A-9A3F-4DFF-BAB9-A61C3B1ECD21";
-				"PROVISIONING_PROFILE[sdk=iphoneos2.2]" = "8E45CE4A-9A3F-4DFF-BAB9-A61C3B1ECD21";
 				SDKROOT = iphoneos2.2.1;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 			};
@@ -742,9 +749,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				ARCHS = "$(NATIVE_ARCH)";
-				CODE_SIGN_IDENTITY = "Don't Code Sign";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos2.2]" = "Don't Code Sign";
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -756,9 +761,7 @@
 				GCC_THUMB_SUPPORT = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 2.2;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "96E11ABB-3585-4E8B-ACAA-37203D5E69DF";
-				"PROVISIONING_PROFILE[sdk=iphoneos2.2]" = "96E11ABB-3585-4E8B-ACAA-37203D5E69DF";
-				SDKROOT = iphoneos2.2;
+				SDKROOT = iphoneos2.2.1;
 			};
 			name = Release;
 		};
@@ -766,8 +769,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos2.2]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos2.2]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -814,8 +817,8 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Siphon;
-				PROVISIONING_PROFILE = "8E45CE4A-9A3F-4DFF-BAB9-A61C3B1ECD21";
-				"PROVISIONING_PROFILE[sdk=iphoneos2.2]" = "8E45CE4A-9A3F-4DFF-BAB9-A61C3B1ECD21";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos2.2]" = "";
 				SDKROOT = iphoneos2.2;
 				STRINGS_FILE_OUTPUT_ENCODING = binary;
 			};
@@ -826,8 +829,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos2.2]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos2.2]" = "Don't Code Sign";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -871,9 +874,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Siphon;
-				PROVISIONING_PROFILE = "8E45CE4A-9A3F-4DFF-BAB9-A61C3B1ECD21";
-				"PROVISIONING_PROFILE[sdk=iphoneos2.2]" = "8E45CE4A-9A3F-4DFF-BAB9-A61C3B1ECD21";
-				SDKROOT = iphoneos2.1;
+				SDKROOT = iphoneos2.2;
 				ZERO_LINK = NO;
 			};
 			name = Release;

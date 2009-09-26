@@ -247,7 +247,6 @@ static const Codecs codecs[] = {
 {@"enableG711u", {"pcmu", 4}},
 {@"enableG711a", {"pcma", 4}},
 {@"enableG722", {"G722", 4}},
-//{@"enableiLBC", {"iLBC", 4}},
 {@"enableGSM", {"GSM", 3}},
 {@"enableG729", {"G729", 4}}};
 

@@ -15,22 +15,29 @@
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ *
+ * =========================================================
+ * Traducció al Català de Jordi Vidal <jordividal@gmail.com>
+ * =========================================================
  */
 
-#ifndef __SIPHON_DTMF_H__
-#define __SIPHON_DTMF_H__
+"Account" = "Compte";
 
-#include <pjsua-lib/pjsua.h>
+/* SIP parameters */
+"Username" = "Nom d'usuari";
+"Server" = "Servidor";
+"Password" = "Mot clau";
+"Voicemail Number" = "Número de Correu de veu";
+"Advanced settings" = "Avançat";
 
-PJ_BEGIN_DECL
+"Phone settings" = "Ajusts del telèfon";
+"Network settings" = "Ajusts de xarxa";
 
-void sip_call_play_digit     (pjsua_call_id call_id, char digit);
-void sip_call_deinit_tonegen (pjsua_call_id call_id);
-void sip_call_play_info_digit(pjsua_call_id call_id, char digit);
+/* Donate */
+"Donate" = "Fer una donació";
+"Yes" = "Si";
+"Not Now" = "Més endavant";
+"Exit Settings and donate via PayPal through Safari?" = "Sortir dels Ajusts i fer una donació amb PayPal ara mateix?";
 
-void sip_call_play_digits(pjsua_call_id call_id, pj_str_t *digits);
-void sip_call_play_info_digits(pjsua_call_id call_id, pj_str_t *digits);
 
-PJ_END_DECL
-
-#endif /* __SIPHON_DTMF_H__ */

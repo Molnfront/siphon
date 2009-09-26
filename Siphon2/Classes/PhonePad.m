@@ -152,13 +152,6 @@ static SystemSoundID sounds[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   {
     [_delegate phonePad:self replaceLastDigitWithString: key];
   }
-  /*else 
-  {
-    if ([_delegate respondsToSelector:@selector(phonePadDeleteLastDigit:)])
-      [_delegate phonePadDeleteLastDigit:self];
-    if ([_delegate respondsToSelector:@selector(phonePad:appendString:)])
-      [_delegate phonePad:self appendString: key];
-  }*/
 }
 
 - (int)keyForPoint:(CGPoint)point

@@ -28,6 +28,14 @@
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* SiphonSettings.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SiphonSettings.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		7E05EF4F106EC55900670BB8 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = Settings/Resources/ca.lproj/Siphon.strings; sourceTree = "<group>"; };
+		7E05EF50106EC57000670BB8 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = Settings/Resources/ca.lproj/Advanced.strings; sourceTree = "<group>"; };
+		7E05EF51106EC58C00670BB8 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = Settings/Resources/ca.lproj/Phone.strings; sourceTree = "<group>"; };
+		7E05EF52106EC5A000670BB8 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = Settings/Resources/ca.lproj/Network.strings; sourceTree = "<group>"; };
+		7E05EF60106EC9C200670BB8 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = Settings/Resources/sk.lproj/Siphon.strings; sourceTree = "<group>"; };
+		7E05EF61106EC9EA00670BB8 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = Settings/Resources/sk.lproj/Advanced.strings; sourceTree = "<group>"; };
+		7E05EF62106ECA1600670BB8 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = Settings/Resources/sk.lproj/Phone.strings; sourceTree = "<group>"; };
+		7E05EF63106ECA4300670BB8 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = Settings/Resources/sk.lproj/Network.strings; sourceTree = "<group>"; };
 		7E082D9F0F3DD2C7006E317E /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = Settings/Resources/sl.lproj/Siphon.strings; sourceTree = "<group>"; };
 		7E082DA00F3DD2EE006E317E /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = Settings/Resources/sl.lproj/Advanced.strings; sourceTree = "<group>"; };
 		7E082DA10F3DD2FD006E317E /* sl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sl; path = Settings/Resources/sl.lproj/Phone.strings; sourceTree = "<group>"; };
@@ -234,6 +242,8 @@
 				ko,
 				hr,
 				he,
+				ca,
+				sk,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
@@ -298,6 +308,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				7E41B2420F35F56400B4567A /* en */,
+				7E05EF52106EC5A000670BB8 /* ca */,
 				7E9431BF0F48AA2500EE69FC /* cs */,
 				7E41B2480F35F5DF00B4567A /* da */,
 				7E41B2490F35F5EC00B4567A /* de */,
@@ -309,6 +320,7 @@
 				7EC423791025E21E005EDE22 /* ko */,
 				7E4915260F894EA100A0CF44 /* ru */,
 				7E41B24D0F35F62100B4567A /* pt */,
+				7E05EF63106ECA4300670BB8 /* sk */,
 				7E082DA20F3DD30E006E317E /* sl */,
 				7EDD6E620F62A5C200952790 /* zh_CN */,
 				7EDD6E630F62A60500952790 /* zh_TW */,
@@ -329,6 +341,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				7E4A58CE0F14180B009B5B00 /* en */,
+				7E05EF51106EC58C00670BB8 /* ca */,
 				7E9431BE0F48AA1600EE69FC /* cs */,
 				7E41B2440F35F58D00B4567A /* da */,
 				7E41B2450F35F59C00B4567A /* de */,
@@ -340,6 +353,7 @@
 				7EC4236D1025E12B005EDE22 /* ko */,
 				7E41B2470F35F5B500B4567A /* pt */,
 				7E4915270F894EA100A0CF44 /* ru */,
+				7E05EF62106ECA1600670BB8 /* sk */,
 				7E082DA10F3DD2FD006E317E /* sl */,
 				7EDD6E640F62A61E00952790 /* zh_CN */,
 				7EDD6E650F62A64000952790 /* zh_TW */,
@@ -351,6 +365,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				7ECAB6230F0CBD4A00DE9737 /* en */,
+				7E05EF4F106EC55900670BB8 /* ca */,
 				7E9431BC0F48A9F000EE69FC /* cs */,
 				7ECAB6290F0CBD8B00DE9737 /* da */,
 				7ECAB6320F0CBDB800DE9737 /* de */,
@@ -362,6 +377,7 @@
 				7EC4236B1025E0D8005EDE22 /* ko */,
 				7ECAB63A0F0CBDF700DE9737 /* pt */,
 				7E4915280F894EA100A0CF44 /* ru */,
+				7E05EF60106EC9C200670BB8 /* sk */,
 				7E082D9F0F3DD2C7006E317E /* sl */,
 				7EDD6E680F62A76900952790 /* zh_CN */,
 				7EDD6E690F62A77700952790 /* zh_TW */,
@@ -373,6 +389,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				7ECAB6260F0CBD5A00DE9737 /* en */,
+				7E05EF50106EC57000670BB8 /* ca */,
 				7E9431BD0F48AA0800EE69FC /* cs */,
 				7ECAB70B0F0CC2E100DE9737 /* da */,
 				7ECAB6310F0CBDB800DE9737 /* de */,
@@ -384,6 +401,7 @@
 				7EC4236C1025E106005EDE22 /* ko */,
 				7ECAB6390F0CBDF700DE9737 /* pt */,
 				7E4915250F894EA100A0CF44 /* ru */,
+				7E05EF61106EC9EA00670BB8 /* sk */,
 				7E082DA00F3DD2EE006E317E /* sl */,
 				7EDD6E660F62A6B900952790 /* zh_CN */,
 				7EDD6E670F62A6C600952790 /* zh_TW */,

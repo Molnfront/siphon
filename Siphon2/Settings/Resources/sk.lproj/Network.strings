@@ -17,20 +17,20 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __SIPHON_DTMF_H__
-#define __SIPHON_DTMF_H__
+"Network" = "Sieť";
 
-#include <pjsua-lib/pjsua.h>
+/* Transport Options */
+"Transport Options" = "Voľby transportu";
 
-PJ_BEGIN_DECL
+"Local Port" = "Lokálny port";
+"STUN Domain" = "STUN doména";
+"STUN Server" = "STUN server";
+"Keep Alive Interval" = "Interval spojenia";
 
-void sip_call_play_digit     (pjsua_call_id call_id, char digit);
-void sip_call_deinit_tonegen (pjsua_call_id call_id);
-void sip_call_play_info_digit(pjsua_call_id call_id, char digit);
+/* Media Transport Options */
+"Media Transport Options" = "Voľby transportu médií";
+"RTP Port" = "RTP port";
+"Enable ICE" = "Aktivovať ICE";
 
-void sip_call_play_digits(pjsua_call_id call_id, pj_str_t *digits);
-void sip_call_play_info_digits(pjsua_call_id call_id, pj_str_t *digits);
-
-PJ_END_DECL
-
-#endif /* __SIPHON_DTMF_H__ */
+"Siphon over EDGE/3G" = "Siphon cez EDGE/3G";
+"You must read your mobile subscription agreement before activate this option. The author is not responsible of your \"Siphon\" usage." = "Pred aktiváciou tejto voľby si najskôr prečítajte dohodu o mobilnom pripojení. Autor nie je zodpovedný za užívanie vášho telefónu - Siphonu.";

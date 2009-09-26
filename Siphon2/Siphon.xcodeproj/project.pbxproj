@@ -124,6 +124,8 @@
 		2207C7B30DF9EFE700B5CFBD /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		2207C7B40DF9EFE700B5CFBD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		2207C7D90DF9F17400B5CFBD /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
+		7E05EF39106EC42000670BB8 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = Resources/ca.lproj/Localizable.strings; sourceTree = "<group>"; };
+		7E05EF53106EC85F00670BB8 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = Resources/sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7E0723940E522F9D00BA1961 /* BottomButtonBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BottomButtonBar.h; path = Classes/BottomButtonBar.h; sourceTree = "<group>"; };
 		7E0723950E522F9D00BA1961 /* BottomButtonBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BottomButtonBar.m; path = Classes/BottomButtonBar.m; sourceTree = "<group>"; };
 		7E0724320E523E4400BA1961 /* bottombarred.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bottombarred.png; path = Resources/bottombarred.png; sourceTree = "<group>"; };
@@ -549,6 +551,8 @@
 				ko,
 				il,
 				he,
+				ca,
+				sk,
 			);
 			mainGroup = 2207C6DA0DF9E9B200B5CFBD;
 			productRefGroup = 2207C6FD0DF9EB7000B5CFBD /* Products */;
@@ -684,10 +688,11 @@
 		7EBF2E310E466C8D0018FB48 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				7EBF2E320E466C8D0018FB48 /* en */,
+				7E05EF39106EC42000670BB8 /* ca */,
 				7E9431DF0F48B0C200EE69FC /* cs */,
 				7E2377A50EA0046900335581 /* da */,
 				7EC5580E0E75F0850055785E /* de */,
+				7EBF2E320E466C8D0018FB48 /* en */,
 				7EC558110E75F0B60055785E /* es */,
 				7EBF2E340E466CC20018FB48 /* fr */,
 				7E92659B1052704900F94C25 /* he */,
@@ -696,6 +701,7 @@
 				7EC42474102839A0005EDE22 /* ko */,
 				7EC38FC20E9D701F006C8D19 /* pt */,
 				7E49156E0F89515D00A0CF44 /* ru */,
+				7E05EF53106EC85F00670BB8 /* sk */,
 				7E082D470F3DC4E4006E317E /* sl */,
 				7E188CA20F61E1610031D080 /* zh_CN */,
 				7E188CA30F61E1750031D080 /* zh_TW */,

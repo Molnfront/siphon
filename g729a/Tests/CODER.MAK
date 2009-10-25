@@ -2,8 +2,8 @@
 
 CC = /Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/gcc-4.0 \
   -isysroot /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.2.sdk
-CFLAGS = -arch armv6 -mno-thumb \
-  -Wall -Os -I ../Headers
+CFLAGS = -arch armv6 -mno-thumb -x c \
+  -Wall -Os -I ../Headers 
 
 SRCDIR = ../Sources
 OBJDIR = ../Build
@@ -32,7 +32,8 @@ OBJECTS= \
  tab_ld8a.o\
  util.o\
  taming.o\
- cor_func.o
+ cor_func.o\
+ g729a_encoder.o
 
 OBJECTS += coder.o
 
@@ -109,3 +110,5 @@ taming.o : $(SRCDIR)/taming.c
 cor_func.o : $(SRCDIR)/cor_func.c
 	$(CC) $(CFLAGS) -c $< -o $(OBJDIR)/$@
 
+g729a_encoder.o : $(SRCDIR)/g729a_encoder.c
+	$(CC) $(CFLAGS) -c $< -o $(OBJDIR)/$@

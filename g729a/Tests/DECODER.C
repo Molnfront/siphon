@@ -1,12 +1,29 @@
-/* ITU-T G.729 Software Package Release 2 (November 2006) */
-/*
+/**
+ *  g729a codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/****************************************************************************************
+Portions of this file are derived from the following ITU standard:
    ITU-T G.729A Speech Coder    ANSI-C Source Code
    Version 1.1    Last modified: September 1996
 
    Copyright (c) 1996,
    AT&T, France Telecom, NTT, Universite de Sherbrooke
-   All rights reserved.
-*/
+****************************************************************************************/
 
 /*-----------------------------------------------------------------*
  * Main program of the G.729a 8.0 kbit/s decoder.                  *
@@ -22,17 +39,7 @@
 #include "basic_op.h"
 #include "ld8a.h"
 
- Word16 bad_lsf;        /* bad LSF indicator   */
-
-/*
-   This variable should be always set to zero unless transmission errors
-   in LSP indices are detected.
-   This variable is useful if the channel coding designer decides to
-   perform error checking on these important parameters. If an error is
-   detected on the  LSP indices, the corresponding flag is
-   set to 1 signalling to the decoder to perform parameter substitution.
-   (The flags should be set back to 0 for correct transmission).
-*/
+#include "g729a.h"
 
 /*-----------------------------------------------------------------*
  *            Main decoder routine                                 *
@@ -40,15 +47,18 @@
 
 int main(int argc, char *argv[] )
 {
-  Word16  synth_buf[L_FRAME+M], *synth; /* Synthesis                   */
-  Word16  parm[PRM_SIZE+1];             /* Synthesis parameters        */
+  Word16  synth[L_FRAME];
+#if defined(CONTROL_OPT) && (CONTROL_OPT == 1)
+  Word16 i;
+  Word16  serial[SERIAL_SIZE];          /* Serial stream               */
+#else
   UWord8  serial[M];                    /* Serial stream               */
-  Word16  Az_dec[MP1*2];                /* Decoded Az for post-filter  */
-  Word16  T2[2];                        /* Pitch lag for 2 subframes   */
-
-
-  Word16  i, frame;
+#endif
+  Word16 frame;
+  Word32 size;
+  void *hDecoder;
   FILE   *f_syn, *f_serial;
+  Flag badFrame;
 
   printf("\n");
   printf("************   G.729a 8.0 KBIT/S SPEECH DECODER  ************\n");
@@ -65,7 +75,13 @@ int main(int argc, char *argv[] )
         printf("Usage :%s bitstream_file  outputspeech_file\n",argv[0]);
         printf("\n");
         printf("Format for bitstream_file:\n");
+#if defined(CONTROL_OPT) && (CONTROL_OPT == 1)
+        printf("  One (2-byte) synchronization word \n");
+        printf("  One (2-byte) size word,\n");
+        printf("  80 words (2-byte) containing 80 bits.\n");
+#else
         printf("  10 bytes - g729a parameters\n");
+#endif
         printf("\n");
         printf("Format for outputspeech_file:\n");
         printf("  Synthesis is written to a binary file of 16 bits PCM data.\n");
@@ -93,48 +109,56 @@ int main(int argc, char *argv[] )
  *           Initialization of decoder                             *
  *-----------------------------------------------------------------*/
 
-  for (i=0; i<M; i++) synth_buf[i] = 0;
-  synth = synth_buf + M;
-
-  bad_lsf = 0;          /* Initialize bad LSF indicator */
-  Init_Decod_ld8a();
-  Init_Post_Filter();
-  Init_Post_Process();
-
+  size = g729a_dec_mem_size();
+  hDecoder = calloc(1, size * sizeof(UWord8));
+  if (hDecoder == NULL)
+  {
+    printf("%s - Not enough memory", argv[0]);
+    fclose(f_syn);
+    fclose(f_serial);
+    exit(0);
+  }
+  g729a_dec_init(hDecoder);
 
 /*-----------------------------------------------------------------*
  *            Loop for each "L_FRAME" speech data                  *
  *-----------------------------------------------------------------*/
 
   frame = 0;
-  //while( fread(serial, sizeof(Word16), SERIAL_SIZE, f_serial) == SERIAL_SIZE)
+  badFrame = 0;
+
+#if defined(CONTROL_OPT) && (CONTROL_OPT == 1)
+  while( fread(serial, sizeof(Word16), SERIAL_SIZE, f_serial) == SERIAL_SIZE)
+#else
   while( fread(serial, sizeof(UWord8), M, f_serial) == M)
+#endif
   {
+
+#if defined(CONTROL_OPT) && (CONTROL_OPT == 1)
+#else
     printf("Frame =%d\r", frame++);
+#endif
 
-    //bits2prm_ld8k( &serial[2], &parm[1]);
-    bits2prm_ld8k( serial, &parm[1]);
-
+#if defined(CONTROL_OPT) && (CONTROL_OPT == 1)
+    badFrame = 0;
     /* the hardware detects frame erasures by checking if all bits
-       are set to zero
-     */
-    parm[0] = 0;           /* No frame erasure */
-    //for (i=2; i < SERIAL_SIZE; i++)
-    //  if (serial[i] == 0 ) parm[0] = 1; /* frame erased     */
+       are set to zero */
+    for (i=2; i < SERIAL_SIZE; i++)
+      if (serial[i] == 0 ) badFrame = 1; /* frame erased     */
 
-    /* check pitch parity and put 1 in parm[4] if parity error */
+    g729a_dec_process(hDecoder, &serial[2], synth, badFrame);
+#else
+    g729a_dec_process(hDecoder, serial, synth, badFrame);
+#endif
 
-    parm[4] = Check_Parity_Pitch(parm[3], parm[4]);
 
-    Decod_ld8a(parm, synth, Az_dec, T2);
-
-    Post_Filter(synth, Az_dec, T2);        /* Post-filter */
-
-    Post_Process(synth, L_FRAME);
 
     fwrite(synth, sizeof(short), L_FRAME, f_syn);
-
   }
+  g729a_dec_deinit(hDecoder);
+  free(hDecoder);
+  fclose(f_syn);
+  fclose(f_serial);
+
   return(0);
 }
-

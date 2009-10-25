@@ -2,8 +2,8 @@
 
 CC = /Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/gcc-4.0 \
   -isysroot /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.2.sdk
-CFLAGS = -arch armv6 -mno-thumb \
-  -Wall -Os -I ../Headers
+CFLAGS = -arch armv6 -mno-thumb -x c \
+  -Wall -Werror -Os -I ../Headers
 
 SRCDIR = ../Sources
 OBJDIR = ../Build
@@ -30,7 +30,12 @@ OBJECTS = \
  pred_lt3.o\
  postfilt.o\
  tab_ld8a.o\
- util.o
+ util.o\
+ g729a_decoder.o
+
+# g729a_decoder.o \
+# g729a_encoder.o \
+# g729a.o
  
 OBJECTS += decoder.o
 
@@ -100,7 +105,12 @@ tab_ld8a.o : $(SRCDIR)/tab_ld8a.c
 
 util.o : $(SRCDIR)/util.c
 	$(CC) $(CFLAGS) -c $< -o $(OBJDIR)/$@
-	
 
- 
+g729a.o : $(SRCDIR)/g729a.c
+	echo $(CC) $(CFLAGS) -c $< -o $(OBJDIR)/$@ 
 
+g729a_decoder.o : $(SRCDIR)/g729a_decoder.c
+	$(CC) $(CFLAGS) -c $< -o $(OBJDIR)/$@ 
+
+g729a_encoder.o : $(SRCDIR)/g729a_encoder.c
+	$(CC) $(CFLAGS) -c $< -o $(OBJDIR)/$@ 

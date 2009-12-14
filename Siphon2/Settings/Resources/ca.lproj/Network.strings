@@ -30,6 +30,7 @@
 "Local Port" = "Port Local";
 "STUN Domain" = "Domini STUN";
 "STUN Server" = "Servidor STUN";
+"DNS" = "DNS";
 "Keep Alive Interval" = "Interval Keep-Alive";
 
 /* Media Transport Options */
@@ -38,5 +39,5 @@
 "Enable ICE" = "Activa ICE";
 
 "Siphon over EDGE/3G" = "Siphon via EDGE/3G";
-"You must read your mobile subscription agreement before activate this option. The author is not responsible of your \"Siphon\" usage." = "Cal que llegeixi el seu contracte abans d'usar aquesta opció. L'autor no es fa responsable del seu us.".";
+"You must read your mobile subscription agreement before activate this option. The author is not responsible of your \"Siphon\" usage." = "Cal que llegeixi el seu contracte abans d'usar aquesta opció. L'autor no es fa responsable del seu us.";
 

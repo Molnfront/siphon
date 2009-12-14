@@ -134,6 +134,7 @@ static SystemSoundID sounds[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     {
       [_delegate phonePad:self keyUp: _keyValues[_downKey]];
     }
+
     [self cancelTrackingWithEvent:nil];
   }
 }

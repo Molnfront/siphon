@@ -25,6 +25,7 @@
 "Local Port" = "Puerto Local";
 "STUN Domain" = "Dominio STUN";
 "STUN Server" = "Servidor STUN";
+"DNS" = "DNS";
 "Keep Alive Interval" = "Keep Alive Interval";
 
 /* Media Transport Options */

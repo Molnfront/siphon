@@ -25,6 +25,7 @@
 "Local Port" = "Lokální port";
 "STUN Domain" = "STUN doména";
 "STUN Server" = "STUN server";
+"DNS" = "DNS";
 "Keep Alive Interval" = "Interval udržováni hovoru";
 
 /* Media Transport Options */

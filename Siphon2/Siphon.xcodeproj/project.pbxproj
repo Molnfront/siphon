@@ -33,7 +33,6 @@
 		7E3845B60E3A8C02007296FC /* delete.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E3845B30E3A8C02007296FC /* delete.png */; };
 		7E3845B70E3A8C02007296FC /* delete_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E3845B40E3A8C02007296FC /* delete_pressed.png */; };
 		7E3845EF0E3A90F8007296FC /* lcd_top.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E3845EE0E3A90F8007296FC /* lcd_top.png */; };
-		7E391791104C851500CE9CEC /* libg729a.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E39178F104C851500CE9CEC /* libg729a.a */; };
 		7E3917D6104F24FC00CE9CEC /* default-iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E3917D4104F24FC00CE9CEC /* default-iphone.png */; };
 		7E3917D7104F24FC00CE9CEC /* default-ipod.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E3917D5104F24FC00CE9CEC /* default-ipod.png */; };
 		7E477EC80E80512200EFDA76 /* keypad.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E477EC60E80512200EFDA76 /* keypad.png */; };
@@ -82,6 +81,11 @@
 		7EBF2EE00E47A5480018FB48 /* FavoritesListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EBF2EDF0E47A5480018FB48 /* FavoritesListController.m */; };
 		7EBF2F220E47A69C0018FB48 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EBF2F210E47A69C0018FB48 /* CoreGraphics.framework */; };
 		7EC38E570E9C10B0006C8D19 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EC38E560E9C10B0006C8D19 /* libsqlite3.0.dylib */; };
+		7ED0583010C5C3A5007F69B4 /* libg7221codec-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7ED0582F10C5C3A5007F69B4 /* libg7221codec-arm-apple-darwin9.a */; };
+		7ED0583410C5C3D4007F69B4 /* libg729a.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7ED0583310C5C3D4007F69B4 /* libg729a.a */; };
+		7ED5123810A24B8E0017BAE2 /* PushButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 7ED5123710A24B8E0017BAE2 /* PushButton.m */; };
+		7ED5125710A24CD60017BAE2 /* libpjmedia-audiodev-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7ED5125610A24CD60017BAE2 /* libpjmedia-audiodev-arm-apple-darwin9.a */; };
+		7ED5125C10A24D0B0017BAE2 /* libresample-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7ED5125B10A24D0B0017BAE2 /* libresample-arm-apple-darwin9.a */; };
 		7EDAB1840E3B5F7700882D34 /* DialerPhonePad.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EDAB1830E3B5F7700882D34 /* DialerPhonePad.m */; };
 		7EDAB18F0E3B61B500882D34 /* dialerkeypad.png in Resources */ = {isa = PBXBuildFile; fileRef = 7EDAB18E0E3B61B500882D34 /* dialerkeypad.png */; };
 		7EDAB4680E41082300882D34 /* call.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EDAB4670E41082300882D34 /* call.m */; };
@@ -155,7 +159,6 @@
 		7E3845B30E3A8C02007296FC /* delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = delete.png; path = Resources/delete.png; sourceTree = "<group>"; };
 		7E3845B40E3A8C02007296FC /* delete_pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = delete_pressed.png; path = Resources/delete_pressed.png; sourceTree = "<group>"; };
 		7E3845EE0E3A90F8007296FC /* lcd_top.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = lcd_top.png; path = Resources/lcd_top.png; sourceTree = "<group>"; };
-		7E39178F104C851500CE9CEC /* libg729a.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libg729a.a; path = "../pjproject-1.0.x/third_party/lib/libg729a.a"; sourceTree = SOURCE_ROOT; };
 		7E3917D4104F24FC00CE9CEC /* default-iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "default-iphone.png"; path = "Resources/default-iphone.png"; sourceTree = "<group>"; };
 		7E3917D5104F24FC00CE9CEC /* default-ipod.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "default-ipod.png"; path = "Resources/default-ipod.png"; sourceTree = "<group>"; };
 		7E477EC60E80512200EFDA76 /* keypad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = keypad.png; path = Resources/keypad.png; sourceTree = "<group>"; };
@@ -174,8 +177,8 @@
 		7E747C6F104B306000F67F72 /* lcd_top_simple.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = lcd_top_simple.png; path = Resources/lcd_top_simple.png; sourceTree = "<group>"; };
 		7E7CE2220EA327F3005583DA /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reachability.h; path = Classes/Reachability.h; sourceTree = "<group>"; };
 		7E7CE2230EA327F3005583DA /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = Classes/Reachability.m; sourceTree = "<group>"; };
-		7E7CE3680EA3FBDB005583DA /* libpjmedia-codec-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjmedia-codec-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/pjmedia/lib/libpjmedia-codec-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
-		7E7CE36C0EA3FC25005583DA /* libgsmcodec-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgsmcodec-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/third_party/lib/libgsmcodec-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7E7CE3680EA3FBDB005583DA /* libpjmedia-codec-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjmedia-codec-arm-apple-darwin9.a"; path = "../pjproject-svn/pjmedia/lib/libpjmedia-codec-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7E7CE36C0EA3FC25005583DA /* libgsmcodec-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgsmcodec-arm-apple-darwin9.a"; path = "../pjproject-svn/third_party/lib/libgsmcodec-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
 		7E92659B1052704900F94C25 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = Resources/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7E9431DF0F48B0C200EE69FC /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = Resources/cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7E95B6010E955D170072ECC5 /* RecentCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RecentCall.h; path = Classes/RecentCall.h; sourceTree = "<group>"; };
@@ -210,7 +213,6 @@
 		7EBEBAD20F1D63C300252639 /* speaker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = speaker.png; path = Resources/Menu/speaker.png; sourceTree = "<group>"; };
 		7EBEBAF00F1D644B00252639 /* BottomBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BottomBar.h; path = Classes/BottomBar.h; sourceTree = "<group>"; };
 		7EBEBAF10F1D644B00252639 /* BottomBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BottomBar.m; path = Classes/BottomBar.m; sourceTree = "<group>"; };
-		7EBEBAFC0F1D648400252639 /* MenuCallView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MenuCallView.h; path = Classes/MenuCallView.h; sourceTree = "<group>"; };
 		7EBEBAFD0F1D648400252639 /* MenuCallView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MenuCallView.m; path = Classes/MenuCallView.m; sourceTree = "<group>"; };
 		7EBEBB070F1D6A7B00252639 /* bottombarblue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bottombarblue.png; path = Resources/bottombarblue.png; sourceTree = "<group>"; };
 		7EBEBB080F1D6A7B00252639 /* bottombarblue_pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bottombarblue_pressed.png; path = Resources/bottombarblue_pressed.png; sourceTree = "<group>"; };
@@ -225,6 +227,13 @@
 		7EC42474102839A0005EDE22 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = Resources/ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7EC5580E0E75F0850055785E /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Resources/de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7EC558110E75F0B60055785E /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = Resources/es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		7ED0582F10C5C3A5007F69B4 /* libg7221codec-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libg7221codec-arm-apple-darwin9.a"; path = "../pjproject-svn/third_party/lib/libg7221codec-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7ED0583310C5C3D4007F69B4 /* libg729a.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libg729a.a; path = "../pjproject-svn/third_party/lib/libg729a.a"; sourceTree = SOURCE_ROOT; };
+		7ED5123610A24B8E0017BAE2 /* PushButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PushButton.h; path = Classes/PushButton.h; sourceTree = "<group>"; };
+		7ED5123710A24B8E0017BAE2 /* PushButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PushButton.m; path = Classes/PushButton.m; sourceTree = "<group>"; };
+		7ED5125510A24C9E0017BAE2 /* MenuCallView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MenuCallView.h; path = Classes/MenuCallView.h; sourceTree = "<group>"; };
+		7ED5125610A24CD60017BAE2 /* libpjmedia-audiodev-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjmedia-audiodev-arm-apple-darwin9.a"; path = "../pjproject-svn/pjmedia/lib/libpjmedia-audiodev-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7ED5125B10A24D0B0017BAE2 /* libresample-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libresample-arm-apple-darwin9.a"; path = "../pjproject-svn/third_party/lib/libresample-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
 		7EDAB1820E3B5F7700882D34 /* DialerPhonePad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DialerPhonePad.h; path = Classes/DialerPhonePad.h; sourceTree = "<group>"; };
 		7EDAB1830E3B5F7700882D34 /* DialerPhonePad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DialerPhonePad.m; path = Classes/DialerPhonePad.m; sourceTree = "<group>"; };
 		7EDAB18E0E3B61B500882D34 /* dialerkeypad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dialerkeypad.png; path = Resources/dialerkeypad.png; sourceTree = "<group>"; };
@@ -233,14 +242,14 @@
 		7EDAB5030E4114C900882D34 /* ring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ring.h; path = Other/ring.h; sourceTree = "<group>"; };
 		7EDAB5870E425BED00882D34 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		7EDAB59B0E425CEB00882D34 /* ring.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ring.m; path = Other/ring.m; sourceTree = "<group>"; };
-		7EDAB6170E4269D600882D34 /* libpj-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpj-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/pjlib/lib/libpj-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
-		7EDAB6190E4269EA00882D34 /* libpjlib-util-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjlib-util-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/pjlib-util/lib/libpjlib-util-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
-		7EDAB61B0E4269FB00882D34 /* libpjnath-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjnath-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/pjnath/lib/libpjnath-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
-		7EDAB61D0E426A1700882D34 /* libpjmedia-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjmedia-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/pjmedia/lib/libpjmedia-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
-		7EDAB61F0E426A3300882D34 /* libpjsip-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsip-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/pjsip/lib/libpjsip-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
-		7EDAB6200E426A3300882D34 /* libpjsip-simple-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsip-simple-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/pjsip/lib/libpjsip-simple-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
-		7EDAB6210E426A3300882D34 /* libpjsip-ua-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsip-ua-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/pjsip/lib/libpjsip-ua-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
-		7EDAB6220E426A3300882D34 /* libpjsua-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsua-arm-apple-darwin9.a"; path = "../pjproject-1.0.x/pjsip/lib/libpjsua-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7EDAB6170E4269D600882D34 /* libpj-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpj-arm-apple-darwin9.a"; path = "../pjproject-svn/pjlib/lib/libpj-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7EDAB6190E4269EA00882D34 /* libpjlib-util-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjlib-util-arm-apple-darwin9.a"; path = "../pjproject-svn/pjlib-util/lib/libpjlib-util-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7EDAB61B0E4269FB00882D34 /* libpjnath-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjnath-arm-apple-darwin9.a"; path = "../pjproject-svn/pjnath/lib/libpjnath-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7EDAB61D0E426A1700882D34 /* libpjmedia-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjmedia-arm-apple-darwin9.a"; path = "../pjproject-svn/pjmedia/lib/libpjmedia-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7EDAB61F0E426A3300882D34 /* libpjsip-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsip-arm-apple-darwin9.a"; path = "../pjproject-svn/pjsip/lib/libpjsip-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7EDAB6200E426A3300882D34 /* libpjsip-simple-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsip-simple-arm-apple-darwin9.a"; path = "../pjproject-svn/pjsip/lib/libpjsip-simple-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7EDAB6210E426A3300882D34 /* libpjsip-ua-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsip-ua-arm-apple-darwin9.a"; path = "../pjproject-svn/pjsip/lib/libpjsip-ua-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7EDAB6220E426A3300882D34 /* libpjsua-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsua-arm-apple-darwin9.a"; path = "../pjproject-svn/pjsip/lib/libpjsua-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
 		7EE0DB20102C953500831291 /* VoicemailController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VoicemailController.h; path = Classes/VoicemailController.h; sourceTree = "<group>"; };
 		7EE0DB21102C953500831291 /* VoicemailController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VoicemailController.m; path = Classes/VoicemailController.m; sourceTree = "<group>"; };
 		7EE412930EE2110F008D26D1 /* dtmf-s.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = "dtmf-s.aif"; path = "Sounds/dtmf-s.aif"; sourceTree = "<group>"; };
@@ -286,7 +295,10 @@
 				7E7CE3690EA3FBDB005583DA /* libpjmedia-codec-arm-apple-darwin9.a in Frameworks */,
 				7E7CE36D0EA3FC25005583DA /* libgsmcodec-arm-apple-darwin9.a in Frameworks */,
 				7E21FB1B0F2BD59C00AD2C7C /* CFNetwork.framework in Frameworks */,
-				7E391791104C851500CE9CEC /* libg729a.a in Frameworks */,
+				7ED5125710A24CD60017BAE2 /* libpjmedia-audiodev-arm-apple-darwin9.a in Frameworks */,
+				7ED5125C10A24D0B0017BAE2 /* libresample-arm-apple-darwin9.a in Frameworks */,
+				7ED0583010C5C3A5007F69B4 /* libg7221codec-arm-apple-darwin9.a in Frameworks */,
+				7ED0583410C5C3D4007F69B4 /* libg729a.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -377,10 +389,13 @@
 		2207C6F30DF9EAF400B5CFBD /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				7ED5123610A24B8E0017BAE2 /* PushButton.h */,
+				7ED5123710A24B8E0017BAE2 /* PushButton.m */,
 				7EE0DB20102C953500831291 /* VoicemailController.h */,
 				7EE0DB21102C953500831291 /* VoicemailController.m */,
 				7E986F930F89664300930F9C /* AbsLCDView.h */,
 				7E986F940F89664300930F9C /* AbsLCDView.m */,
+				7ED5125510A24C9E0017BAE2 /* MenuCallView.h */,
 				7EBEBAFD0F1D648400252639 /* MenuCallView.m */,
 				7EECB0260EF857130044293F /* constants.h */,
 				7E07257B0E53959600BA1961 /* NSNotificationAdditions.h */,
@@ -453,7 +468,6 @@
 		7E95B5F80E955CC90072ECC5 /* Database Interactions */ = {
 			isa = PBXGroup;
 			children = (
-				7EBEBAFC0F1D648400252639 /* MenuCallView.h */,
 				7E95B6010E955D170072ECC5 /* RecentCall.h */,
 				7E95B6020E955D170072ECC5 /* RecentCall.m */,
 			);
@@ -486,9 +500,11 @@
 		7EDAB6160E4269C100882D34 /* Device */ = {
 			isa = PBXGroup;
 			children = (
-				7E39178F104C851500CE9CEC /* libg729a.a */,
+				7ED0583310C5C3D4007F69B4 /* libg729a.a */,
+				7ED0582F10C5C3A5007F69B4 /* libg7221codec-arm-apple-darwin9.a */,
 				7E7CE36C0EA3FC25005583DA /* libgsmcodec-arm-apple-darwin9.a */,
 				7E7CE3680EA3FBDB005583DA /* libpjmedia-codec-arm-apple-darwin9.a */,
+				7ED5125610A24CD60017BAE2 /* libpjmedia-audiodev-arm-apple-darwin9.a */,
 				7EDAB6170E4269D600882D34 /* libpj-arm-apple-darwin9.a */,
 				7EDAB6190E4269EA00882D34 /* libpjlib-util-arm-apple-darwin9.a */,
 				7EDAB61B0E4269FB00882D34 /* libpjnath-arm-apple-darwin9.a */,
@@ -497,6 +513,7 @@
 				7EDAB6200E426A3300882D34 /* libpjsip-simple-arm-apple-darwin9.a */,
 				7EDAB6210E426A3300882D34 /* libpjsip-ua-arm-apple-darwin9.a */,
 				7EDAB6220E426A3300882D34 /* libpjsua-arm-apple-darwin9.a */,
+				7ED5125B10A24D0B0017BAE2 /* libresample-arm-apple-darwin9.a */,
 			);
 			name = Device;
 			sourceTree = "<group>";
@@ -679,6 +696,7 @@
 				7EBEBAFE0F1D648400252639 /* MenuCallView.m in Sources */,
 				7E986F960F89664300930F9C /* AbsLCDView.m in Sources */,
 				7EE0DB22102C953500831291 /* VoicemailController.m in Sources */,
+				7ED5123810A24B8E0017BAE2 /* PushButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -735,11 +753,11 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"../pjproject-1.0.x/pjlib/include",
-					"../pjproject-1.0.x/pjlib-util/include",
-					"../pjproject-1.0.x/pjnath/include",
-					"../pjproject-1.0.x/pjmedia/include",
-					"../pjproject-1.0.x/pjsip/include",
+					"../pjproject-svn/pjlib/include",
+					"../pjproject-svn/pjlib-util/include",
+					"../pjproject-svn/pjnath/include",
+					"../pjproject-svn/pjmedia/include",
+					"../pjproject-svn/pjsip/include",
 				);
 				LD_OPENMP_FLAGS = "-fopenmp";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
@@ -794,26 +812,27 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				HEADER_SEARCH_PATHS = (
 					Headers,
-					"../pjproject-1.0.x/pjlib/include",
-					"../pjproject-1.0.x/pjlib-util/include",
-					"../pjproject-1.0.x/pjmedia/include",
-					"../pjproject-1.0.x/pjnath/include",
-					"../pjproject-1.0.x/pjsip/include",
+					"../pjproject-svn/pjlib/include",
+					"../pjproject-svn/pjlib-util/include",
+					"../pjproject-svn/pjmedia/include",
+					"../pjproject-svn/pjnath/include",
+					"../pjproject-svn/pjsip/include",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				IPHONEOS_DEPLOYMENT_TARGET = 2.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"../pjproject-1.0.x/pjlib/lib",
-					"../pjproject-1.0.x/pjsip/lib",
-					"../pjproject-1.0.x/pjmedia/lib",
-					"../pjproject-1.0.x/pjlib-util/lib",
-					"../pjproject-1.0.x/pjnath/lib",
-					"../pjproject-1.0.x/third_party/lib",
-					"../pjproject-1.0.x/pjmedia/lib",
-					"../pjproject-1.0.x/third_party/lib",
-					"\"$(SRCROOT)/../pjproject-1.0.x/third_party/lib\"",
+					"../pjproject-svn/pjlib/lib",
+					"../pjproject-svn/pjsip/lib",
+					"../pjproject-svn/pjmedia/lib",
+					"../pjproject-svn/pjlib-util/lib",
+					"../pjproject-svn/pjnath/lib",
+					"../pjproject-svn/third_party/lib",
+					"../pjproject-svn/pjmedia/lib",
+					"../pjproject-svn/third_party/lib",
+					"\"$(SRCROOT)/../pjproject-svn/third_party/lib\"",
+					"\"$(SRCROOT)/../pjproject-svn/pjmedia/lib\"",
 				);
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -852,25 +871,26 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					Headers,
-					"../pjproject-1.0.x/pjlib/include",
-					"../pjproject-1.0.x/pjlib-util/include",
-					"../pjproject-1.0.x/pjmedia/include",
-					"../pjproject-1.0.x/pjnath/include",
-					"../pjproject-1.0.x/pjsip/include",
+					"../pjproject-svn/pjlib/include",
+					"../pjproject-svn/pjlib-util/include",
+					"../pjproject-svn/pjmedia/include",
+					"../pjproject-svn/pjnath/include",
+					"../pjproject-svn/pjsip/include",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"../pjproject-1.0.x/pjlib/lib",
-					"../pjproject-1.0.x/pjsip/lib",
-					"../pjproject-1.0.x/pjmedia/lib",
-					"../pjproject-1.0.x/pjlib-util/lib",
-					"../pjproject-1.0.x/pjnath/lib",
-					"../pjproject-1.0.x/third_party/lib",
-					"../pjproject-1.0.x/pjmedia/lib",
-					"../pjproject-1.0.x/third_party/lib",
-					"\"$(SRCROOT)/../pjproject-1.0.x/third_party/lib\"",
+					"../pjproject-svn/pjlib/lib",
+					"../pjproject-svn/pjsip/lib",
+					"../pjproject-svn/pjmedia/lib",
+					"../pjproject-svn/pjlib-util/lib",
+					"../pjproject-svn/pjnath/lib",
+					"../pjproject-svn/third_party/lib",
+					"../pjproject-svn/pjmedia/lib",
+					"../pjproject-svn/third_party/lib",
+					"\"$(SRCROOT)/../pjproject-svn/third_party/lib\"",
+					"\"$(SRCROOT)/../pjproject-svn/pjmedia/lib\"",
 				);
 				OTHER_LDFLAGS = (
 					"-framework",

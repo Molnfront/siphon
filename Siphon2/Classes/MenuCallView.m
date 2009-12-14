@@ -26,11 +26,12 @@
 
 - (void)preloadButtons
 {
+  int i;
   CGRect rect = {0.0f, 0.0f, 0.0f, 0.0f};
   NSString *bg, *bgSel;
   UIImage *image, *selectedImage;
   
-  for (int i = 0; i < 6; ++i)
+  for (i = 0; i < 6; ++i)
   {
     bg    = [NSString stringWithFormat:@"sixsqbutton_%d.png", i+1];
     bgSel = [NSString stringWithFormat:@"sixsqbuttonsel_%d.png", i+1];
@@ -38,9 +39,7 @@
     selectedImage = [UIImage imageNamed:bgSel];
     
     rect.size = [image size];
-    
-    UIButton *button = [[UIButton alloc] initWithFrame:rect];
-    //UIButton *button = [[PushButton alloc] initWithFrame:rect];
+    PushButton *button = [[PushButton alloc] initWithFrame:rect];
     
     button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
@@ -50,18 +49,25 @@
     [button setBackgroundImage:selectedImage forState:UIControlStateSelected];
     
     // in case the parent view draws with a custom color or gradient, use a transparent color
-    button.backgroundColor = [UIColor clearColor];
+    //button.backgroundColor = [UIColor clearColor];
     
     [button setTag:i];
     [button addTarget:self action:@selector(clicked:) forControlEvents:UIControlEventTouchUpInside];
     
+    CGRect content = CGRectMake(11.0, 11.0, 72.0, 75.0);
+    if (i == 0 || i == 3)
+      content.origin.x += 5.;
+    if (i < 3)
+      content.origin.y += 2.;
+    [button setContentRect: content];
+    
     _buttons[i] = button;
     [self addSubview:_buttons[i]];
     
-    //rect.origin.x += rect.size.width;
     if (i == 2)
     {
-      rect.origin.y += rect.size.height - 1.0f;
+      //rect.origin.y += rect.size.height - 1.0f;
+      rect.origin.y += rect.size.height - 9.0f;
       rect.origin.x = 0.0f;
     }
     else
@@ -95,7 +101,7 @@
     [super dealloc];
 }
 
-- (UIButton *)buttonAtPosition:(NSInteger)pos
+- (PushButton *)buttonAtPosition:(NSInteger)pos
 {
   if (pos < 0 || pos > 5)
     return nil;
@@ -113,8 +119,13 @@
   }
   if (title)
   {
-    [_buttons[pos] setFont:[UIFont systemFontOfSize:[UIFont buttonFontSize] - 4.]];
-    //[_buttons[pos] setTitle:title forState:UIControlStateNormal];
+#ifdef __IPHONE_3_0
+    _buttons[pos].titleLabel.font = [UIFont systemFontOfSize:[UIFont buttonFontSize] - 5.];
+#else
+    [_buttons[pos] setFont:[UIFont systemFontOfSize:[UIFont buttonFontSize] - 5.]];
+#endif
+    [_buttons[pos] setTitle:title forState:UIControlStateNormal];
+    //[_buttons[pos] setTitle:title];
   }
 }
 

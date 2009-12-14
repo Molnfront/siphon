@@ -18,6 +18,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "PushButton.h"
 
 @protocol MenuCallView
 
@@ -27,13 +28,13 @@
 
 @interface MenuCallView : UIView 
 {
-  UIButton *_buttons[6];
+  PushButton *_buttons[6];
   id delegate;
 }
 
 @property (nonatomic, retain)  id delegate;
 
-- (UIButton *)buttonAtPosition:(NSInteger)button;
+- (PushButton *)buttonAtPosition:(NSInteger)button;
 - (void)setTitle:(NSString *)title image:(UIImage *)image forPosition:(NSInteger)pos;
 
 @end

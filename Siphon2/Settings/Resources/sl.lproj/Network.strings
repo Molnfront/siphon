@@ -25,6 +25,7 @@
 "Local Port" = "Lokalni port";
 "STUN Domain" = "STUN domena";
 "STUN Server" = "STUN strežnik";
+"DNS" = "DNS";
 "Keep Alive Interval" = "Interval povezljivosti";
 
 /* Media Transport Options */

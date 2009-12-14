@@ -138,7 +138,6 @@ static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
   
   /* FIXME: Start ringback */
   sip_ring_start([app pjsipConfig]);
-  //sip_ring_startup(call_id);
   
   
   /* Automatically answer incoming calls with 180/RINGING */
@@ -246,7 +245,8 @@ typedef struct struct_codecs {
 static const Codecs codecs[] = {
 {@"enableG711u", {"pcmu", 4}},
 {@"enableG711a", {"pcma", 4}},
-{@"enableG722", {"G722", 4}},
+{@"enableG722", {"G722/", 5}},
+{@"enableG7221", {"G7221", 5}},
 {@"enableGSM", {"GSM", 3}},
 {@"enableG729", {"G729", 4}}};
 
@@ -281,8 +281,12 @@ pj_status_t sip_startup(app_config_t *app_config)
   char tmp[80];
   pjsua_transport_id transport_id = -1;
  
-  const char *stun_srv;
-  const char *stun_dmn;
+  const char *srv;
+
+  const char *ip_addr;
+  
+  NSArray * array;
+  NSString *dns;
   
   SiphonApplication *app = (SiphonApplication *)[SiphonApplication sharedApplication];
 
@@ -388,24 +392,80 @@ pj_status_t sip_startup(app_config_t *app_config)
     goto error;
   }
 
+#if 1 // TEST pour le vpn
+  ip_addr = [[[NSUserDefaults standardUserDefaults] stringForKey: 
+              @"boundAddr"] UTF8String];
+  if (ip_addr && strlen(ip_addr))
+  {
+    pj_strdup2_with_null(app_config->pool, 
+                         &(app_config->udp_cfg.bound_addr), 
+                         ip_addr);
+    pj_strdup2_with_null(app_config->pool, 
+                         &(app_config->rtp_cfg.bound_addr), 
+                         ip_addr);
+  }
+  
+  ip_addr = [[[NSUserDefaults standardUserDefaults] stringForKey: 
+              @"publicAddr"] UTF8String];
+  if (ip_addr && strlen(ip_addr))
+  {
+    pj_strdup2_with_null(app_config->pool, 
+                         &(app_config->udp_cfg.public_addr), 
+                         ip_addr);
+    pj_strdup2_with_null(app_config->pool, 
+                         &(app_config->rtp_cfg.public_addr), 
+                         ip_addr);
+  }
+#endif
+  
   /* Initialize application callbacks */
   app_config->cfg.cb.on_incoming_call = &on_incoming_call;
   app_config->cfg.cb.on_call_media_state = &on_call_media_state;
   app_config->cfg.cb.on_call_state = &on_call_state;
   app_config->cfg.cb.on_reg_state = &on_reg_state;
-  
-  stun_dmn = [[[NSUserDefaults standardUserDefaults] stringForKey: 
-      @"stunDomain"] UTF8String];
-  if (stun_dmn && strlen(stun_dmn))
-    pj_strdup2_with_null(app_config->pool, &(app_config->cfg.stun_domain), stun_dmn);
-  
-  stun_srv= [[[NSUserDefaults standardUserDefaults] stringForKey: 
-      @"stunServer"] UTF8String];
-  if (stun_srv && strlen(stun_srv))
-    pj_strdup2_with_null(app_config->pool, &(app_config->cfg.stun_host), stun_srv);
-  
+
+  srv = [[[NSUserDefaults standardUserDefaults] stringForKey: 
+              @"stunServer"] UTF8String];
+  if (srv && strlen(srv))
+  {
+    if (app_config->cfg.stun_srv_cnt==PJ_ARRAY_SIZE(app_config->cfg.stun_srv)) 
+    {
+      PJ_LOG(1,(THIS_FILE, "Error: too many STUN servers"));
+      return PJ_ETOOMANY;
+    }
+    pj_strdup2_with_null(app_config->pool, 
+                         &(app_config->cfg.stun_srv[app_config->cfg.stun_srv_cnt++]), 
+                         srv);
+  }
+
  // app_config->cfg.outbound_proxy[0] = pj_str(outbound_proxy);
  // app_config->cfg.outbound_proxy_cnt = 1;
+  
+  dns = [[NSUserDefaults standardUserDefaults] stringForKey: @"dnsServer"];
+  array = [dns componentsSeparatedByString:@","];
+  NSEnumerator *enumerator = [array objectEnumerator];
+  NSString *anObject;
+  while (anObject = [enumerator nextObject])
+  {
+    NSMutableString *mutableStr = [anObject mutableCopy];
+    CFStringTrimWhitespace((CFMutableStringRef)mutableStr);
+    srv = [mutableStr UTF8String];
+    if (srv && strlen(srv))
+    {
+      if (app_config->cfg.nameserver_count==PJ_ARRAY_SIZE(app_config->cfg.nameserver)) 
+      {
+        PJ_LOG(1,(THIS_FILE, "Error: too many DNS servers"));
+        [mutableStr release];
+        break;
+      }
+      pj_strdup2_with_null(app_config->pool, 
+                           &(app_config->cfg.nameserver[app_config->cfg.nameserver_count++]), 
+                           srv);
+    }
+      [mutableStr release];
+  }
+  //[enumerator release];
+  //[array release];
   
   /* Initialize pjsua */
   status = pjsua_init(&app_config->cfg, &app_config->log_cfg, 
@@ -508,7 +568,6 @@ pj_status_t sip_connect(pj_pool_t *pool, pjsua_acc_id *acc_id)
   const char *contactname;
   const char *passwd;
   const char *server;
-  const char *proxy;
   
   SiphonApplication *app = (SiphonApplication *)[SiphonApplication sharedApplication];
   
@@ -524,8 +583,6 @@ pj_status_t sip_connect(pj_pool_t *pool, pjsua_acc_id *acc_id)
              @"password"] UTF8String];
   server = [[[NSUserDefaults standardUserDefaults] stringForKey: 
              @"server"] UTF8String];
-  proxy = [[[NSUserDefaults standardUserDefaults] stringForKey: 
-             @"proxyServer"] UTF8String];
   
   pjsua_acc_config_default(&acc_cfg);
 
@@ -591,21 +648,39 @@ pj_status_t sip_connect(pj_pool_t *pool, pjsua_acc_id *acc_id)
   acc_cfg.ka_interval = [[NSUserDefaults standardUserDefaults] integerForKey: 
                     @"kaInterval"];
 
-  pj_str_t pj_proxy = pj_str((char *)proxy);
-  if (pj_strlen(&pj_proxy) > 0)
+  // proxies server
+  NSString *proxies = [[NSUserDefaults standardUserDefaults] stringForKey: @"proxyServer"];
+  NSArray *array = [proxies componentsSeparatedByString:@","];
+  NSEnumerator *enumerator = [array objectEnumerator];
+  NSString *anObject;
+  while (anObject = [enumerator nextObject])
   {
-    acc_cfg.proxy[0].ptr = (char*) pj_pool_alloc(/*app_config.*/pool, 
-                                                 PJSIP_MAX_URL_SIZE);
-    acc_cfg.proxy[0].slen = pj_ansi_snprintf(acc_cfg.proxy[0].ptr, 
-                                            PJSIP_MAX_URL_SIZE, "sip:%s;lr", proxy);
-    if ((status = pjsua_verify_sip_url(acc_cfg.proxy[0].ptr)) != 0) 
+    NSMutableString *mutableStr = [anObject mutableCopy];
+    CFStringTrimWhitespace((CFMutableStringRef)mutableStr);
+    const char *proxy = [mutableStr UTF8String];
+    if (proxy && strlen(proxy))
     {
-      PJ_LOG(1,(THIS_FILE,  "Error: invalid SIP URL '%s' in proxy argument",
-                acc_cfg.reg_uri));
-      [app displayParameterError: @"Invalid value for proxy parameter."];
-      return status;
+      if (acc_cfg.proxy_cnt==PJ_ARRAY_SIZE(acc_cfg.proxy)) 
+      {
+        PJ_LOG(1,(THIS_FILE, "Error: too many proxy servers"));
+        [mutableStr release];
+        break;
+      }
+      pj_str_t pj_proxy;
+      pj_proxy.slen = strlen(proxy) + 8;
+      pj_proxy.ptr = (char*) pj_pool_alloc(pool, pj_proxy.slen);
+      pj_proxy.slen = pj_ansi_snprintf(pj_proxy.ptr, pj_proxy.slen, "sip:%s;lr", proxy);
+      if ((status = pjsua_verify_sip_url(pj_proxy.ptr)) != 0) 
+      {
+        PJ_LOG(1,(THIS_FILE,  "Error: invalid SIP URL '%*.s' in proxy argument (%d)",
+                  pj_proxy.slen, pj_proxy.ptr, status));
+        [mutableStr release];
+        [app displayParameterError: @"Invalid value for proxy parameter."];
+        continue;
+      }
+      acc_cfg.proxy[acc_cfg.proxy_cnt++] = pj_proxy;
     }
-    acc_cfg.proxy_cnt = 1;
+    [mutableStr release];
   }
 
 #if LOCAL_ACCOUNT 

@@ -28,6 +28,7 @@
 "Local Port" = "本地端口";
 "STUN Domain" = "STUN纲域";
 "STUN Server" = "STUN伺服器";
+"DNS" = "DNS";
 "Keep Alive Interval" = "保持连接时距时制";
 
 /* Media Transport Options */

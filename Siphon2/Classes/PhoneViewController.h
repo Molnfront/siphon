@@ -46,6 +46,7 @@
   UIButton *_callButton;
   UIButton *_deleteButton;
   
+  int      _deletedChar;
   NSTimer *_deleteTimer;
   
   NSString *_lastNumber;

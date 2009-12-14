@@ -25,16 +25,11 @@
 
 PJ_BEGIN_DECL
 
-#if 0
-void sip_ring_startup(pjsua_call_id call_id);
-void sip_ring_cleanup(pjsua_call_id call_id);
-#else
 void sip_ring_init(app_config_t *app_config);
 void sip_ring_deinit(app_config_t *app_config);
 void sip_ring_start(app_config_t *app_config);
 void sip_ringback_start(app_config_t *app_config);
 void sip_ring_stop(app_config_t *app_config);
-#endif
 
 PJ_END_DECL
 

@@ -17,5 +17,5 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#define VERSION_STRING @"Siphon 2.1.0"
+#define VERSION_STRING @"Siphon 2.2.0"
 

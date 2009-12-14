@@ -17,21 +17,14 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-"Network" = "Sieť";
+#import <UIKit/UIKit.h>
 
-/* Transport Options */
-"Transport Options" = "Voľby transportu";
 
-"Local Port" = "Lokálny port";
-"STUN Domain" = "STUN doména";
-"STUN Server" = "STUN server";
-"DNS" = "DNS";
-"Keep Alive Interval" = "Interval spojenia";
+@interface PushButton : UIButton
+{
+  CGRect _contentRect;
+}
 
-/* Media Transport Options */
-"Media Transport Options" = "Voľby transportu médií";
-"RTP Port" = "RTP port";
-"Enable ICE" = "Aktivovať ICE";
+- (void)setContentRect:(CGRect)rect;
 
-"Siphon over EDGE/3G" = "Siphon cez EDGE/3G";
-"You must read your mobile subscription agreement before activate this option. The author is not responsible of your \"Siphon\" usage." = "Pred aktiváciou tejto voľby si najskôr prečítajte dohodu o mobilnom pripojení. Autor nie je zodpovedný za užívanie vášho telefónu - Siphonu.";
+@end

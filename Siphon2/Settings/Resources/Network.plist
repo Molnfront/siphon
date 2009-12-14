@@ -86,11 +86,11 @@
 			<key>defaults</key>
 			<string>com.googlecode.siphon</string>
 			<key>key</key>
-			<string>stunDomain</string>
+			<string>dnsServer</string>
 			<key>isURL</key>
-			<true/>
+			<false/>
 			<key>label</key>
-			<string>STUN Domain</string>
+			<string>DNS</string>
 			<key>cell</key>
 			<string>PSEditTextCell</string>
 		</dict>
@@ -105,6 +105,36 @@
 			<true/>
 			<key>label</key>
 			<string>Keep Alive Interval</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+		</dict>
+		<dict>
+			<key>label</key>
+			<string>VPN (Temporary)</string>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>defaults</key>
+			<string>com.googlecode.siphon</string>
+			<key>key</key>
+			<string>publicAddr</string>
+			<key>isURL</key>
+			<true/>
+			<key>label</key>
+			<string>Public IP address</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+		</dict>
+		<dict>
+			<key>defaults</key>
+			<string>com.googlecode.siphon</string>
+			<key>key</key>
+			<string>boundAddr</string>
+			<key>isURL</key>
+			<true/>
+			<key>label</key>
+			<string>Bound IP Address</string>
 			<key>cell</key>
 			<string>PSEditTextCell</string>
 		</dict>

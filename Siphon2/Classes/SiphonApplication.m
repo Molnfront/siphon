@@ -111,19 +111,80 @@ typedef enum ConnectionState {
   //[message release];
 }
 
+#if 1
+- (void) activateWWAN
+{
+  //NSURL * url = [[NSURL alloc] initWithString:[NSString stringWithCString:"http://www.anyurl.com"]];
+  NSURL * url = [[NSURL alloc] initWithString:[NSString stringWithCString:"http://www.google.com"]];
+  NSData * data = [NSData dataWithContentsOfURL:url];
+  [url release];
+}
+#endif
+
 /***** SIP ********/
+/* */
+- (BOOL)sipStartup
+{
+  if (_app_config.pool)
+    return YES;
+  
+  self.networkActivityIndicatorVisible = YES;
+  
+  if (sip_startup(&_app_config) != PJ_SUCCESS)
+  {
+    self.networkActivityIndicatorVisible = NO;
+    return NO;
+  }
+  self.networkActivityIndicatorVisible = NO;
+  
+  /** Call management **/
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(processCallState:)
+                                               name: kSIPCallState object:nil];
+  
+  /** Registration management */
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(processRegState:)
+                                               name: kSIPRegState object:nil];
+  
+  /*[[NSNotificationCenter defaultCenter] addObserver:self 
+                                           selector:@selector(reachabilityChanged:) 
+                                               name:@"kNetworkReachabilityChangedNotification" 
+                                             object:nil];*/
+  
+  return YES;
+}
+
+/* */
+- (void)sipCleanup
+{
+  //[[NSNotificationCenter defaultCenter] removeObserver:self];
+/*  [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                  name:@"kNetworkReachabilityChangedNotification" 
+                                                object:nil];*/
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                  name: kSIPRegState
+                                                object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                  name:kSIPCallState 
+                                                object:nil];
+  [self sipDisconnect];
+  
+  if (_app_config.pool != NULL)
+  {
+    sip_cleanup(&_app_config);
+  }
+}
+
 /* */
 - (BOOL)sipConnect
 {
   pj_status_t status;
   
-  if (_app_config.pool == NULL && (sip_startup(&_app_config) != PJ_SUCCESS))
-  {
-       return FALSE;
-  }
+  if (![self sipStartup])
+  	return FALSE;
 
 #if defined(CYDIA) && (CYDIA == 1)
-#if 1
   BOOL overEDGE = FALSE;
   if (isIpod == FALSE)
   {
@@ -146,54 +207,10 @@ typedef enum ConnectionState {
     array = CFHostGetNames (host, &hasBeenResolved);
     CFRelease(host);
 #else
-    NSURL * url = [[NSURL alloc] initWithString:[NSString stringWithCString:"http://www.google.com"]];
-    NSData * data = [NSData dataWithContentsOfURL:url];
-    [url release];
+    [self activateWWAN];
 #endif
   }
-#else
-  //if (isIpod == FALSE &&
-  //[[Reachability sharedReachability] remoteHostStatus] == NotReachable)
-  if (isIpod == FALSE)
-  {
-    BOOL overEDGE = [[NSUserDefaults standardUserDefaults] boolForKey:@"siphonOverEDGE"];
-    //NetworkStatus networkStatus = (overEDGE ? NotReachable : ReachableViaCarrierDataNetwork);
-    //if ([[Reachability sharedReachability] remoteHostStatus] == networkStatus)
-    //  return FALSE;
-    if (overEDGE)
-    {
-      NetworkStatus networkStatus = [[Reachability sharedReachability] remoteHostStatus];
-      if (networkStatus == NotReachable)
-        return FALSE;
-      
-      // FIXME: beurk
-      if (networkStatus == ReachableViaCarrierDataNetwork)
-      {
-#if 0
-        CFStreamError error;
-        Boolean hasBeenResolved;
-        CFArrayRef array;
-        CFStringRef google = CFSTR("www.google.com");
-        CFHostRef host = CFHostCreateWithName(kCFAllocatorDefault, google);
-        CFHostStartInfoResolution (host, kCFHostAddresses, &error);
-        array = CFHostGetAddressing(host, &hasBeenResolved);
-        array = CFHostGetNames (host, &hasBeenResolved);
-        CFRelease(host);
-#else
-        NSURL * url = [[NSURL alloc] initWithString:[NSString stringWithCString:"http://www.google.com"]];
-        NSData * data = [NSData dataWithContentsOfURL:url];
-        [url release];
-#endif
-      }
-    }
-    else
-    {
-      if ([[Reachability sharedReachability] remoteHostStatus] != ReachableViaWiFiNetwork)
-        return FALSE;
-    }
-  }
-#endif
-#else
+#else /* !CYDIA */
   if (isIpod == FALSE &&
       [[Reachability sharedReachability] remoteHostStatus] != ReachableViaWiFiNetwork)
   {
@@ -204,8 +221,12 @@ typedef enum ConnectionState {
   
   if (_sip_acc_id == PJSUA_INVALID_ID)
   {
+    self.networkActivityIndicatorVisible = YES;
     if ((status = sip_connect(_app_config.pool, &_sip_acc_id)) != PJ_SUCCESS)
+    {
+      self.networkActivityIndicatorVisible = NO;
       return FALSE;
+    }
   }
   
   return TRUE;
@@ -271,6 +292,8 @@ typedef enum ConnectionState {
                         [NSNumber numberWithBool:YES],  @"enableG711u",
                         [NSNumber numberWithBool:YES],  @"enableG711a",
                         [NSNumber numberWithBool:NO],   @"enableG722",
+                        [NSNumber numberWithBool:NO],   @"enableG7221",
+                        [NSNumber numberWithBool:NO],   @"enableG729",
                         [NSNumber numberWithBool:YES],  @"enableGSM",
                         nil];
   
@@ -298,28 +321,7 @@ typedef enum ConnectionState {
   //NSLog(@"%@", model);
 }
 
-/***** APPLICATION *****/
-- (void)applicationDidFinishLaunching:(UIApplication *)application
-{
-#if defined(CYDIA) && (CYDIA == 1)
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
-  NSString *libraryDirectory = [NSString stringWithFormat:@"%@/Siphon", [paths objectAtIndex:0]];
-  mkdir([libraryDirectory UTF8String], 0755);
-#endif
-  
-  _sip_acc_id = PJSUA_INVALID_ID;
-
-  isConnected = FALSE;
-  
-  [self initModel];
-
-  self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
-
-  NSUserDefaults *userDef = [NSUserDefaults standardUserDefaults];
-  [self initUserDefaults];
-  
-	if (![[userDef objectForKey: @"username"] length] ||
-		![[userDef objectForKey: @"server"] length])
+- (UIView *)applicationStartWithoutSettings
   {    
     // TODO: go to settings immediately
     UIView *mainView = [[UIView alloc] initWithFrame:[[UIScreen mainScreen]
@@ -354,37 +356,12 @@ typedef enum ConnectionState {
     text.font = [UIFont systemFontOfSize: 16];
     text.text = NSLocalizedString(@"Press the Home button", @"SiphonApp");
     [mainView addSubview:text];
-    [window addSubview: mainView];
-    [window makeKeyAndVisible];
     
-    launchDefault = NO;
-  }
-  else
-  {
-    NSString *server = [userDef stringForKey: @"proxyServer"];
-    if (!server || [server length] < 1)
-      server = [userDef stringForKey: @"server"];
+  return mainView;
+}
 
-    NSRange range = [server rangeOfString:@":" 
-                                  options:NSCaseInsensitiveSearch|NSBackwardsSearch];
-    if (range.length > 0)
+- (UIView *)applicationStartWithSettings
     {
-      server = [server substringToIndex:range.location];
-    }
-    
-    [[Reachability sharedReachability] setHostName:server];
-    // The Reachability class is capable of notifying your application when the network
-    // status changes. By default, those notifications are not enabled.
-    // Uncomment the following line to enable them:
-    [[Reachability sharedReachability] setNetworkStatusNotificationsEnabled:YES];
-    // Observe the kNetworkReachabilityChangedNotification. When that notification is posted, the
-    // method "reachabilityChanged" will be called. 
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:@"kNetworkReachabilityChangedNotification" object:nil];
-    
-
-    // Build GUI
-    callViewController = [[CallViewController alloc] initWithNibName:nil bundle:nil];
-
     /* Favorites List*/
     FavoritesListController *favoritesListCtrl = [[FavoritesListController alloc]
                                                   initWithStyle:UITableViewStylePlain];
@@ -435,52 +412,128 @@ typedef enum ConnectionState {
     tabBarController = [[UITabBarController alloc] init];
     tabBarController.viewControllers = [NSArray arrayWithObjects:
                                         favoritesViewCtrl, recentsViewCtrl,
-                                        phoneViewController,
-                                        contactsViewCtrl, voicemailNavCtrl, nil];
+                                        phoneViewController, contactsViewCtrl, 
+                                        voicemailNavCtrl, nil];
     tabBarController.selectedIndex = 2;
 
-    [window addSubview:tabBarController.view];
-    [window makeKeyAndVisible];
-    if (_app_config.pool == NULL)
+  return tabBarController.view;
+}
+
+/***** APPLICATION *****/
+#if 0 //def __IPHONE_3_0
+- (BOOL)application:(UIApplication *)application 
+      didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+  if (launchOptions == nil)
+  {
+    // Démarrage normal
+  }
+  NSURL *url = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
+  // UIApplicationLaunchOptionsSourceApplicationKey : Pour retrouver l'appli qui lance
+  if (url != nil)
+  {
+    // Démarrage avec URL
+  }
+  NSDictionary *userInfo = [launchOptions objectForKey: UIApplicationLaunchOptionsRemoteNotificationKey];
+  if (userInfo != nil)
+  {
+    // Réception d'une notification
+  }
+}
+/* Sent to the delegate when a running application receives a remote notification.
+ * RQ: Ne devrais pas être appelée, le serveur ne devrait pas communiquer avec une 
+ *     application lancée.
+ * RQ: Une appli peut être lancée sans être connectée au serveur (absence de WiFi)
+ */
+- (void)application:(UIApplication *)application 
+      didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+  
+}
+#else
+- (void)applicationDidFinishLaunching:(UIApplication *)application
+{
+#if defined(CYDIA) && (CYDIA == 1)
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+  NSString *libraryDirectory = [NSString stringWithFormat:@"%@/Siphon", [paths objectAtIndex:0]];
+  mkdir([libraryDirectory UTF8String], 0755);
+#endif
+  
+  _sip_acc_id = PJSUA_INVALID_ID;
+
+  isConnected = FALSE;
+  
+  [self initModel];
+
+  self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
+
+  NSUserDefaults *userDef = [NSUserDefaults standardUserDefaults];
+  [self initUserDefaults];
+  
+	if (![[userDef objectForKey: @"username"] length] ||
+		![[userDef objectForKey: @"server"] length])
+  {
+    [window addSubview: [self applicationStartWithoutSettings]];
+    //[window makeKeyAndVisible];
+    
+    launchDefault = NO;
+  }
+  else
+  {
+    NSString *server = [userDef stringForKey: @"proxyServer"];
+    NSArray *array = [server componentsSeparatedByString:@","];
+    NSEnumerator *enumerator = [array objectEnumerator];
+    while (server = [enumerator nextObject]) 
+      if ([server length])break;// {[server retain]; break;}
+    //[enumerator release];
+   // [array release];
+    if (!server || [server length] < 1)
+      server = [userDef stringForKey: @"server"];
+
+    NSRange range = [server rangeOfString:@":" 
+                                  options:NSCaseInsensitiveSearch|NSBackwardsSearch];
+    if (range.length > 0)
     {
-      sip_startup(&_app_config);
-
-      /** Call management **/
-  	  [[NSNotificationCenter defaultCenter] addObserver:self
-                                               selector:@selector(processCallState:)
-                                                   name: kSIPCallState object:nil];
-      
-      /** Registration management */
-      [[NSNotificationCenter defaultCenter] addObserver:self
-                                               selector:@selector(processRegState:)
-                                                   name: kSIPRegState object:nil];
-
-      //[[Reachability sharedReachability] remoteHostStatus];
-      [[NSNotificationCenter defaultCenter] addObserver:self 
-                                               selector:@selector(reachabilityChanged:) 
-                                                   name:@"kNetworkReachabilityChangedNotification" 
-                                                 object:nil];
-      //if ([[Reachability sharedReachability] addressFromString: server address:NULL])
-      [self sipConnect];
+      server = [server substringToIndex:range.location];
     }
+    
+    [[Reachability sharedReachability] setHostName:server];
+    // The Reachability class is capable of notifying your application when the network
+    // status changes. By default, those notifications are not enabled.
+    // Uncomment the following line to enable them:
+    [[Reachability sharedReachability] setNetworkStatusNotificationsEnabled:YES];
+    // Observe the kNetworkReachabilityChangedNotification. When that notification is posted, the
+    // method "reachabilityChanged" will be called. 
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:@"kNetworkReachabilityChangedNotification" object:nil];
+    
+
+    // Build GUI
+    callViewController = [[CallViewController alloc] initWithNibName:nil bundle:nil];
+    
+    [window addSubview: [self applicationStartWithSettings]];
+    //[window makeKeyAndVisible];
+
+   [[NSNotificationCenter defaultCenter] addObserver:self 
+                                            selector:@selector(reachabilityChanged:) 
+                                                name:@"kNetworkReachabilityChangedNotification" 
+                                              object:nil];
+    
     launchDefault = YES;
-    //[self performSelector:@selector(postFinishLaunch) withObject:nil afterDelay:0.0];
+    [self performSelector:@selector(sipConnect) withObject:nil afterDelay:0.2];
   }
 
- // [window makeKeyAndVisible];
+  [window makeKeyAndVisible];
 }
+#endif
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
   // TODO enregistrer le numéro en cours pour le rappeler au retour ?
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [self sipDisconnect];
-
-  if (_app_config.pool != NULL)
-  {
-    sip_cleanup(&_app_config);
-  }
-  
+  [[NSNotificationCenter defaultCenter] removeObserver:self 
+                                                  name:@"kNetworkReachabilityChangedNotification" 
+                                                object:nil];
+  [self sipCleanup]; // FIXME non logique avec l'appel au démarrage : sipConnect
+  //[[NSNotificationCenter defaultCenter] removeObserver:self]; // FIXME il y a des observers qui trainent
   [callViewController release];
   //[tabBarController release];
   
@@ -490,6 +543,7 @@ typedef enum ConnectionState {
   [recentsViewController finalizeDatabase];
 }
 
+#if 1 //ndef __IPHONE_3_0
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
 {
   pjsua_call_id call_id;
@@ -547,6 +601,7 @@ typedef enum ConnectionState {
 
   return YES;
 }
+#endif
 
 - (void)outOfTimeToCall
 {
@@ -741,8 +796,11 @@ typedef enum ConnectionState {
     case PJSIP_INV_STATE_NULL: // Before INVITE is sent or received.
       return;
     case PJSIP_INV_STATE_CALLING: // After INVITE is sent.
-      //[UIDevice currentDevice].proximityMonitoringEnabled = YES;
+#ifdef __IPHONE_3_0
+      [UIDevice currentDevice].proximityMonitoringEnabled = YES;
+#else
       self.proximitySensingEnabled = YES;
+#endif
     case PJSIP_INV_STATE_INCOMING: // After INVITE is received.
       self.idleTimerDisabled = YES;
       self.statusBarStyle = UIStatusBarStyleBlackTranslucent;
@@ -752,13 +810,19 @@ typedef enum ConnectionState {
     case PJSIP_INV_STATE_CONNECTING: // After 2xx is sent/received.
       break;
     case PJSIP_INV_STATE_CONFIRMED: // After ACK is sent/received.
-      //[UIDevice currentDevice].proximityMonitoringEnabled = YES;
+#ifdef __IPHONE_3_0
+      [UIDevice currentDevice].proximityMonitoringEnabled = YES;
+#else
       self.proximitySensingEnabled = YES;
+#endif
       break;
     case PJSIP_INV_STATE_DISCONNECTED:
       self.idleTimerDisabled = NO;
-      //[UIDevice currentDevice].proximityMonitoringEnabled = NO;
+#ifdef __IPHONE_3_0
+      [UIDevice currentDevice].proximityMonitoringEnabled = NO;
+#else
       self.proximitySensingEnabled = NO;
+#endif
       //[tabBarController dismissModalViewControllerAnimated: YES];
       // TODO vérifier si c'est la dernière communication
       
@@ -774,6 +838,7 @@ typedef enum ConnectionState {
 //  const pj_str_t *str;
   //NSNumber *value = [[ notification userInfo ] objectForKey: @"AccountID"];
   //pjsua_acc_id accId = [value intValue];
+  self.networkActivityIndicatorVisible = NO;
   int status = [[[ notification userInfo ] objectForKey: @"Status"] intValue];
   
   switch(status)

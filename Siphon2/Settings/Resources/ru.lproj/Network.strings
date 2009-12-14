@@ -25,6 +25,7 @@
 "Local Port" = "Локальный порт";
 "STUN Domain" = "STUN Домен";
 "STUN Server" = "STUN Сервер";
+"DNS" = "DNS";
 "Keep Alive Interval" = "Удерживать";
 
 /* Media Transport Options */

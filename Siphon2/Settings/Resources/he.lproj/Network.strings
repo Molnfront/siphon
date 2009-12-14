@@ -24,6 +24,7 @@
 "Local Port" = "יציאה מקומית";
 "STUN Domain" = "STUN דומיין";
 "STUN Server" = "STUN שרת";
+"DNS" = "DNS";
 "Keep Alive Interval" = "מרווח שמור בחיים";
 
 /* Media Transport Options */

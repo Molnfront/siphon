@@ -82,11 +82,11 @@ NSString *forbiddenChars;
   _label.minimumFontSize = 15;
   _label.adjustsFontSizeToFitWidth = YES;
   _label.textAlignment = UITextAlignmentCenter;
-  _label.text =@"";
-
+  
+  _label.text = @"";
   [_lcd addSubview:_label];
-
-  _pad = [[DialerPhonePad alloc] initWithFrame:
+  
+  _pad = [[DialerPhonePad alloc] initWithFrame: 
           CGRectMake(0.0f, 74.0f, 320.0f, 273.0f)];
 
   //[_pad setPlaysSounds:YES];
@@ -97,19 +97,19 @@ NSString *forbiddenChars;
   SiphonApplication *app = (SiphonApplication *)[SiphonApplication sharedApplication];
   //if (app.isIpod)
   {
-  _addContactButton = [[UIButton alloc] initWithFrame: 
-                       CGRectMake(0.0f, 0.0f, 107.0f, 64.0f)];
-  [_addContactButton setImage: [UIImage imageNamed:@"addcontact.png"]
-                     forState:UIControlStateNormal];
-  [_addContactButton setImage: [UIImage imageNamed:@"addcontact_pressed.png"] 
-                     forState:UIControlStateHighlighted];
-  [_addContactButton addTarget:self action:@selector(addButtonPressed:) 
-                     forControlEvents:UIControlEventTouchDown];
+    _addContactButton = [[UIButton alloc] initWithFrame:
+                         CGRectMake(0.0f, 0.0f, 107.0f, 64.0f)];
+    [_addContactButton setImage: [UIImage imageNamed:@"addcontact.png"]
+                       forState:UIControlStateNormal];
+    [_addContactButton setImage: [UIImage imageNamed:@"addcontact_pressed.png"] 
+                       forState:UIControlStateHighlighted];
+    [_addContactButton addTarget:self action:@selector(addButtonPressed:) 
+                       forControlEvents:UIControlEventTouchDown];
     }
   //else
   {
-    _gsmCallButton =[[UIButton alloc] initWithFrame: 
-                  CGRectMake(0.0f, 0.0f, 107.0f, 64.0f)];
+    _gsmCallButton =[[UIButton alloc] initWithFrame:
+                     CGRectMake(0.0f, 0.0f, 107.0f, 64.0f)];
     [_gsmCallButton setImage:[UIImage imageNamed:@"answer.png"] 
                  forState: UIControlStateNormal];
     _gsmCallButton.imageEdgeInsets = UIEdgeInsetsMake (0., 0., 0., 5.);
@@ -121,11 +121,11 @@ NSString *forbiddenChars;
     [_gsmCallButton setTitleColor:[UIColor colorWithWhite:1.0 alpha:0.5]  forState:UIControlStateDisabled];
     _gsmCallButton.font = [UIFont boldSystemFontOfSize:26];
     _gsmCallButton.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"callblue.png"]];
-  
+    
     [_gsmCallButton addTarget:self action:@selector(gsmCallButtonPressed:) 
           forControlEvents:UIControlEventTouchDown];
   }
-  _callButton =[[UIButton alloc] initWithFrame: 
+  _callButton =[[UIButton alloc] initWithFrame:
                 CGRectMake(107.0f, 0.0f, 107.0f, 64.0f)];
   //_callButton.enabled = NO;
 #if 0
@@ -149,7 +149,7 @@ NSString *forbiddenChars;
   [_callButton addTarget:self action:@selector(callButtonPressed:) 
                forControlEvents:UIControlEventTouchDown];
   
-  _deleteButton = [[UIButton alloc] initWithFrame: 
+  _deleteButton = [[UIButton alloc] initWithFrame:
                    CGRectMake(214.0f, 0.0f, 107.0f, 64.0f)];
   [_deleteButton setImage:[UIImage imageNamed:@"delete.png"] 
                  forState:UIControlStateNormal];
@@ -160,14 +160,14 @@ NSString *forbiddenChars;
   [_deleteButton addTarget:self action:@selector(deleteButtonReleased:) 
                  forControlEvents:UIControlEventValueChanged| 
                  UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
-  
+
   _container = [[UIView alloc] initWithFrame:
-                CGRectMake(0.0f, 348.0f, 320.0f, 64.0f)];
+                CGRectMake(0.0f, 347.0f, 320.0f, 64.0f)];
   
   
   [view addSubview:_pad];
   [view addSubview:_lcd];
-  
+
   if (app.isIpod || 
       ![[NSUserDefaults standardUserDefaults] boolForKey:@"cellularButton"])
     [_container addSubview:_addContactButton];
@@ -176,9 +176,9 @@ NSString *forbiddenChars;
 
   [_container addSubview:_callButton];
   [_container addSubview:_deleteButton];
-
-  [view addSubview:_container];
   
+  [view addSubview:_container];
+
   self.view = view;
   [view release];
 }
@@ -345,7 +345,8 @@ NSString *forbiddenChars;
           ABMultiValueCreateMutable(kABStringPropertyType);
 
   ABMultiValueAddValueAndLabel(multiValue, [_label text], kABPersonPhoneMainLabel, 
-                               NULL);
+                               NULL);  
+
   ABRecordSetValue(person, kABPersonPhoneProperty, multiValue, error);
     
   ABUnknownPersonViewController *unknownCtrl = [[ABUnknownPersonViewController alloc] init];
@@ -361,7 +362,7 @@ NSString *forbiddenChars;
                                               initWithBarButtonSystemItem:UIBarButtonSystemItemCancel 
                                               target:self action:@selector(cancelAddPerson:)];
   navCtrl.navigationBar.barStyle = UIBarStyleBlackOpaque;
-
+  
   [self.parentViewController presentModalViewController:navCtrl animated:YES];
   [unknownCtrl release];
   [navCtrl release];
@@ -410,23 +411,9 @@ NSString *forbiddenChars;
   {
     [_deleteTimer invalidate];
     [_deleteTimer release];
-    _deleteTimer = NULL;
+    _deleteTimer = nil;
   }
-}
-
-- (void)deleteRepeat
-{
-  NSString *curText = [_label text];
-  int length = [curText length];
-  if(length > 0)
-  {
-    [_label setText: [curText substringToIndex:(length-1)]];
-  }
-  else
-  {
-    [self stopTimer];
-  }
-  if (length == 1)
+  if ([[_label text] length] == 0)
   {
     _callButton.enabled = NO;
     if (_gsmCallButton)
@@ -436,8 +423,31 @@ NSString *forbiddenChars;
   }
 }
 
+- (void)deleteRepeat
+{
+  NSString *curText = [_label text];
+  int length = [curText length];
+  if(length > 0)
+  {
+    _deletedChar++;
+    if (_deletedChar == 6)
+    {
+      [_label setText:@""];
+    }
+    else
+    {
+      [_label setText: [curText substringToIndex:(length-1)]];
+    }
+  }
+  else
+  {
+    [self stopTimer];
+  }
+}
+
 - (void)deleteButtonPressed:(UIButton*)unused
 {
+  _deletedChar = 0;
   [self deleteRepeat];
   _deleteTimer = [[NSTimer scheduledTimerWithTimeInterval:0.2 target:self 
                                                 selector:@selector(deleteRepeat) 

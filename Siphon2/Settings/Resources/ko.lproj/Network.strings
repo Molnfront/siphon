@@ -29,6 +29,7 @@
 "Local Port" = "로컬 포트";
 "STUN Domain" = "STUN 도메인";
 "STUN Server" = "STUN 서버";
+"DNS" = "DNS";
 "Keep Alive Interval" = "Keep Alive 간격";
 
 /* Media Transport Options */

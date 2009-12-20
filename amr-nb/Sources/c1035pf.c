@@ -55,17 +55,17 @@ void q_p (
 {
     Word16 tmp;
     
-    tmp = *ind;                                  move16 (); 
+    tmp = *ind;
     
-    test ();
+
     if (sub (n, 5) < 0)
     {
-        *ind = (tmp & 0x8) | gray[tmp & 0x7];     logic16 (); logic16 ();
-                                                 logic16 (); move16 ();
+        *ind = (tmp & 0x8) | gray[tmp & 0x7];
+
     }
     else
     {
-        *ind = gray[tmp & 0x7];                   logic16 (); move16 (); 
+        *ind = gray[tmp & 0x7];
     }
 }
 
@@ -94,94 +94,94 @@ static void build_code (
 
     for (i = 0; i < L_CODE; i++)
     {
-        cod[i] = 0;                              move16 (); 
+        cod[i] = 0;
     }
     for (i = 0; i < NB_TRACK; i++)
     {
-        indx[i] = -1;                            move16 (); 
+        indx[i] = -1;
     }
     
     for (k = 0; k < NB_PULSE; k++)
     {
         /* read pulse position */            
-        i = codvec[k];                           move16 ();
+        i = codvec[k];
         /* read sign           */        
-        j = sign[i];                             move16 (); 
+        j = sign[i];
         
         index = mult (i, 6554);                  /* index = pos/5       */
         /* track = pos%5 */
         track = sub (i, extract_l (L_shr (L_mult (index, 5), 1)));
-        test (); 
+
         if (j > 0)
         {
-            cod[i] = add (cod[i], 4096);         move16 ();
-            _sign[k] = 8192;                     move16 (); 
+            cod[i] = add (cod[i], 4096);
+            _sign[k] = 8192;
             
         }
         else
         {
-            cod[i] = sub (cod[i], 4096);         move16 ();
-            _sign[k] = -8192;                    move16 (); 
+            cod[i] = sub (cod[i], 4096);
+            _sign[k] = -8192;
             index = add (index, 8);
         }
         
-        test (); move16 ();
+
         if (indx[track] < 0)
         {
-            indx[track] = index;                 move16 (); 
+            indx[track] = index;
         }
         else
         {
-            test (); logic16 (); logic16 (); 
+
             if (((index ^ indx[track]) & 8) == 0)
             {
                 /* sign of 1st pulse == sign of 2nd pulse */
                 
-                test (); 
+
                 if (sub (indx[track], index) <= 0)
                 {
-                    indx[track + 5] = index;     move16 (); 
+                    indx[track + 5] = index;
                 }
                 else
                 {
                     indx[track + 5] = indx[track];
-                                                 move16 (); 
-                    indx[track] = index;         move16 (); 
+
+                    indx[track] = index;
                 }
             }
             else
             {
                 /* sign of 1st pulse != sign of 2nd pulse */
                 
-                test (); logic16 (); logic16 (); 
+
                 if (sub ((indx[track] & 7), (index & 7)) <= 0)
                 {
                     indx[track + 5] = indx[track];
-                                                 move16 (); 
-                    indx[track] = index;         move16 (); 
+
+                    indx[track] = index;
                 }
                 else
                 {
-                    indx[track + 5] = index;     move16 (); 
+                    indx[track + 5] = index;
                 }
             }
         }
     }
     
-    p0 = h - codvec[0];                          move16 (); 
-    p1 = h - codvec[1];                          move16 (); 
-    p2 = h - codvec[2];                          move16 (); 
-    p3 = h - codvec[3];                          move16 (); 
-    p4 = h - codvec[4];                          move16 (); 
-    p5 = h - codvec[5];                          move16 (); 
-    p6 = h - codvec[6];                          move16 (); 
-    p7 = h - codvec[7];                          move16 (); 
-    p8 = h - codvec[8];                          move16 (); 
-    p9 = h - codvec[9];                          move16 (); 
+    p0 = h - codvec[0];
+    p1 = h - codvec[1];
+    p2 = h - codvec[2];
+    p3 = h - codvec[3];
+    p4 = h - codvec[4];
+    p5 = h - codvec[5];
+    p6 = h - codvec[6];
+    p7 = h - codvec[7];
+    p8 = h - codvec[8];
+    p9 = h - codvec[9];
      
     for (i = 0; i < L_CODE; i++)
     {
-        s = 0;                                   move32 (); 
+        s = 0;
         s = L_mac (s, *p0++, _sign[0]);
         s = L_mac (s, *p1++, _sign[1]);
         s = L_mac (s, *p2++, _sign[2]);
@@ -192,7 +192,7 @@ static void build_code (
         s = L_mac (s, *p7++, _sign[7]);
         s = L_mac (s, *p8++, _sign[8]);
         s = L_mac (s, *p9++, _sign[9]);
-        y[i] = round (s);                        move16 (); 
+        y[i] = round (s);
     }
 }
 

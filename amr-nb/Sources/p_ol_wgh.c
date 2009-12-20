@@ -79,40 +79,40 @@ static Word16 Lag_max ( /* o : lag found                               */
     const Word16 *ww, *we;
     Word32 t1;
     
-    ww = &corrweight[250];                                 move16 ();
-    we = &corrweight[123 + lag_max - old_lag];             move16 ();
+    ww = &corrweight[250];
+    we = &corrweight[123 + lag_max - old_lag];
 
-    max = MIN_32;                                          move32 ();
-    p_max = lag_max;                                       move16 ();
+    max = MIN_32;
+    p_max = lag_max;
 
     for (i = lag_max; i >= lag_min; i--)
     {
-       t0 = corr[-i];                                      move32 ();   
+       t0 = corr[-i];
        
        /* Weighting of the correlation function.   */
        L_Extract (corr[-i], &t0_h, &t0_l);
        t0 = Mpy_32_16 (t0_h, t0_l, *ww);
-       ww--;                                               move16();
-       test ();
+       ww--;
+
        if (wght_flg > 0) {
           /* Weight the neighbourhood of the old lag. */
           L_Extract (t0, &t0_h, &t0_l);
           t0 = Mpy_32_16 (t0_h, t0_l, *we);
-          we--;                                            move16();
+          we--;
        }
        
-       test (); 
+
        if (L_sub (t0, max) >= 0)
        {
-          max = t0;                                        move32 (); 
-          p_max = i;                                       move16 (); 
+          max = t0;
+          p_max = i;
        }
     }
     
-    p  = &scal_sig[0];                                     move16 (); 
-    p1 = &scal_sig[-p_max];                                move16 (); 
-    t0 = 0;                                                move32 (); 
-    t1 = 0;                                                move32 (); 
+    p  = &scal_sig[0];
+    p1 = &scal_sig[-p_max];
+    t0 = 0;
+    t1 = 0;
     
     for (j = 0; j < L_frame; j++, p++, p1++)
     {
@@ -134,9 +134,9 @@ static Word16 Lag_max ( /* o : lag found                               */
     
     /* gain flag is set according to the open_loop gain */
     /* is t2/t1 > 0.4 ? */    
-    *gain_flg = round(L_msu(t0, round(t1), 13107));        move16(); 
+    *gain_flg = round(L_msu(t0, round(t1), 13107));
     
-    *cor_max = 0;                                          move16 ();
+    *cor_max = 0;
 
     return (p_max);
 }
@@ -251,9 +251,9 @@ Word16 Pitch_ol_wgh (     /* o   : open loop pitch lag                          
     Word16 scaled_signal[PIT_MAX + L_FRAME];
     Word16 *scal_sig;
 
-    scal_sig = &scaled_signal[pit_max];                          move16 (); 
+    scal_sig = &scaled_signal[pit_max];
 
-    t0 = 0L;                                                     move32 (); 
+    t0 = 0L;
     for (i = -pit_max; i < L_frame; i++)
     {
         t0 = L_mac (t0, signal[i], signal[i]);
@@ -270,70 +270,70 @@ Word16 Pitch_ol_wgh (     /* o   : open loop pitch lag                          
      *  Verification for risk of overflow.                    *
      *--------------------------------------------------------*/
 
-    test (); test (); 
+
     if (L_sub (t0, MAX_32) == 0L)               /* Test for overflow */
     {
         for (i = -pit_max; i < L_frame; i++)
         {
-            scal_sig[i] = shr (signal[i], 3);   move16 (); 
+            scal_sig[i] = shr (signal[i], 3);
         }
     }
     else if (L_sub (t0, (Word32) 1048576L) < (Word32) 0)
     {
         for (i = -pit_max; i < L_frame; i++)
         {
-            scal_sig[i] = shl (signal[i], 3);   move16 (); 
+            scal_sig[i] = shl (signal[i], 3);
         }
     }
     else
     {
         for (i = -pit_max; i < L_frame; i++)
         {
-            scal_sig[i] = signal[i];            move16 (); 
+            scal_sig[i] = signal[i];
         }
     }
 
     /* calculate all coreelations of scal_sig, from pit_min to pit_max */
-    corr_ptr = &corr[pit_max];                  move32 ();
+    corr_ptr = &corr[pit_max];
     comp_corr (scal_sig, L_frame, pit_max, pit_min, corr_ptr); 
 
     p_max1 = Lag_max (vadSt, corr_ptr, scal_sig, L_frame, pit_max, pit_min,
                       st->old_T0_med, &max1, st->wght_flg, &ol_gain_flg[idx],
                       dtx);
-    move16 ();
 
-    test (); move16 ();
+
+
     if (ol_gain_flg[idx] > 0)
     {
        /* Calculate 5-point median of previous lags */
        for (i = 4; i > 0; i--) /* Shift buffer */
        {
-          old_lags[i] = old_lags[i-1];              move16 ();
+          old_lags[i] = old_lags[i-1];
        }
-       old_lags[0] = p_max1;                        move16 (); 
-       st->old_T0_med = gmed_n (old_lags, 5);       move16 ();
-       st->ada_w = 32767;                           move16 (); /* Q15 = 1.0 */
+       old_lags[0] = p_max1;
+       st->old_T0_med = gmed_n (old_lags, 5);
+       st->ada_w = 32767;                            /* Q15 = 1.0 */
     }	
     else
     {        
-       st->old_T0_med = p_max1;                     move16 ();
+       st->old_T0_med = p_max1;
        st->ada_w = mult(st->ada_w, 29491);      /* = ada_w = ada_w * 0.9 */
     }
     
-    test ();
+
     if (sub(st->ada_w, 9830) < 0)  /* ada_w - 0.3 */
     { 
-       st->wght_flg = 0;                            move16 ();
+       st->wght_flg = 0;
     } 
     else
     {
-       st->wght_flg = 1;                            move16 ();
+       st->wght_flg = 1;
     }
 
 #ifndef VAD2
     if (dtx)
     {  /* no test() call since this if is only in simulation env */
-       test ();
+
        if (sub(idx, 1) == 0)
        {
           /* calculate max high-passed filtered correlation of all lags */

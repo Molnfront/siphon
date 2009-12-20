@@ -87,23 +87,23 @@ void cor_h_x2 (
 
     /* first keep the result on 32 bits and find absolute maximum */
 
-    tot = 5;                                     move32 (); 
+    tot = 5;
 
     for (k = 0; k < nb_track; k++)
     {
-        max = 0;                                 move32 (); 
+        max = 0;
         for (i = k; i < L_CODE; i += step)
         {
-            s = 0;                               move32 (); 
+            s = 0;
             for (j = i; j < L_CODE; j++)
                 s = L_mac (s, x[j], h[j - i]);
             
-            y32[i] = s;                          move32 (); 
+            y32[i] = s;
             
             s = L_abs (s);
-            test (); 
+
             if (L_sub (s, max) > (Word32) 0L)
-                max = s;                         move32 (); 
+                max = s;
         }
         tot = L_add (tot, L_shr (max, 1));
     }
@@ -112,7 +112,7 @@ void cor_h_x2 (
     
     for (i = 0; i < L_CODE; i++)
     {
-        dn[i] = round (L_shl (y32[i], j));       move16 (); 
+        dn[i] = round (L_shl (y32[i], j));
     }
 }
 
@@ -143,17 +143,17 @@ void cor_h (
 
     /* Scaling for maximum precision */
 
-    s = 2;                                       move32 (); 
+    s = 2;
     for (i = 0; i < L_CODE; i++)
         s = L_mac (s, h[i], h[i]);
     
     j = sub (extract_h (s), 32767);
-    test (); 
+
     if (j == 0)
     {
         for (i = 0; i < L_CODE; i++)
         {
-            h2[i] = shr (h[i], 1);               move16 (); 
+            h2[i] = shr (h[i], 1);
         }
     }
     else
@@ -165,30 +165,30 @@ void cor_h (
         for (i = 0; i < L_CODE; i++)
         {
             h2[i] = round (L_shl (L_mult (h[i], k), 9));
-                                                 move16 (); 
+
         }
     }
     
     /* build matrix rr[] */
-    s = 0;                                       move32 (); 
+    s = 0;
     i = L_CODE - 1;
     for (k = 0; k < L_CODE; k++, i--)
     {
         s = L_mac (s, h2[k], h2[k]);
-        rr[i][i] = round (s);                    move16 (); 
+        rr[i][i] = round (s);
     }
     
     for (dec = 1; dec < L_CODE; dec++)
     {
-        s = 0;                                   move32 (); 
+        s = 0;
         j = L_CODE - 1;
         i = sub (j, dec);
         for (k = 0; k < (L_CODE - dec); k++, i--, j--)
         {
             s = L_mac (s, h2[k], h2[k + dec]);
             rr[j][i] = mult (round (s), mult (sign[i], sign[j]));
-                                                 move16 (); 
-            rr[i][j] = rr[j][i];                 move16 (); 
+
+            rr[i][j] = rr[j][i];
         }
     }
 }

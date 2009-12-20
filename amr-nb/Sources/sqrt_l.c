@@ -77,23 +77,23 @@ Word32 sqrt_l_exp (/* o : output value,                          Q31 */
     Word16 e, i, a, tmp;
     Word32 L_y;
 
-    test (); 
+
     if (L_x <= (Word32) 0)
     {
-        *exp = 0;               move16 ();
+        *exp = 0;
         return (Word32) 0;
     }
 
-    e = norm_l (L_x) & 0xFFFE;  logic16 (); /* get next lower EVEN norm. exp  */
+    e = norm_l (L_x) & 0xFFFE;   /* get next lower EVEN norm. exp  */
     L_x = L_shl (L_x, e);                   /* L_x is normalized to [0.25..1) */
-    *exp = e;                   move16 ();  /* return 2*exponent (or Q1)      */
+    *exp = e;                     /* return 2*exponent (or Q1)      */
 
     L_x = L_shr (L_x, 9);
     i = extract_h (L_x);            /* Extract b25-b31, 16 <= i <= 63 because
                                        of normalization                       */
     L_x = L_shr (L_x, 1);   
     a = extract_l (L_x);            /* Extract b10-b24                        */
-    a = a & (Word16) 0x7fff;    logic16 (); 
+    a = a & (Word16) 0x7fff;
 
     i = sub (i, 16);                /* 0 <= i <= 47                           */
 

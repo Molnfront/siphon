@@ -57,10 +57,10 @@ void Weight_Ai (
 {
     Word16 i;
 
-    a_exp[0] = a[0];                                    move16 (); 
+    a_exp[0] = a[0];
     for (i = 1; i <= M; i++)
     {
-        a_exp[i] = round (L_mult (a[i], fac[i - 1]));   move16 (); 
+        a_exp[i] = round (L_mult (a[i], fac[i - 1]));
     }
 
     return;

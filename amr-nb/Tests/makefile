@@ -27,9 +27,6 @@
 #
 #                         Specifying MODE=DEBUG compiles in debug mode
 #                         (libaries compiled in DEBUG mode will be linked)
-#                         Specifying MODE=WMOPS enables WMOPS counting
-#                         (FIP operation library compiled in WMOPS mode will
-#                          be linked)
 #
 #                         Specifying VAD=VAD1 compiles VAD option 1
 #                         Specifying VAD=VAD2 compiles VAD option 2
@@ -54,7 +51,7 @@ MAKEFILENAME = makefile
 
 # Use MODE=DEBUG for debuggable library (default target builds both)
 #
-# default mode = NORM ==> no debug, no wmops
+# default mode = NORM ==> no debug
 #
 MODE=NORM
 
@@ -65,15 +62,10 @@ MODE=NORM
 VAD=VAD1
 
 #
-# compiler flags (for normal, DEBUG, and WMOPS compilation)
+# compiler flags (for normal, DEBUG compilation)
 #
-#CFLAGS_NORM  = -O3 -DWMOPS=0
-#CFLAGS_DEBUG = -g -DDEBUG -DWMOPS=0
-#CFLAGS_WMOPS = -O3 -DWMOPS=1
-
-CFLAGS_NORM  = -arch armv6 -mno-thumb -Os -DWMOPS=0
-CFLAGS_DEBUG = -arch armv6 -mno-thumb -O0 -gdwarf-2 -DWMOPS=0 -DDEBUG
-CFLAGS_WMOPS = -arch armv6 -mno-thumb -Os -DWMOPS=1
+CFLAGS_NORM  = -arch armv6 -mno-thumb -Os
+CFLAGS_DEBUG = -arch armv6 -mno-thumb -O0 -gdwarf-2 -DDEBUG
 
 CFLAGS = -Wall -pedantic-errors -I. -I../Headers $(CFLAGS_$(MODE)) -D$(VAD)
 CFLAGSDEPEND = -MM $(CFLAGS)                    # for make depend
@@ -92,7 +84,6 @@ SPCLIB=spc$(TMP2:WMOPS=).a
 # construct FIP operation library name:
 #   fipop.a        in normal mode
 #   fipop_debug.a  in debug mode (MODE=DEBUG)
-#   fipop_wmops.a  in wmops mode (MODE=WMOPS)
 #
 FIPOPLIB=fipop$(TMP2:WMOPS=_wmops).a
 
@@ -117,7 +108,7 @@ SPC_OBJS_TMP=  agc.o autocorr.o az_lsp.o bits2prm.o \
        cod_amr.o dec_amr.o sp_enc.o sp_dec.o ph_disp.o \
        g_adapt.o calc_en.o qgain795.o qgain475.o sqrt_l.o set_sign.o s10_8pf.o \
        bgnscd.o gmed_n.o \
-       mac_32.o ex_ctrl.o c_g_aver.o lsp_avg.o int_lsf.o c8_31pf.o d8_31pf.o \
+       ex_ctrl.o c_g_aver.o lsp_avg.o int_lsf.o c8_31pf.o d8_31pf.o \
        p_ol_wgh.o ton_stab.o vad1.o dtx_enc.o dtx_dec.o a_refl.o \
        b_cn_cod.o calc_cor.o hp_max.o vadname.o \
        vad2.o r_fft.o lflg_upd.o \
@@ -127,9 +118,9 @@ SPC_OBJS = $(foreach file, $(SPC_OBJS_TMP), $(OBJDIR)/$(file))
 
 ENCODER_SRCS=coder.c 
 DECODER_SRCS=decoder.c
-FIPOP_SRCS=basicop2.c count.c oper_32b.c log2.c \
+FIPOP_SRCS=basicop2.c oper_32b.c log2.c \
            strfunc.c n_proc.c sid_sync.c
-#copy.c set_zero.c
+ 
 ENCODER_OBJS=$(ENCODER_SRCS:.c=.o) 
 DECODER_OBJS=$(DECODER_SRCS:.c=.o)
 FIPOP_OBJS_TMP=$(FIPOP_SRCS:.c=.o)

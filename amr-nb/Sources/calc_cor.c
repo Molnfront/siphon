@@ -65,15 +65,15 @@ void comp_corr (
     
     for (i = lag_max; i >= lag_min; i--)
     {
-       p = scal_sig;           move16 (); 
-       p1 = &scal_sig[-i];     move16 (); 
-       t0 = 0;                 move32 (); 
+       p = scal_sig;
+       p1 = &scal_sig[-i];
+       t0 = 0;
        
        for (j = 0; j < L_frame; j++, p++, p1++)
        {
           t0 = L_mac (t0, *p, *p1);             
        }
-       corr[-i] = t0;          move32 ();
+       corr[-i] = t0;
     }
 
     return;

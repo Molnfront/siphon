@@ -58,17 +58,17 @@ void set_sign(Word16 dn[],   /* i/o : correlation between target and h[]    */
    /* set sign according to dn[] */
    
    for (i = 0; i < L_CODE; i++) {
-      val = dn[i];                                 move16 ();
+      val = dn[i];
       
-      test ();
+
       if (val >= 0) {
-         sign[i] = 32767;                          move16 ();
+         sign[i] = 32767;
       } else {
-         sign[i] = -32767;                         move16 ();
+         sign[i] = -32767;
          val = negate(val);
       }
-      dn[i] = val;    move16 (); /* modify dn[] according to the fixed sign */
-      dn2[i] = val;   move16 ();
+      dn[i] = val;     /* modify dn[] according to the fixed sign */
+      dn2[i] = val;
    }
    
    /* keep 8-n maximum positions/8 of each track and store it in dn2[] */
@@ -77,22 +77,22 @@ void set_sign(Word16 dn[],   /* i/o : correlation between target and h[]    */
    {
       for (k = 0; k < (8-n); k++)
       {
-         min = 0x7fff;                             move16 ();
+         min = 0x7fff;
          for (j = i; j < L_CODE; j += STEP)
          {
-            test ();                               move16 ();
+
             if (dn2[j] >= 0)
             {
                val = sub(dn2[j], min);
-               test ();
+
                if (val < 0)
                {
-                  min = dn2[j];                    move16 ();
-                  pos = j;                         move16 ();
+                  min = dn2[j];
+                  pos = j;
                }
             }
          }
-         dn2[pos] = -1;                            move16 ();
+         dn2[pos] = -1;
       }
    }
    
@@ -127,68 +127,68 @@ void set_sign12k2 (
  
     /* calculate energy for normalization of cn[] and dn[] */
  
-    s = 256;                                     move32 (); 
+    s = 256;
     for (i = 0; i < L_CODE; i++)
     {
         s = L_mac (s, cn[i], cn[i]);
     }
-    s = Inv_sqrt (s);                            move32 (); 
+    s = Inv_sqrt (s);
     k_cn = extract_h (L_shl (s, 5));
     
-    s = 256;                                     move32 (); 
+    s = 256;
     for (i = 0; i < L_CODE; i++)
     {
         s = L_mac (s, dn[i], dn[i]);
     }
-    s = Inv_sqrt (s);                            move32 (); 
+    s = Inv_sqrt (s);
     k_dn = extract_h (L_shl (s, 5));
     
     for (i = 0; i < L_CODE; i++)
     {
-        val = dn[i];                             move16 (); 
+        val = dn[i];
         cor = round (L_shl (L_mac (L_mult (k_cn, cn[i]), k_dn, val), 10));
  
-        test (); 
+
         if (cor >= 0)
         {
-            sign[i] = 32767;                     move16 (); /* sign = +1 */
+            sign[i] = 32767;                      /* sign = +1 */
         }
         else
         {
-            sign[i] = -32767;                    move16 (); /* sign = -1 */
+            sign[i] = -32767;                     /* sign = -1 */
             cor = negate (cor);
             val = negate (val);
         }
         /* modify dn[] according to the fixed sign */        
-        dn[i] = val;                             move16 (); 
-        en[i] = cor;                             move16 (); 
+        dn[i] = val;
+        en[i] = cor;
     }
     
-    max_of_all = -1;                             move16 (); 
+    max_of_all = -1;
     for (i = 0; i < nb_track; i++)
     {
-        max = -1;                                move16 (); 
+        max = -1;
         
         for (j = i; j < L_CODE; j += step)
         {
-            cor = en[j];                         move16 (); 
+            cor = en[j];
             val = sub (cor, max);
-            test (); 
+
             if (val > 0)
             {
-                max = cor;                       move16 (); 
-                pos = j;                         move16 (); 
+                max = cor;
+                pos = j;
             }
         }
         /* store maximum correlation position */
-        pos_max[i] = pos;                        move16 (); 
+        pos_max[i] = pos;
         val = sub (max, max_of_all);
-        test (); 
+
         if (val > 0)
         {
-            max_of_all = max;                    move16 ();
+            max_of_all = max;
             /* starting position for i0 */            
-            ipos[0] = i;                         move16 (); 
+            ipos[0] = i;
         }
     }
     
@@ -196,18 +196,18 @@ void set_sign12k2 (
      *     Set starting position of each pulse.                       *
      *----------------------------------------------------------------*/
     
-    pos = ipos[0];                               move16 (); 
-    ipos[nb_track] = pos;                        move16 (); 
+    pos = ipos[0];
+    ipos[nb_track] = pos;
     
     for (i = 1; i < nb_track; i++)
     {
         pos = add (pos, 1);
-        test ();
+
         if (sub (pos, nb_track) >= 0)
         {
-           pos = 0;                              move16 (); 
+           pos = 0;
         }
-        ipos[i] = pos;                           move16 (); 
-        ipos[add(i, nb_track)] = pos;            move16 (); 
+        ipos[i] = pos;
+        ipos[add(i, nb_track)] = pos;
     }
 }

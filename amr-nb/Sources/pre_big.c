@@ -61,22 +61,22 @@ int pre_big(
    Word16 aOffset;
    Word16 i;
    
-   test ();
+
    if (sub (mode, MR795) <= 0 )
    {
-       g1 = gamma1;                          move16 ();
+       g1 = gamma1;
    }
    else
    {
-       g1 = gamma1_12k2;                     move16 ();
+       g1 = gamma1_12k2;
    }
 
-   test ();
+
    if (frameOffset > 0) {
-      aOffset = 2*MP1;                       move16 ();
+      aOffset = 2*MP1;
    }
    else {
-      aOffset = 0;                           move16 ();
+      aOffset = 0;
    }
 
    /* process two subframes (which form the "big" subframe) */

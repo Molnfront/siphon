@@ -66,34 +66,34 @@ int cbsearch(Word16 x[],    /* i : target vector, Q0                       */
     * codebook search routine, while for MR122 is it not.
     */
    
-   test (); test (); 
+
    if ((sub (mode, MR475) == 0) || (sub (mode, MR515) == 0))
-   {   /* MR475, MR515 */ move16 ();
+   {   /* MR475, MR515 */
       *(*anap)++ = code_2i40_9bits(subNr, x, h, T0, pitch_sharp,
                                    code, y, &index);
-      *(*anap)++ = index;    /* sign index */                  move16 ();
+      *(*anap)++ = index;    /* sign index */
    }
    else if (sub (mode, MR59) == 0)
    {   /* MR59 */
-      test (); move16 ();
+
       *(*anap)++ = code_2i40_11bits(x, h, T0, pitch_sharp, code, y, &index);
-      *(*anap)++ = index;    /* sign index */                  move16 ();
+      *(*anap)++ = index;    /* sign index */
    }
    else if (sub (mode, MR67) == 0)
    {   /* MR67 */
-      test (); test (); move16 ();
+
       *(*anap)++ = code_3i40_14bits(x, h, T0, pitch_sharp, code, y, &index);
-      *(*anap)++ = index;    /* sign index */                  move16 ();
+      *(*anap)++ = index;    /* sign index */
    }
    else if (sub (mode, MR74) == 0 || sub (mode, MR795) == 0)
    {   /* MR74, MR795 */
-      test (); test (); test (); move16 ();
+
       *(*anap)++ = code_4i40_17bits(x, h, T0, pitch_sharp, code, y, &index);
-      *(*anap)++ = index;    /* sign index */                  move16 ();
+      *(*anap)++ = index;    /* sign index */
    }
    else if (sub (mode, MR102) == 0)
    {   /* MR102 */
-      test (); test (); test ();
+
       /*-------------------------------------------------------------*
        * - include pitch contribution into impulse resp. h1[]        *
        *-------------------------------------------------------------*/
@@ -103,7 +103,7 @@ int cbsearch(Word16 x[],    /* i : target vector, Q0                       */
       for (i = T0; i < L_SUBFR; i++)
       {
          temp = mult(h[i - T0], pit_sharpTmp);
-         h[i] = add(h[i], temp);                               move16 ();
+         h[i] = add(h[i], temp);
       }
 
       /*--------------------------------------------------------------*
@@ -118,7 +118,7 @@ int cbsearch(Word16 x[],    /* i : target vector, Q0                       */
       for (i = T0; i < L_SUBFR; i++)
       {
          temp = mult (code[i - T0], pit_sharpTmp);
-         code[i] = add (code[i], temp);                        move16 ();
+         code[i] = add (code[i], temp);
       }
    }
    else
@@ -126,7 +126,7 @@ int cbsearch(Word16 x[],    /* i : target vector, Q0                       */
       /*-------------------------------------------------------------*
        * - include pitch contribution into impulse resp. h1[]        *
        *-------------------------------------------------------------*/
-      test (); test (); test ();
+
       
       /* pit_sharpTmp = gain_pit;                      */
       /* if (pit_sharpTmp > 1.0) pit_sharpTmp = 1.0;   */
@@ -135,7 +135,7 @@ int cbsearch(Word16 x[],    /* i : target vector, Q0                       */
       for (i = T0; i < L_SUBFR; i++)
       {
          temp = mult(h[i - T0], pit_sharpTmp);
-         h[i] = add(h[i], temp);                               move16 ();
+         h[i] = add(h[i], temp);
       }
       /*--------------------------------------------------------------*
        * - Innovative codebook search (find index and gain)           *
@@ -150,7 +150,7 @@ int cbsearch(Word16 x[],    /* i : target vector, Q0                       */
       for (i = T0; i < L_SUBFR; i++)
       {
          temp = mult (code[i - T0], pit_sharpTmp);
-         code[i] = add (code[i], temp);                        move16 ();
+         code[i] = add (code[i], temp);
       }     
    }
 

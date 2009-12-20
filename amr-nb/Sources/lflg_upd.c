@@ -59,29 +59,29 @@ void LTP_flag_update (vadState2 * st, Word16 mode)
 	Word16 lo1;
 	Word32 Ltmp;
 
-									test(); test();
+
 	if ((sub(mode, MR475) == 0) || (sub(mode, MR515) == 0))
 	{
-		thresh = (Word16)(32768.0*0.55);			move16();
+		thresh = (Word16)(32768.0*0.55);
 	}
 	else if (sub(mode, MR102) == 0)
 	{
-		thresh = (Word16)(32768.0*0.60);			move16();
+		thresh = (Word16)(32768.0*0.60);
 	}
 	else
 	{
-		thresh = (Word16)(32768.0*0.65);			move16();
+		thresh = (Word16)(32768.0*0.65);
 	}
 
 	L_Extract (st->L_R0, &hi1, &lo1);
-	Ltmp = Mpy_32_16(hi1, lo1, thresh);				test();
+	Ltmp = Mpy_32_16(hi1, lo1, thresh);
 	if (L_sub(st->L_Rmax, Ltmp) > 0)
 	{
-		st->LTP_flag = TRUE;					move16();
+		st->LTP_flag = TRUE;
 	}
 	else
 	{
-		st->LTP_flag = FALSE;					move16();
+		st->LTP_flag = FALSE;
 	}
 
 	return;

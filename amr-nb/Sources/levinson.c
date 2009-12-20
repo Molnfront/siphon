@@ -180,12 +180,12 @@ int Levinson (
     t1 = L_Comp (Rh[1], Rl[1]);
     t2 = L_abs (t1);                    /* abs R[1]         */
     t0 = Div_32 (t2, Rh[0], Rl[0]);     /* R[1]/R[0]        */
-    test (); 
+
     if (t1 > 0)
        t0 = L_negate (t0);             /* -R[1]/R[0]       */
     L_Extract (t0, &Kh, &Kl);           /* K in DPF         */
     
-    rc[0] = round (t0);                 move16 (); 
+    rc[0] = round (t0);
 
     t0 = L_shr (t0, 4);                 /* A[1] in          */
     L_Extract (t0, &Ah[1], &Al[1]);     /* A[1] in DPF      */
@@ -212,7 +212,7 @@ int Levinson (
     {
        /* t0 = SUM ( R[j]*A[i-j] ,j=1,i-1 ) +  R[i] */
        
-       t0 = 0;                         move32 (); 
+       t0 = 0;
        for (j = 1; j < i; j++)
        {
           t0 = L_add (t0, Mpy_32 (Rh[j], Rl[j], Ah[i - j], Al[i - j]));
@@ -226,30 +226,30 @@ int Levinson (
        
        t1 = L_abs (t0);
        t2 = Div_32 (t1, alp_h, alp_l); /* abs(t0)/Alpha              */
-       test (); 
+
        if (t0 > 0)
           t2 = L_negate (t2);         /* K =-t0/Alpha                */
        t2 = L_shl (t2, alp_exp);       /* denormalize; compare to Alpha */
        L_Extract (t2, &Kh, &Kl);       /* K in DPF                      */
        
-       test (); 
+
        if (sub (i, 5) < 0)
        {
-          rc[i - 1] = round (t2);     move16 (); 
+          rc[i - 1] = round (t2);
        }
        /* Test for unstable filter. If unstable keep old A(z) */
        
-       test (); 
+
        if (sub (abs_s (Kh), 32750) > 0)
        {
           for (j = 0; j <= M; j++)
           {
-             A[j] = st->old_A[j];        move16 (); 
+             A[j] = st->old_A[j];
           }
           
           for (j = 0; j < 4; j++)
           {
-             rc[j] = 0;              move16 (); 
+             rc[j] = 0;
           }
           
           return 0;
@@ -289,16 +289,16 @@ int Levinson (
        
        for (j = 1; j <= i; j++)
        {
-          Ah[j] = Anh[j];                     move16 (); 
-          Al[j] = Anl[j];                     move16 (); 
+          Ah[j] = Anh[j];
+          Al[j] = Anl[j];
        }
     }
     
-    A[0] = 4096;                                move16 (); 
+    A[0] = 4096;
     for (i = 1; i <= M; i++)
     {
        t0 = L_Comp (Ah[i], Al[i]);
-       st->old_A[i] = A[i] = round (L_shl (t0, 1));move16 (); move16 (); 
+       st->old_A[i] = A[i] = round (L_shl (t0, 1));
     }
     
     return 0;

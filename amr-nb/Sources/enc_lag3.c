@@ -82,13 +82,13 @@ Enc_lag3(                /* o  : Return index of encoding             */
    Word16 index, i, tmp_ind, uplag;
    Word16 tmp_lag;
    
-   test (); 
+
    if (delta_flag == 0)
    {  /* if 1st or 3rd subframe */
 
       /* encode pitch delay (with fraction) */
       
-      test (); 
+
       if (sub (T0, 85) <= 0)
       {
          /* index = T0*3 - 58 + T0_frac   */
@@ -102,7 +102,7 @@ Enc_lag3(                /* o  : Return index of encoding             */
    }
    else
    {   /* if second or fourth subframe */
-      test (); 
+
       if (flag4 == 0) {
          
          /* 'normal' encoding: either with 5 or 6 bit resolution */
@@ -116,12 +116,12 @@ Enc_lag3(                /* o  : Return index of encoding             */
          
          /* encoding with 4 bit resolution */
          
-         tmp_lag = T0_prev;                                   move16 ();
+         tmp_lag = T0_prev;
 
-         test ();
+
          if ( sub( sub(tmp_lag, T0_min), 5) > 0)
             tmp_lag = add (T0_min, 5);
-         test ();
+
          if ( sub( sub(T0_max, tmp_lag), 4) > 0)
             tmp_lag = sub (T0_max, 4);
          
@@ -130,7 +130,7 @@ Enc_lag3(                /* o  : Return index of encoding             */
          i = sub (tmp_lag, 2);
          tmp_ind = add (add (i, i), i);
          
-         test ();
+
          if (sub (tmp_ind, uplag) >= 0) { 
             index = add (sub (T0, tmp_lag), 5);
          } 
@@ -139,7 +139,7 @@ Enc_lag3(                /* o  : Return index of encoding             */
             i = add (tmp_lag, 1);
             i = add (add (i, i), i);
             
-            test ();
+
             if (sub (i, uplag) > 0) {
                
                 index = add ( sub (uplag, tmp_ind), 3);                

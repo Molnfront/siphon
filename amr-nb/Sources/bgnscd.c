@@ -149,8 +149,8 @@ Word16 Bgn_scd (Bgn_scdState *st,      /* i : State variables for bgn SCD */
    /* it now works as a energy detector floating on top                      */ 
    /* not as good as a VAD.                                                  */
 
-   currEnergy = 0;                                   move16 ();
-   s = (Word32) 0;                                   move32 ();
+   currEnergy = 0;
+   s = (Word32) 0;
 
    for (i = 0; i < L_FRAME; i++)
    {
@@ -161,38 +161,38 @@ Word16 Bgn_scd (Bgn_scdState *st,      /* i : State variables for bgn SCD */
 
    currEnergy = extract_h (s);
 
-   frameEnergyMin = 32767;                     move16 ();
+   frameEnergyMin = 32767;
 
    for (i = 0; i < L_ENERGYHIST; i++)
    {
-      test ();
+
       if (sub(st->frameEnergyHist[i], frameEnergyMin) < 0)
-         frameEnergyMin = st->frameEnergyHist[i];           move16 ();
+         frameEnergyMin = st->frameEnergyHist[i];
    }
 
    noiseFloor = shl (frameEnergyMin, 4); /* Frame Energy Margin of 16 */
 
-   maxEnergy = st->frameEnergyHist[0];               move16 ();
+   maxEnergy = st->frameEnergyHist[0];
    for (i = 1; i < L_ENERGYHIST-4; i++)
    {
-      test ();
+
       if ( sub (maxEnergy, st->frameEnergyHist[i]) < 0)
       {
-         maxEnergy = st->frameEnergyHist[i];         move16 ();
+         maxEnergy = st->frameEnergyHist[i];
       }
    }
    
-   maxEnergyLastPart = st->frameEnergyHist[2*L_ENERGYHIST/3]; move16 ();
+   maxEnergyLastPart = st->frameEnergyHist[2*L_ENERGYHIST/3];
    for (i = 2*L_ENERGYHIST/3+1; i < L_ENERGYHIST; i++)
    {
-      test ();
+
       if ( sub (maxEnergyLastPart, st->frameEnergyHist[i] ) < 0)
       {
-         maxEnergyLastPart = st->frameEnergyHist[i]; move16 ();     
+         maxEnergyLastPart = st->frameEnergyHist[i];
       }
    }
 
-   inbgNoise = 0;        /* false */                 move16 (); 
+   inbgNoise = 0;        /* false */
 
    /* Do not consider silence as noise */
    /* Do not consider continuous high volume as noise */
@@ -200,17 +200,17 @@ Word16 Bgn_scd (Bgn_scdState *st,      /* i : State variables for bgn SCD */
    /* Mark as noise if under current noise limit */
    /* OR if the maximum energy is below the upper limit */
 
-   test (); test (); test (); test (); test (); 
+
    if ( (sub(maxEnergy, LOWERNOISELIMIT) > 0) &&
         (sub(currEnergy, FRAMEENERGYLIMIT) < 0) &&
         (sub(currEnergy, LOWERNOISELIMIT) > 0) &&
         ( (sub(currEnergy, noiseFloor) < 0) ||
           (sub(maxEnergyLastPart, UPPERNOISELIMIT) < 0)))
    {
-      test ();
+
       if (sub(add(st->bgHangover, 1), 30) > 0)
       {
-         st->bgHangover = 30;                         move16 ();
+         st->bgHangover = 30;
       } else
       {
          st->bgHangover = add(st->bgHangover, 1);
@@ -218,70 +218,70 @@ Word16 Bgn_scd (Bgn_scdState *st,      /* i : State variables for bgn SCD */
    }
    else
    {
-      st->bgHangover = 0;                             move16 ();    
+      st->bgHangover = 0;
    }
    
    /* make final decision about frame state , act somewhat cautiosly */
-   test ();
+
    if (sub(st->bgHangover,1) > 0)
-      inbgNoise = 1;       /* true  */               move16 ();  
+      inbgNoise = 1;       /* true  */
 
    for (i = 0; i < L_ENERGYHIST-1; i++)
    {
-      st->frameEnergyHist[i] = st->frameEnergyHist[i+1]; move16 ();
+      st->frameEnergyHist[i] = st->frameEnergyHist[i+1];
    }
-   st->frameEnergyHist[L_ENERGYHIST-1] = currEnergy;              move16 ();
+   st->frameEnergyHist[L_ENERGYHIST-1] = currEnergy;
    
    /* prepare for voicing decision; tighten the threshold after some 
       time in noise */
-   ltpLimit = 13926;             /* 0.85  Q14 */     move16 (); 
-   test ();
+   ltpLimit = 13926;             /* 0.85  Q14 */
+
    if (sub(st->bgHangover, 8) > 0)
    {
-      ltpLimit = 15565;          /* 0.95  Q14 */     move16 ();
+      ltpLimit = 15565;          /* 0.95  Q14 */
    }
-   test ();
+
    if (sub(st->bgHangover, 15) > 0)
    {
-      ltpLimit = 16383;          /* 1.00  Q14 */     move16 ();
+      ltpLimit = 16383;          /* 1.00  Q14 */
    }
 
    /* weak sort of voicing indication. */
-   prevVoiced = 0;        /* false */                move16 ();
-   test ();
+   prevVoiced = 0;        /* false */
+
 
    if (sub(gmed_n(&ltpGainHist[4], 5), ltpLimit) > 0)
    {
-      prevVoiced = 1;     /* true  */                move16 ();
+      prevVoiced = 1;     /* true  */
    }
-   test ();   
+
    if (sub(st->bgHangover, 20) > 0) {
       if (sub(gmed_n(ltpGainHist, 9), ltpLimit) > 0)
       {
-         prevVoiced = 1;  /* true  */                move16 ();
+         prevVoiced = 1;  /* true  */
       }
       else
       {
-         prevVoiced = 0;  /* false  */                move16 ();
+         prevVoiced = 0;  /* false  */
       }
    }
    
-   test ();
+
    if (prevVoiced)
    {
-      *voicedHangover = 0;                        move16 ();
+      *voicedHangover = 0;
    }
    else
    {
       temp = add(*voicedHangover, 1);
-      test ();
+
       if (sub(temp, 10) > 0)
       {
-         *voicedHangover = 10;                    move16 ();
+         *voicedHangover = 10;
       }
       else
       {
-         *voicedHangover = temp;                  move16 ();
+         *voicedHangover = temp;
       }
    }
 

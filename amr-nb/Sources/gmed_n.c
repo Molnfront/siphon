@@ -69,25 +69,25 @@ Word16 gmed_n (   /* o : index of the median value (0...N-1)      */
 
     for (i = 0; i < n; i++)
     {
-        tmp2[i] = ind[i];                                      move16 (); 
+        tmp2[i] = ind[i];
     }
 
     for (i = 0; i < n; i++)
     {
-        max = -32767;                                          move16 (); 
+        max = -32767;
         for (j = 0; j < n; j++)
         {
-            test (); 
+
             if (sub (tmp2[j], max) >= 0)
             {
-                max = tmp2[j];                                 move16 (); 
-                ix = j;                                        move16 (); 
+                max = tmp2[j];
+                ix = j;
             }
         }
-        tmp2[ix] = -32768;                                     move16 (); 
-        tmp[i] = ix;                                           move16 (); 
+        tmp2[ix] = -32768;
+        tmp[i] = ix;
     }
 
-    medianIndex=tmp[ shr(n,1) ]; move16 (); /* account for complex addressing */
+    medianIndex=tmp[ shr(n,1) ];  /* account for complex addressing */
     return (ind[medianIndex]);                                     
 }

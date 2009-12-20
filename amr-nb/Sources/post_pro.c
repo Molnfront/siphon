@@ -150,12 +150,12 @@ int Post_Process (
     Word16 i, x2;
     Word32 L_tmp;
 
-    test (); test ();
+
     for (i = 0; i < lg; i++)
     {
-        x2 = st->x1;                             move16 (); 
-        st->x1 = st->x0;                         move16 (); 
-        st->x0 = signal[i];                      move16 (); 
+        x2 = st->x1;
+        st->x1 = st->x0;
+        st->x0 = signal[i];
         
         /*  y[i] = b[0]*x[i]*2 + b[1]*x[i-1]*2 + b140[2]*x[i-2]/2  */
         /*                     + a[1]*y[i-1] + a[2] * y[i-2];      */
@@ -168,10 +168,10 @@ int Post_Process (
         L_tmp = L_shl (L_tmp, 2);
         
         /* Multiplication by two of output speech with saturation. */
-        signal[i] = round(L_shl(L_tmp, 1));   move16 (); 
+        signal[i] = round(L_shl(L_tmp, 1));
         
-        st->y2_hi = st->y1_hi;                   move16 (); 
-        st->y2_lo = st->y1_lo;                   move16 (); 
+        st->y2_hi = st->y1_hi;
+        st->y2_lo = st->y1_lo;
         L_Extract (L_tmp, &st->y1_hi, &st->y1_lo);
     }
 

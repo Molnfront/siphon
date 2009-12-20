@@ -35,7 +35,7 @@ typedef struct{
     Pre_ProcessState *pre_state;
     cod_amrState   *cod_amr_state;
     Flag dtx;
-    int complexityCounter;   /* Only for complexity computation            */
+   /* int complexityCounter;*/   /* Only for complexity computation            */
 } Speech_Encode_FrameState;
  
 /*

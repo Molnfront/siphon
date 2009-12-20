@@ -90,12 +90,12 @@ void d_gain_code (
     p = &qua_gain_code[add (add (index, index), index)];
 
     /* Different scalings between MR122 and the other modes */
-    test ();
+
     if (sub(mode, MR122) == 0)
     {
         gcode0 = extract_l (Pow2 (exp, frac));  /* predicted gain */
         gcode0 = shl (gcode0, 4);                                   
-        *gain_code = shl (mult (gcode0, *p++), 1);  move16 ();
+        *gain_code = shl (mult (gcode0, *p++), 1);
     }
     else
     {
@@ -109,8 +109,8 @@ void d_gain_code (
      *  update table of past quantized energies                          *
      *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                          *
      *-------------------------------------------------------------------*/
-    qua_ener_MR122 = *p++;                 move16();
-    qua_ener = *p++;                       move16();
+    qua_ener_MR122 = *p++;
+    qua_ener = *p++;
     gc_pred_update(pred_state, qua_ener_MR122, qua_ener);
 
     return;

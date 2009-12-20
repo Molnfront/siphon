@@ -66,36 +66,36 @@ void decode_2i40_9bits(
 
     /* Decode the positions */
     /* table bit  is the MSB */ 
-    j = shr((index & 64),6);                                 logic16 ();
+    j = shr((index & 64),6);
 
-    i = index & 7;                                       logic16 ();
+    i = index & 7;
 
     i = add(i, shl(i, 2));       /* pos0 =i*5+startPos[j*8+subNr*2] */
     k = startPos[add(shl(j, 3), shl(subNr, 1))];
-    pos[0] = add(i, k);                                  move16 ();    
+    pos[0] = add(i, k);
 
     index = shr(index, 3);
-    i = index & 7;                                       logic16 ();
+    i = index & 7;
 
     i = add(i, shl(i, 2));       /* pos1 =i*5+startPos[j*8+subNr*2+1] */
     k = startPos[add(add(shl(j, 3), shl(subNr, 1)), 1)];
-    pos[1] = add(i, k);                                  move16 ();
+    pos[1] = add(i, k);
 
     /* decode the signs  and build the codeword */
 
     for (i = 0; i < L_SUBFR; i++) {
-        cod[i] = 0;                                      move16 ();
+        cod[i] = 0;
     }
 
     for (j = 0; j < NB_PULSE; j++) {
-        i = sign & 1;                                    logic16 ();
+        i = sign & 1;
         sign = shr(sign, 1);
 
-        test ();
+
         if (i != 0) {
-            cod[pos[j]] = 8191;                          move16 (); /* +1.0 */
+            cod[pos[j]] = 8191;                           /* +1.0 */
         } else {
-            cod[pos[j]] = -8192;                         move16 (); /* -1.0 */
+            cod[pos[j]] = -8192;                          /* -1.0 */
         }
     }
 

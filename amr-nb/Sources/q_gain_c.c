@@ -73,9 +73,9 @@ Word16 q_gain_code (        /* o  : quantization index,            Q0  */
     Word16 gcode0, err, err_min;
     Word16 g_q0;
 
-    test ();
-    g_q0 = 0;    move16 ();
-    test ();
+
+    g_q0 = 0;
+
     if (sub(mode, MR122) == 0)
     {
        g_q0 = shr (*gain, 1); /* Q1 -> Q0 */
@@ -91,7 +91,7 @@ Word16 q_gain_code (        /* o  : quantization index,            Q0  */
 
     gcode0 = extract_l (Pow2 (exp_gcode0, frac_gcode0));  /* predicted gain */
 
-    test ();
+
     if (sub(mode, MR122) == 0)
     {
        gcode0 = shl (gcode0, 4);
@@ -105,8 +105,8 @@ Word16 q_gain_code (        /* o  : quantization index,            Q0  */
      *                   Search for best quantizer                        *
      *-------------------------------------------------------------------*/
 
-    p = &qua_gain_code[0]; move16 ();
-    test ();
+    p = &qua_gain_code[0];
+
     if (sub(mode, MR122) == 0)
     {
        err_min = abs_s (sub (g_q0, mult (gcode0, *p++)));
@@ -116,11 +116,11 @@ Word16 q_gain_code (        /* o  : quantization index,            Q0  */
        err_min = abs_s (sub (*gain, mult (gcode0, *p++)));
     }
     p += 2;                                  /* skip quantized energy errors */
-    index = 0;              move16 (); 
+    index = 0;
 
     for (i = 1; i < NB_QUA_CODE; i++)
     {
-       test ();
+
        if (sub(mode, MR122) == 0)
        {
           err = abs_s (sub (g_q0,  mult (gcode0, *p++)));
@@ -132,16 +132,16 @@ Word16 q_gain_code (        /* o  : quantization index,            Q0  */
        
        p += 2;                              /* skip quantized energy error */
 
-       test (); 
+
        if (sub (err, err_min) < 0)
        {
-          err_min = err;                  move16 (); 
-          index = i;                      move16 (); 
+          err_min = err;
+          index = i;
        }
     }
 
-    p = &qua_gain_code[add (add (index,index), index)]; move16 ();
-    test ();
+    p = &qua_gain_code[add (add (index,index), index)];
+
     if (sub(mode, MR122) == 0)
     {
        *gain = shl (mult (gcode0, *p++), 1); 
@@ -150,11 +150,11 @@ Word16 q_gain_code (        /* o  : quantization index,            Q0  */
     {
        *gain = mult (gcode0, *p++);
     }
-                                            move16 ();
+
     
     /* quantized error energies (for MA predictor update) */
-    *qua_ener_MR122 = *p++;                 move16 (); 
-    *qua_ener = *p;                         move16 (); 
+    *qua_ener_MR122 = *p++;
+    *qua_ener = *p;
 
     return index;
 }

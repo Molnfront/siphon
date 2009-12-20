@@ -82,99 +82,99 @@ static void build_code (
 
     for (i = 0; i < L_CODE; i++)
     {
-        cod[i] = 0;                              move16 (); 
+        cod[i] = 0;
     }
     for (i = 0; i < NB_TRACK_MR102; i++)
     {
-        pos_indx[i] = -1;                            move16 (); 
-        sign_indx[i] = -1;                            move16 (); 
+        pos_indx[i] = -1;
+        sign_indx[i] = -1;
     }
     
     for (k = 0; k < NB_PULSE; k++)
     {
        /* read pulse position */            
-       i = codvec[k];                           move16 ();
+       i = codvec[k];
        /* read sign           */        
-       j = sign[i];                             move16 (); 
+       j = sign[i];
        
        pos_index = shr(i, 2);                      /* index = pos/4 */
-       track = i & 3;             logic16 ();      /* track = pos%4 */
+       track = i & 3;                   /* track = pos%4 */
        
-       test (); 
+
        if (j > 0)
        {
-          cod[i] = add (cod[i], POS_CODE);         move16 ();
-          _sign[k] = POS_SIGN;                     move16 (); 
-          sign_index = 0;  /* bit=0 -> positive pulse */  move16 (); 
+          cod[i] = add (cod[i], POS_CODE);
+          _sign[k] = POS_SIGN;
+          sign_index = 0;  /* bit=0 -> positive pulse */
        }
        else
        {
-          cod[i] = sub (cod[i], NEG_CODE);         move16 ();
-          _sign[k] = NEG_SIGN;                     move16 (); 
-          sign_index = 1;     move16 (); /* bit=1 => negative pulse */ 
+          cod[i] = sub (cod[i], NEG_CODE);
+          _sign[k] = NEG_SIGN;
+          sign_index = 1;      /* bit=1 => negative pulse */
           /* index = add (index, 8); 1 = negative  old code */
        }
        
-       test (); move16 ();
+
        if (pos_indx[track] < 0)
        {   /* first set first NB_TRACK pulses  */
-          pos_indx[track] = pos_index;                 move16 (); 
-          sign_indx[track] = sign_index;              move16 (); 
+          pos_indx[track] = pos_index;
+          sign_indx[track] = sign_index;
        }
        else
        {   /* 2nd row of pulses , test if positions needs to be switched */
-          test (); logic16 (); logic16 (); 
+
           if (((sign_index ^ sign_indx[track]) & 1) == 0)
           {
              /* sign of 1st pulse == sign of 2nd pulse */
              
-             test (); 
+
              if (sub (pos_indx[track], pos_index) <= 0)
              {   /* no swap */
-                pos_indx[track + NB_TRACK_MR102] = pos_index;     move16 (); 
+                pos_indx[track + NB_TRACK_MR102] = pos_index;
              }
              else
              {   /* swap*/
                 pos_indx[track + NB_TRACK_MR102] = pos_indx[track];
-                move16 (); 
+
                 
-                pos_indx[track] = pos_index;         move16 ();
-                sign_indx[track] = sign_index;       move16 ();
+                pos_indx[track] = pos_index;
+                sign_indx[track] = sign_index;
              }
           }
           else
           {
              /* sign of 1st pulse != sign of 2nd pulse */
              
-             test (); 
+
              if (sub (pos_indx[track], pos_index) <= 0)
              {  /*swap*/
                 pos_indx[track + NB_TRACK_MR102] = pos_indx[track];
-                move16 (); 
+
                 
-                pos_indx[track] = pos_index;         move16 (); 
-                sign_indx[track] = sign_index;       move16 (); 
+                pos_indx[track] = pos_index;
+                sign_indx[track] = sign_index;
              }
              else
              {   /*no swap */
-                pos_indx[track + NB_TRACK_MR102] = pos_index;     move16 (); 
+                pos_indx[track + NB_TRACK_MR102] = pos_index;
              }
           }
        }
     }
     
-    p0 = h - codvec[0];                          move16 (); 
-    p1 = h - codvec[1];                          move16 (); 
-    p2 = h - codvec[2];                          move16 (); 
-    p3 = h - codvec[3];                          move16 (); 
-    p4 = h - codvec[4];                          move16 (); 
-    p5 = h - codvec[5];                          move16 (); 
-    p6 = h - codvec[6];                          move16 (); 
-    p7 = h - codvec[7];                          move16 (); 
+    p0 = h - codvec[0];
+    p1 = h - codvec[1];
+    p2 = h - codvec[2];
+    p3 = h - codvec[3];
+    p4 = h - codvec[4];
+    p5 = h - codvec[5];
+    p6 = h - codvec[6];
+    p7 = h - codvec[7];
     
     for (i = 0; i < L_CODE; i++)
     {
-       s = 0;                                   move32 (); 
+       s = 0;
        s = L_mac (s, *p0++, _sign[0]);
        s = L_mac (s, *p1++, _sign[1]);
        s = L_mac (s, *p2++, _sign[2]);
@@ -183,7 +183,7 @@ static void build_code (
        s = L_mac (s, *p5++, _sign[5]);
        s = L_mac (s, *p6++, _sign[6]);
        s = L_mac (s, *p7++, _sign[7]);
-       y[i] = round (s);                        move16 (); 
+       y[i] = round (s);
     }
 }
 
@@ -208,9 +208,9 @@ static Word16 compress10 (
    ib = extract_l(L_shr(L_mult(shr(pos_indxB, 1), 5), 1));
    ic = extract_l(L_shr(L_mult(shr(pos_indxC, 1), 25), 1));            
    indx = shl(add(ia, add(ib, ic)), 3);
-   ia = pos_indxA & 1;                                logic16 ();
-   ib = shl((pos_indxB & 1), 1);                      logic16 ();
-   ic = shl((pos_indxC & 1), 2);                      logic16 ();
+   ia = pos_indxA & 1;
+   ib = shl((pos_indxB & 1), 1);
+   ic = shl((pos_indxC & 1), 2);
    indx = add(indx , add(ia, add(ib, ic)));  
    
    return indx;
@@ -241,18 +241,18 @@ static void compress_code (
 
    for (i = 0; i < NB_TRACK_MR102; i++)
    {
-      indx[i] = sign_indx[i];                            move16 (); 
+      indx[i] = sign_indx[i];
    }
     
     /* First index 
       indx[NB_TRACK] = (ia/2+(ib/2)*5 +(ic/2)*25)*8 + ia%2 + (ib%2)*2 + (ic%2)*4; */
-   move16 (); 
+
    indx[NB_TRACK_MR102] = compress10(pos_indx[0],pos_indx[4],pos_indx[1]);
 
     /* Second index       
       indx[NB_TRACK+1] = (ia/2+(ib/2)*5 +(ic/2)*25)*8 + ia%2 + (ib%2)*2 + (ic%2)*4; */
     
-   move16 (); 
+
    indx[NB_TRACK_MR102+1]= compress10(pos_indx[2],pos_indx[6],pos_indx[5]);
     
     /*
@@ -263,8 +263,8 @@ static void compress_code (
         indx[NB_TRACK+2] = ((((ia/2) +   (ib/2)*5)*32+12)/25)*4 + ia%2 + (ib%2)*2;
         */
     
-    ib = shr(pos_indx[7], 1) & 1;                        logic16 ();
-    test ();
+    ib = shr(pos_indx[7], 1) & 1;
+
     if (sub(ib, 1) == 0)
        ia = sub(4, shr(pos_indx[3], 1));
     else
@@ -273,8 +273,8 @@ static void compress_code (
     ib = extract_l(L_shr(L_mult(shr(pos_indx[7], 1), 5), 1));       
     ib = add(shl(add(ia, ib), 5), 12);
     ic = shl(mult(ib, 1311), 2);
-    ia = pos_indx[3] & 1;                             logic16 ();
-    ib = shl((pos_indx[7] & 1), 1);                   logic16 ();
+    ia = pos_indx[3] & 1;
+    ib = shl((pos_indx[7] & 1), 1);
     indx[NB_TRACK_MR102+2] = add(ia, add(ib, ic));
 }
 

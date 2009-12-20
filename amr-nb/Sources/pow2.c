@@ -68,7 +68,7 @@ Word32 Pow2 (           /* (o)  : result       (range: 0<=val<=0x7fffffff) */
     i = extract_h (L_x);        /* Extract b10-b16 of fraction */
     L_x = L_shr (L_x, 1);
     a = extract_l (L_x);        /* Extract b0-b9   of fraction */
-    a = a & (Word16) 0x7fff;    logic16 (); 
+    a = a & (Word16) 0x7fff;
 
     L_x = L_deposit_h (table[i]);       /* table[i] << 16        */
     tmp = sub (table[i], table[i + 1]); /* table[i] - table[i+1] */

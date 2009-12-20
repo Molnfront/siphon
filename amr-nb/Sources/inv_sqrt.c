@@ -63,7 +63,7 @@ Word32 Inv_sqrt (       /* (o) : output value   */
     Word16 exp, i, a, tmp;
     Word32 L_y;
 
-    test (); 
+
     if (L_x <= (Word32) 0)
         return ((Word32) 0x3fffffffL);
 
@@ -71,7 +71,7 @@ Word32 Inv_sqrt (       /* (o) : output value   */
     L_x = L_shl (L_x, exp);     /* L_x is normalize */
 
     exp = sub (30, exp);
-    test (); logic16 (); 
+
     if ((exp & 1) == 0)         /* If exponent even -> shift right */
     {
         L_x = L_shr (L_x, 1);
@@ -83,7 +83,7 @@ Word32 Inv_sqrt (       /* (o) : output value   */
     i = extract_h (L_x);        /* Extract b25-b31 */
     L_x = L_shr (L_x, 1);
     a = extract_l (L_x);        /* Extract b10-b24 */
-    a = a & (Word16) 0x7fff;    logic16 (); 
+    a = a & (Word16) 0x7fff;
 
     i = sub (i, 16);
 

@@ -70,12 +70,12 @@ Word16 G_code (         /* out   : Gain of innovation code         */
 
     for (i = 0; i < L_SUBFR; i++)
     {
-        scal_y2[i] = shr (y2[i], 1);  move16 (); 
+        scal_y2[i] = shr (y2[i], 1);
     }
 
     /* Compute scalar product <X[],Y[]> */
 
-    s = 1L;                           move32 (); /* Avoid case of all zeros */
+    s = 1L;                            /* Avoid case of all zeros */
     for (i = 0; i < L_SUBFR; i++)
     {
         s = L_mac (s, xn2[i], scal_y2[i]);
@@ -85,13 +85,13 @@ Word16 G_code (         /* out   : Gain of innovation code         */
 
     /* If (xy < 0) gain = 0  */
 
-    test (); 
+
     if (xy <= 0)
         return ((Word16) 0);
 
     /* Compute scalar product <Y[],Y[]> */
 
-    s = 0L;                           move32 (); 
+    s = 0L;
     for (i = 0; i < L_SUBFR; i++)
     {
         s = L_mac (s, scal_y2[i], scal_y2[i]);

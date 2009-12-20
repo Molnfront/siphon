@@ -25,90 +25,8 @@
 #include "typedef.h"
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
 
-/*****************************************************************************
- *                                                                           *
- *  Function L_Extract()                                                     *
- *                                                                           *
- *  Extract from a 32 bit integer two 16 bit DPF.                            *
- *                                                                           *
- *  Arguments:                                                               *
- *                                                                           *
- *   L_32      : 32 bit integer.                                             *
- *               0x8000 0000 <= L_32 <= 0x7fff ffff.                         *
- *   hi        : b16 to b31 of L_32                                          *
- *   lo        : (L_32 - hi<<16)>>1                                          *
- *****************************************************************************
-*/
-
-void L_Extract (Word32 L_32, Word16 *hi, Word16 *lo)
-{
-    *hi = extract_h (L_32);
-    *lo = extract_l (L_msu (L_shr (L_32, 1), *hi, 16384));
-    return;
-}
-
-/*****************************************************************************
- *                                                                           *
- *  Function L_Comp()                                                        *
- *                                                                           *
- *  Compose from two 16 bit DPF a 32 bit integer.                            *
- *                                                                           *
- *     L_32 = hi<<16 + lo<<1                                                 *
- *                                                                           *
- *  Arguments:                                                               *
- *                                                                           *
- *   hi        msb                                                           *
- *   lo        lsf (with sign)                                               *
- *                                                                           *
- *   Return Value :                                                          *
- *                                                                           *
- *             32 bit long signed integer (Word32) whose value falls in the  *
- *             range : 0x8000 0000 <= L_32 <= 0x7fff fff0.                   *
- *                                                                           *
- *****************************************************************************
-*/
-
-Word32 L_Comp (Word16 hi, Word16 lo)
-{
-    Word32 L_32;
-
-    L_32 = L_deposit_h (hi);
-    return (L_mac (L_32, lo, 1));       /* = hi<<16 + lo<<1 */
-}
-
-/*****************************************************************************
- * Function Mpy_32()                                                         *
- *                                                                           *
- *   Multiply two 32 bit integers (DPF). The result is divided by 2**31      *
- *                                                                           *
- *   L_32 = (hi1*hi2)<<1 + ( (hi1*lo2)>>15 + (lo1*hi2)>>15 )<<1              *
- *                                                                           *
- *   This operation can also be viewed as the multiplication of two Q31      *
- *   number and the result is also in Q31.                                   *
- *                                                                           *
- * Arguments:                                                                *
- *                                                                           *
- *  hi1         hi part of first number                                      *
- *  lo1         lo part of first number                                      *
- *  hi2         hi part of second number                                     *
- *  lo2         lo part of second number                                     *
- *                                                                           *
- *****************************************************************************
-*/
-
-Word32 Mpy_32 (Word16 hi1, Word16 lo1, Word16 hi2, Word16 lo2)
-{
-    Word32 L_32;
-
-    L_32 = L_mult (hi1, hi2);
-    L_32 = L_mac (L_32, mult (hi1, lo2), 1);
-    L_32 = L_mac (L_32, mult (lo1, hi2), 1);
-
-    return (L_32);
-}
-
+#if 1
 /*****************************************************************************
  * Function Mpy_32_16()                                                      *
  *                                                                           *
@@ -129,14 +47,33 @@ Word32 Mpy_32 (Word16 hi1, Word16 lo1, Word16 hi2, Word16 lo2)
 
 Word32 Mpy_32_16 (Word16 hi, Word16 lo, Word16 n)
 {
+#if 0
     Word32 L_32;
 
     L_32 = L_mult (hi, n);
     L_32 = L_mac (L_32, mult (lo, n), 1);
+    /*L_32 += mult(lo, n) << 1;
+    L_32 += L_mult(lo, n) >> 15;*/
 
     return (L_32);
-}
+#else
+    register Word32 ra = hi;
+    register Word32 rb = lo;
+    register Word32 rc = n;
+    Word32 out, out1;
 
+    __asm__("smulbb %0, %2, %4 \n\t"
+            "qadd %0, %0, %0   \n\t"
+            "smulbb %1, %3, %4 \n\t"
+            "mov %1, %1, ASR #15 \n\t"
+            "qdadd %0, %0, %1   \n\t"
+            : "=r"(out), "=r"(out1)
+            : "r"(ra), "r"(rb), "r"(rc));
+
+    return out;
+#endif
+}
+#endif
 /*****************************************************************************
  *                                                                           *
  *   Function Name : Div_32                                                  *
@@ -192,16 +129,18 @@ Word32 Div_32 (Word32 L_num, Word16 denom_hi, Word16 denom_lo)
 
     L_32 = Mpy_32_16 (denom_hi, denom_lo, approx);
 
-    L_32 = L_sub ((Word32) 0x7fffffffL, L_32);
+    L_32 = L_sub (MAX_32, L_32);
 
-    L_Extract (L_32, &hi, &lo);
+    hi = (Word16)(L_32 >> 16);
+    lo = (L_32 >> 1) - (hi << 15);
 
     L_32 = Mpy_32_16 (hi, lo, approx);
 
     /* L_num * (1/L_denom) */
-
-    L_Extract (L_32, &hi, &lo);
-    L_Extract (L_num, &n_hi, &n_lo);
+    hi = (Word16)(L_32 >> 16);
+    lo = (L_32 >> 1) - (hi << 15);
+    n_hi = (Word16)(L_num >> 16);
+    n_lo = (L_num >> 1) - (n_hi << 15);
     L_32 = Mpy_32 (n_hi, n_lo, hi, lo);
     L_32 = L_shl (L_32, 2);
 

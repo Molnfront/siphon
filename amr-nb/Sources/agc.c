@@ -72,9 +72,9 @@ static Word32 energy_new( /* o : return energy of signal     */
 {
     Word32 s;
     Word16 i;
-    Flag ov_save;
+    /*Flag ov_save;*/
 
-    ov_save = Overflow; move16 (); /* save overflow flag in case energy_old */
+    /*ov_save = Overflow; */           /* save overflow flag in case energy_old */
                                    /* must be called                        */
     s = L_mult(in[0], in[0]);
     for (i = 1; i < l_trm; i++)
@@ -83,11 +83,11 @@ static Word32 energy_new( /* o : return energy of signal     */
     }
     
     /* check for overflow */
-    test (); 
+
     if (L_sub (s, MAX_32) == 0L)
     {
-        Overflow = ov_save; move16 (); /* restore overflow flag */
-        s = energy_old (in, l_trm); move32 (); /* function result */
+        /*Overflow = ov_save;*/ /* restore overflow flag */
+        s = energy_old (in, l_trm); /* function result */
     }
     else
     {
@@ -193,24 +193,24 @@ int agc (
     Word32 s;
             
     /* calculate gain_out with exponent */
-    s = energy_new(sig_out, l_trm); move32 (); /* function result */
+    s = energy_new(sig_out, l_trm);  /* function result */
         
-    test (); 
+
     if (s == 0)
     {
-        st->past_gain = 0;          move16 (); 
+        st->past_gain = 0;
         return 0;
     }
     exp = sub (norm_l (s), 1);
     gain_out = round (L_shl (s, exp));
 
     /* calculate gain_in with exponent */
-    s = energy_new(sig_in, l_trm);   move32 (); /* function result */
+    s = energy_new(sig_in, l_trm);    /* function result */
     
-    test (); 
+
     if (s == 0)
     {
-        g0 = 0;                 move16 (); 
+        g0 = 0;
     }
     else
     {
@@ -226,7 +226,7 @@ int agc (
         s = L_shl (s, 7);       /* s = gain_out / gain_in */
         s = L_shr (s, exp);     /* add exponent */
 
-        s = Inv_sqrt (s); move32 (); /* function result */
+        s = Inv_sqrt (s);  /* function result */
         i = round (L_shl (s, 9));
 
         /* g0 = i * (1-agc_fac) */
@@ -237,17 +237,17 @@ int agc (
                         + (1-agc_fac) * sqrt(gain_in/gain_out) */
     /* sig_out[n] = gain[n] * sig_out[n]                        */
 
-    gain = st->past_gain;           move16 (); 
+    gain = st->past_gain;
 
     for (i = 0; i < l_trm; i++)
     {
         gain = mult (gain, agc_fac);
         gain = add (gain, g0);
         sig_out[i] = extract_h (L_shl (L_mult (sig_out[i], gain), 3));
-                                move16 (); 
+
     }
 
-    st->past_gain = gain;           move16 (); 
+    st->past_gain = gain;
 
     return 0;
 }
@@ -271,9 +271,9 @@ void agc2 (
     Word32 s;
     
     /* calculate gain_out with exponent */
-    s = energy_new(sig_out, l_trm);   move32 (); /* function result */
+    s = energy_new(sig_out, l_trm);    /* function result */
         
-    test (); 
+
     if (s == 0)
     {
         return;
@@ -282,12 +282,12 @@ void agc2 (
     gain_out = round (L_shl (s, exp));
 
     /* calculate gain_in with exponent */
-    s = energy_new(sig_in, l_trm);   move32 (); /* function result */
+    s = energy_new(sig_in, l_trm);    /* function result */
     
-    test (); 
+
     if (s == 0)
     {
-        g0 = 0;                 move16 (); 
+        g0 = 0;
     }
     else
     {
@@ -303,7 +303,7 @@ void agc2 (
         s = L_shl (s, 7);       /* s = gain_out / gain_in */
         s = L_shr (s, exp);     /* add exponent */
 
-        s = Inv_sqrt (s); move32 (); /* function result */
+        s = Inv_sqrt (s);  /* function result */
         g0 = round (L_shl (s, 9));
     }
 
@@ -312,7 +312,7 @@ void agc2 (
     for (i = 0; i < l_trm; i++)
     {
         sig_out[i] = extract_h (L_shl (L_mult (sig_out[i], g0), 3));
-                                move16 (); 
+
     }
 
     return;

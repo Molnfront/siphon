@@ -69,14 +69,14 @@ int subframePreProc(
    /*---------------------------------------------------------------*
     * mode specific pointer to gamma1 values                        *
     *---------------------------------------------------------------*/
-	test (); test ();
+
 	if ( sub(mode, MR122) == 0 || sub(mode, MR102) == 0 )
         {
-           g1 = gamma1_12k2; move16 (); 
+           g1 = gamma1_12k2;
 	}
         else
         {
-           g1 = gamma1;      move16 (); 
+           g1 = gamma1;
 	}
    /*---------------------------------------------------------------*
     * Find the weighted LPC coefficients for the weighting filter.  *
@@ -89,7 +89,7 @@ int subframePreProc(
     *---------------------------------------------------------------*/
    for (i = 0; i <= M; i++)
    {
-      ai_zero[i] = Ap1[i];        move16 ();
+      ai_zero[i] = Ap1[i];
    }
 
    Syn_filt(Aq, ai_zero, h1, L_SUBFR, zero, 0);

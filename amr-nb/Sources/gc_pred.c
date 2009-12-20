@@ -186,8 +186,9 @@ gc_pred(
     for (i = 1; i < L_SUBFR; i++)
         ener_code = L_mac(ener_code, code[i], code[i]);
     
-    test ();
-    if (sub (mode, MR122) == 0)
+
+    /*if (sub (mode, MR122) == 0)*/
+    if ( mode == MR122 )
     {
         Word32 ener;
 
@@ -214,7 +215,7 @@ gc_pred(
          *                                           constant = 20*Log10(2)  *
          *-------------------------------------------------------------------*/
 
-        ener = MEAN_ENER_MR122; move32 ();                  /* Q24 (Q17) */
+        ener = MEAN_ENER_MR122;                   /* Q24 (Q17) */
         for (i = 0; i < NPRED; i++)
         {
             ener = L_mac (ener, st->past_qua_en_MR122[i], pred_MR122[i]);
@@ -275,12 +276,14 @@ gc_pred(
          *   (MR102)                K = 2134793.51 Q14 ~= 16678 * 64 * 2         
          */
 
-        if (test (), sub (mode, MR102) == 0)
+        /*if (test (), sub (mode, MR102) == 0)*/
+        if ( mode ==  MR102 )
         {
             /* mean = 33 dB */
             L_tmp = L_mac(L_tmp, 16678, 64);     /* Q14 */
         }
-        else if (test (), sub (mode, MR795) == 0)
+        /*else if (test (), sub (mode, MR795) == 0)*/
+        else if ( mode == MR795 )
         {
             /* ener_code  = <xn xn> * 2^27*2^exp_code
                frac_en    = ener_code / 2^16
@@ -290,18 +293,20 @@ gc_pred(
 
                ==> exp_en = -11-exp_code;
              */
-            *frac_en = extract_h (ener_code); move16 ();
-            *exp_en = sub (-11, exp_code);    move16 ();
+            *frac_en = extract_h (ener_code);
+            *exp_en = sub (-11, exp_code);
 
             /* mean = 36 dB */
             L_tmp = L_mac(L_tmp, 17062, 64);     /* Q14 */
         }
-        else if (test (), sub (mode, MR74) == 0)
+        /*else if (test (), sub (mode, MR74) == 0)*/
+        else if ( mode == MR74 )
         {
             /* mean = 30 dB */
             L_tmp = L_mac(L_tmp, 32588, 32);     /* Q14 */
         }
-        else if (test (), sub (mode, MR67) == 0)
+        /*else if (test (), sub (mode, MR67) == 0)*/
+        else if ( mode == MR67 )
         {
             /* mean = 28.75 dB */
             L_tmp = L_mac(L_tmp, 32268, 32);     /* Q14 */
@@ -332,7 +337,7 @@ gc_pred(
 
         /* 5439 Q15 = 0.165985                                        */
         /* (correct: 1/(20*log10(2)) 0.166096 = 5443 Q15)             */
-        test ();
+
         if (sub (mode, MR74) == 0) /* For IS641 bitexactness */
             L_tmp = L_mult(gcode0, 5439);  /* Q8 * Q15 -> Q24 */
         else
@@ -363,14 +368,14 @@ void gc_pred_update(
 
     for (i = 3; i > 0; i--)
     {
-        st->past_qua_en[i] = st->past_qua_en[i - 1];             move16 ();
-        st->past_qua_en_MR122[i] = st->past_qua_en_MR122[i - 1]; move16 ();
+        st->past_qua_en[i] = st->past_qua_en[i - 1];
+        st->past_qua_en_MR122[i] = st->past_qua_en_MR122[i - 1];
     }
 
     st->past_qua_en_MR122[0] = qua_ener_MR122;  /*    log2 (qua_err), Q10 */
-	                                                             move16 ();
+
     st->past_qua_en[0] = qua_ener;              /* 20*log10(qua_err), Q10 */
-	                                                             move16 ();
+
 }
 
 /*************************************************************************
@@ -393,7 +398,7 @@ void gc_pred_average_limited(
     Word16 i;
 
     /* do average in MR122 mode (log2() domain) */
-    av_pred_en = 0;                                        move16 ();
+    av_pred_en = 0;
     for (i = 0; i < NPRED; i++)
     {
         av_pred_en = add (av_pred_en, st->past_qua_en_MR122[i]);
@@ -403,15 +408,15 @@ void gc_pred_average_limited(
     av_pred_en = mult (av_pred_en, 8192);
 
     /* if (av_pred_en < -14/(20Log10(2))) av_pred_en = .. */
-    test ();
+
     if (sub (av_pred_en, MIN_ENERGY_MR122) < 0)
     {
-        av_pred_en = MIN_ENERGY_MR122;                     move16 ();
+        av_pred_en = MIN_ENERGY_MR122;
     }
-    *ener_avg_MR122 = av_pred_en;                          move16 ();
+    *ener_avg_MR122 = av_pred_en;
 
     /* do average for other modes (20*log10() domain) */
-    av_pred_en = 0;                                        move16 ();
+    av_pred_en = 0;
     for (i = 0; i < NPRED; i++)
     {
         av_pred_en = add (av_pred_en, st->past_qua_en[i]);
@@ -421,10 +426,10 @@ void gc_pred_average_limited(
     av_pred_en = mult (av_pred_en, 8192);
 
     /* if (av_pred_en < -14) av_pred_en = .. */
-    test ();
+
     if (sub (av_pred_en, MIN_ENERGY) < 0)
     {
-        av_pred_en = MIN_ENERGY;                           move16 ();
+        av_pred_en = MIN_ENERGY;
     }
-    *ener_avg = av_pred_en;                                move16 ();
+    *ener_avg = av_pred_en;
 }

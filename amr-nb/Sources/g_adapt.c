@@ -145,21 +145,21 @@ void gain_adapt(
     Word16 tmp, i;
     
     /* basic adaptation */
-    test ();
+
     if (sub (ltpg, LTP_GAIN_THR1) <= 0)
     {
-        adapt = 0;                            move16 ();
+        adapt = 0;
     }
     else
     {
-        test ();
+
         if (sub (ltpg, LTP_GAIN_THR2) <= 0)
         {
-            adapt = 1;                        move16 ();
+            adapt = 1;
         }
         else
         {
-            adapt = 2;                        move16 ();
+            adapt = 2;
         }
     }
 
@@ -173,17 +173,17 @@ void gain_adapt(
      */
     /* tmp = cbGain / onFact; onFact = 2.0; 200 Q1 = 100.0 */
     tmp = shr_r (gain_cod, 1);
-    test (); test ();
+
     if ((sub (tmp, st->prev_gc) > 0) && sub(gain_cod, 200) > 0)
     {
-        st->onset = 8;                            move16 ();
+        st->onset = 8;
     }
     else
     {
-        test ();
+
         if (st->onset != 0)
         {
-            st->onset = sub (st->onset, 1);       move16 ();
+            st->onset = sub (st->onset, 1);
         }
     }
 
@@ -191,29 +191,28 @@ void gain_adapt(
      *  // if onset, increase adaptor state
      *  if (onset && (gainAdapt < 2)) gainAdapt++;
      */
-    test(); test ();
     if ((st->onset != 0) && (sub (adapt, 2) < 0))
     {
         adapt = add (adapt, 1);
     }
 
-    st->ltpg_mem[0] = ltpg;                       move16 ();
-    filt = gmed_n (st->ltpg_mem, 5);   move16 (); /* function result */
+    st->ltpg_mem[0] = ltpg;
+    filt = gmed_n (st->ltpg_mem, 5);    /* function result */
 
-    test ();
+
     if (adapt == 0)
     {
-        test ();
+
         if (sub (filt, 5443) > 0) /* 5443 Q13 = 0.66443... */
         {
-            result = 0; move16 ();
+            result = 0;
         }
         else
         {
-            test ();
+
             if (filt < 0)
             {
-                result = 16384; move16 ();  /* 16384 Q15 = 0.5 */
+                result = 16384;   /* 16384 Q15 = 0.5 */
             }
             else
             {   /* result       =   0.5 - 0.75257499*filt     */
@@ -225,27 +224,27 @@ void gain_adapt(
     }
     else
     {
-        result = 0; move16 ();
+        result = 0;
     }
     /*
      *  if (prevAlpha == 0.0) result = 0.5 * (result + prevAlpha);
      */
-    test ();
+
     if (st->prev_alpha == 0)
     {
         result = shr (result, 1);
     }
 
     /* store the result */
-    *alpha = result;                           move16 ();
+    *alpha = result;
     
     /* update adapter state memory */
-    st->prev_alpha = result;                   move16 ();
-    st->prev_gc = gain_cod;                    move16 ();
+    st->prev_alpha = result;
+    st->prev_gc = gain_cod;
 
     for (i = LTPG_MEM_SIZE-1; i > 0; i--)
     {
-        st->ltpg_mem[i] = st->ltpg_mem[i-1];   move16 ();
+        st->ltpg_mem[i] = st->ltpg_mem[i-1];
     }
     /* mem[0] is just present for convenience in calling the gmed_n[5]
      * function above. The memory depth is really LTPG_MEM_SIZE-1.

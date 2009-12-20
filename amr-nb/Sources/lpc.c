@@ -138,7 +138,7 @@ int lpc(
                                   /* No fixed Q value but normalized  */
                                   /* so that overflow is avoided      */
    
-   test ();
+
    if ( sub (mode, MR122) == 0)
    {
        /* Autocorrelations */

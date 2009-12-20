@@ -86,16 +86,16 @@ Qua_gain(                   /* o  : index of quantization.                 */
     const Word16 *table_gain;
     Word16 table_len;
     
-    test();  test(); test();
+
     if ( sub (mode, MR102) == 0 || sub (mode, MR74) == 0 || sub (mode, MR67) == 0)
     {
-       table_len = VQ_SIZE_HIGHRATES;            move16 ();
-       table_gain = table_gain_highrates;        move16 ();
+       table_len = VQ_SIZE_HIGHRATES;
+       table_gain = table_gain_highrates;
     }
     else
     {
-       table_len = VQ_SIZE_LOWRATES;             move16 ();
-       table_gain = table_gain_lowrates;         move16 ();
+       table_len = VQ_SIZE_LOWRATES;
+       table_gain = table_gain_lowrates;
     }
     
     /*-------------------------------------------------------------------*
@@ -128,11 +128,11 @@ Qua_gain(                   /* o  : index of quantization.                 */
     exp_code = sub(exp_gcode0, 11);
 
     /* calculate exp_max[i] = s[i]-1 */
-    exp_max[0] = sub(exp_coeff[0], 13);                        move16 ();
-    exp_max[1] = sub(exp_coeff[1], 14);                        move16 ();
-    exp_max[2] = add(exp_coeff[2], add(15, shl(exp_code, 1))); move16 ();
-    exp_max[3] = add(exp_coeff[3], exp_code);                  move16 ();
-    exp_max[4] = add(exp_coeff[4], add(1, exp_code));          move16 ();
+    exp_max[0] = sub(exp_coeff[0], 13);
+    exp_max[1] = sub(exp_coeff[1], 14);
+    exp_max[2] = add(exp_coeff[2], add(15, shl(exp_code, 1)));
+    exp_max[3] = add(exp_coeff[3], exp_code);
+    exp_max[4] = add(exp_coeff[4], add(1, exp_code));
 
 
     /*-------------------------------------------------------------------*
@@ -149,13 +149,13 @@ Qua_gain(                   /* o  : index of quantization.                 */
      *    c[i] = c[i]*2^e                                                *
      *-------------------------------------------------------------------*/
 
-    e_max = exp_max[0];                                        move16 ();
+    e_max = exp_max[0];
     for (i = 1; i < 5; i++)
     {
-        move16(); test();
+
         if (sub(exp_max[i], e_max) > 0)
         {
-            e_max = exp_max[i];                                move16 ();
+            e_max = exp_max[i];
         }
     }
 
@@ -181,18 +181,18 @@ Qua_gain(                   /* o  : index of quantization.                 */
      *-------------------------------------------------------------------*/
 
     /* start with "infinite" MSE */
-    dist_min = MAX_32;        move32();
+    dist_min = MAX_32;
 
-    p = &table_gain[0];       move16 ();
+    p = &table_gain[0];
 
     for (i = 0; i < table_len; i++)
     {
-        g_pitch = *p++;       move16 ();
-        g_code = *p++;        move16 (); /* this is g_fac        */
+        g_pitch = *p++;
+        g_code = *p++;         /* this is g_fac        */
         p++;                             /* skip log2(g_fac)     */
         p++;                             /* skip 20*log10(g_fac) */
             
-        test ();
+
         if (sub(g_pitch, gp_limit) <= 0)
         {
             g_code = mult(g_code, gcode0);
@@ -208,11 +208,11 @@ Qua_gain(                   /* o  : index of quantization.                 */
 
             /* store table index if MSE for this index is lower
                than the minimum MSE seen so far */
-            test ();
+
             if (L_sub(L_tmp, dist_min) < (Word32) 0)
             {
-                dist_min = L_tmp; move32 ();
-                index = i;        move16 ();
+                dist_min = L_tmp;
+                index = i;
             }
         }
     }
@@ -223,11 +223,11 @@ Qua_gain(                   /* o  : index of quantization.                 */
      *------------------------------------------------------------------*/
 
     /* Read the quantized gains */
-    p = &table_gain[shl (index, 2)]; move16 ();
-    *gain_pit = *p++;         move16();
-    g_code = *p++;            move16();
-    *qua_ener_MR122 = *p++;   move16();
-    *qua_ener = *p;           move16();
+    p = &table_gain[shl (index, 2)];
+    *gain_pit = *p++;
+    g_code = *p++;
+    *qua_ener_MR122 = *p++;
+    *qua_ener = *p;
 
     /*------------------------------------------------------------------*
      *  calculate final fixed codebook gain:                            *

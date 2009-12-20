@@ -259,7 +259,7 @@ int dtx_dec(
     * new_state  (SPEECH, DTX, DTX_MUTE)
     */
 
-   test(); test();
+   /* */
    if ((st->dtxHangoverAdded != 0) && 
        (st->sid_frame != 0))
    {
@@ -269,29 +269,29 @@ int dtx_dec(
       /* set log_en_adjust to correct value */
       st->log_en_adjust = dtx_log_en_adjust[mode];
           
-      ptr = add(st->lsf_hist_ptr, M);                               move16(); 
-      test();
+      ptr = add(st->lsf_hist_ptr, M);
+
       if (sub(ptr, 80) == 0)
       {
-         ptr = 0;                                                   move16();
+         ptr = 0;
       }
       Copy( &st->lsf_hist[st->lsf_hist_ptr],&st->lsf_hist[ptr],M); 
       
-      ptr = add(st->log_en_hist_ptr,1);                             move16();
-      test();
+      ptr = add(st->log_en_hist_ptr,1);
+
       if (sub(ptr, DTX_HIST_SIZE) == 0)
       {
-         ptr = 0;                                                   move16();
+         ptr = 0;
       }
-      move16();
+
       st->log_en_hist[ptr] = st->log_en_hist[st->log_en_hist_ptr]; /* Q11 */
       
       /* compute mean log energy and lsp *
        * from decoded signal (SID_FIRST) */         
-      st->log_en = 0;                                               move16();
+      st->log_en = 0;
       for (i = 0; i < M; i++)
       {
-         L_lsf[i] = 0;                                              move16();
+         L_lsf[i] = 0;
       }
       
       /* average energy and lsp */
@@ -308,7 +308,7 @@ int dtx_dec(
        
       for (j = 0; j < M; j++)
       {
-         lsf[j] = extract_l(L_shr(L_lsf[j],3)); /* divide by 8 */  move16();
+         lsf[j] = extract_l(L_shr(L_lsf[j],3)); /* divide by 8 */
       }
       
       Lsf_lsp(lsf, st->lsp, M); 
@@ -322,7 +322,7 @@ int dtx_dec(
 
       for (i = 0; i < M; i++)
       {
-         L_lsf_mean = 0;                                           move32();
+         L_lsf_mean = 0;
          /* compute mean lsf */
          for (j = 0; j < 8; j++)
          {
@@ -330,7 +330,7 @@ int dtx_dec(
                                L_deposit_l(st->lsf_hist_mean[i+j*M]));
          }
          
-         lsf_mean = extract_l(L_shr(L_lsf_mean, 3));               move16();
+         lsf_mean = extract_l(L_shr(L_lsf_mean, 3));
          /* subtract mean and limit to within reasonable limits  *
           * moreover the upper lsf's are attenuated              */
          for (j = 0; j < 8; j++)
@@ -344,19 +344,19 @@ int dtx_dec(
                mult(st->lsf_hist_mean[i+j*M], lsf_hist_mean_scale[i]);
 
             /* limit the deviation */
-            test();
+
             if (st->lsf_hist_mean[i+j*M] < 0)
             {
-               negative = 1;                                        move16();
+               negative = 1;
             }
             else
             {
-               negative = 0;                                        move16();
+               negative = 0;
             }
             st->lsf_hist_mean[i+j*M] = abs_s(st->lsf_hist_mean[i+j*M]);
 
             /* apply soft limit */
-            test();
+
             if (sub(st->lsf_hist_mean[i+j*M], 655) > 0)
             {
                st->lsf_hist_mean[i+j*M] = 
@@ -364,168 +364,168 @@ int dtx_dec(
             }
             
             /* apply hard limit */
-            test();
+
             if (sub(st->lsf_hist_mean[i+j*M], 1310) > 0)
             {
-               st->lsf_hist_mean[i+j*M] = 1310;                     move16();
+               st->lsf_hist_mean[i+j*M] = 1310;
             }
-            test();
+
             if (negative != 0) 
             {
-               st->lsf_hist_mean[i+j*M] = -st->lsf_hist_mean[i+j*M];move16();
+               st->lsf_hist_mean[i+j*M] = -st->lsf_hist_mean[i+j*M];
             }
             
          }
       }
    }
    
-   test();
+
    if (st->sid_frame != 0 )
    {
       /* Set old SID parameters, always shift */
       /* even if there is no new valid_data   */
       Copy(st->lsp, st->lsp_old, M);
-      st->old_log_en = st->log_en;                                  move16();
+      st->old_log_en = st->log_en;
 
-      test();
+
       if (st->valid_data != 0 )  /* new data available (no CRC) */
       {
          /* Compute interpolation factor, since the division only works *
           * for values of since_last_sid < 32 we have to limit the      *
           * interpolation to 32 frames                                  */
-         tmp_int_length = st->since_last_sid;                       move16();
-         st->since_last_sid = 0;                                    move16();
+         tmp_int_length = st->since_last_sid;
+         st->since_last_sid = 0;
 
-         test();
+
          if (sub(tmp_int_length, 32) > 0)
          {
-            tmp_int_length = 32;                                    move16();
+            tmp_int_length = 32;
          }
-         test();
+
          if (sub(tmp_int_length, 2) >= 0)
          {
-            move16();
+
             st->true_sid_period_inv = div_s(1 << 10, shl(tmp_int_length, 10)); 
          }
          else
          {
-            st->true_sid_period_inv = 1 << 14; /* 0.5 it Q15 */     move16();
+            st->true_sid_period_inv = 1 << 14; /* 0.5 it Q15 */
          }
          
          Init_D_plsf_3(lsfState, parm[0]);  /* temporay initialization */ 
          D_plsf_3(lsfState, MRDTX, 0, &parm[1], st->lsp);
          Set_zero(lsfState->past_r_q, M);   /* reset for next speech frame */ 
 
-         log_en_index = parm[4];                                    move16();
+         log_en_index = parm[4];
          /* Q11 and divide by 4 */
-         st->log_en = shl(log_en_index, (11 - 2));                  move16();
+         st->log_en = shl(log_en_index, (11 - 2));
          
          /* Subtract 2.5 in Q11 */
          st->log_en = sub(st->log_en, (2560 * 2));
          
          /* Index 0 is reserved for silence */
-         test();
+
          if (log_en_index == 0)
          {
-            st->log_en = MIN_16;                                    move16();
+            st->log_en = MIN_16;
          }
          
          /* no interpolation at startup after coder reset        */
          /* or when SID_UPD has been received right after SPEECH */
-         test(); test();
+
          if ((st->data_updated == 0) ||
              (sub(st->dtxGlobalState, SPEECH) == 0)
              ) 
          {
             Copy(st->lsp, st->lsp_old, M);
-            st->old_log_en = st->log_en;                            move16();
+            st->old_log_en = st->log_en;
          }         
       } /* endif valid_data */
 
       /* initialize gain predictor memory of other modes */       
-      ma_pred_init = sub(shr(st->log_en,1), 9000);                  move16();
-      test();
+      ma_pred_init = sub(shr(st->log_en,1), 9000);
+
       if (ma_pred_init > 0)
       {                   
-         ma_pred_init = 0;                                          move16();  
+         ma_pred_init = 0;
       }      
-      test();
+
       if (sub(ma_pred_init, -14436) < 0)
       {
-         ma_pred_init = -14436;                                     move16();
+         ma_pred_init = -14436;
       }
       
-      predState->past_qua_en[0] = ma_pred_init;                     move16();
-      predState->past_qua_en[1] = ma_pred_init;                     move16();
-      predState->past_qua_en[2] = ma_pred_init;                     move16();
-      predState->past_qua_en[3] = ma_pred_init;                     move16();
+      predState->past_qua_en[0] = ma_pred_init;
+      predState->past_qua_en[1] = ma_pred_init;
+      predState->past_qua_en[2] = ma_pred_init;
+      predState->past_qua_en[3] = ma_pred_init;
 
       /* past_qua_en for other modes than MR122 */      
       ma_pred_init = mult(5443, ma_pred_init); 
       /* scale down by factor 20*log10(2) in Q15 */
-      predState->past_qua_en_MR122[0] = ma_pred_init;               move16();
-      predState->past_qua_en_MR122[1] = ma_pred_init;               move16();
-      predState->past_qua_en_MR122[2] = ma_pred_init;               move16();
-      predState->past_qua_en_MR122[3] = ma_pred_init;               move16();
+      predState->past_qua_en_MR122[0] = ma_pred_init;
+      predState->past_qua_en_MR122[1] = ma_pred_init;
+      predState->past_qua_en_MR122[2] = ma_pred_init;
+      predState->past_qua_en_MR122[3] = ma_pred_init;
    } /* endif sid_frame */
    
    /* CN generation */
    /* recompute level adjustment factor Q11             *
     * st->log_en_adjust = 0.9*st->log_en_adjust +       *
     *                     0.1*dtx_log_en_adjust[mode]); */
-   move16();
+
    st->log_en_adjust = add(mult(st->log_en_adjust, 29491),
                            shr(mult(shl(dtx_log_en_adjust[mode],5),3277),5));
 
    /* Interpolate SID info */
-   int_fac = shl(add(1,st->since_last_sid), 10); /* Q10 */                 move16();
+   int_fac = shl(add(1,st->since_last_sid), 10); /* Q10 */
    int_fac = mult(int_fac, st->true_sid_period_inv); /* Q10 * Q15 -> Q10 */
    
    /* Maximize to 1.0 in Q10 */
-   test();
+
    if (sub(int_fac, 1024) > 0)
    {
-      int_fac = 1024;                                               move16();
+      int_fac = 1024;
    }
    int_fac = shl(int_fac, 4); /* Q10 -> Q14 */
    
-   L_log_en_int = L_mult(int_fac, st->log_en); /* Q14 * Q11->Q26 */ move32();
+   L_log_en_int = L_mult(int_fac, st->log_en); /* Q14 * Q11->Q26 */
    for(i = 0; i < M; i++)
    {
-      lsp_int[i] = mult(int_fac, st->lsp[i]);/* Q14 * Q15 -> Q14 */ move16();
+      lsp_int[i] = mult(int_fac, st->lsp[i]);/* Q14 * Q15 -> Q14 */
    }
    
-   int_fac = sub(16384, int_fac); /* 1-k in Q14 */                  move16();
+   int_fac = sub(16384, int_fac); /* 1-k in Q14 */
 
    /* (Q14 * Q11 -> Q26) + Q26 -> Q26 */
    L_log_en_int = L_mac(L_log_en_int, int_fac, st->old_log_en);
    for(i = 0; i < M; i++)
    {
       /* Q14 + (Q14 * Q15 -> Q14) -> Q14 */
-      lsp_int[i] = add(lsp_int[i], mult(int_fac, st->lsp_old[i]));  move16();
-      lsp_int[i] = shl(lsp_int[i], 1); /* Q14 -> Q15 */             move16();
+      lsp_int[i] = add(lsp_int[i], mult(int_fac, st->lsp_old[i]));
+      lsp_int[i] = shl(lsp_int[i], 1); /* Q14 -> Q15 */
    }
    
    /* compute the amount of lsf variability */
-   lsf_variab_factor = sub(st->log_pg_mean,2457); /* -0.6 in Q12 */ move16();
+   lsf_variab_factor = sub(st->log_pg_mean,2457); /* -0.6 in Q12 */
    /* *0.3 Q12*Q15 -> Q12 */
    lsf_variab_factor = sub(4096, mult(lsf_variab_factor, 9830)); 
 
    /* limit to values between 0..1 in Q12 */ 
-   test();
+
    if (sub(lsf_variab_factor, 4096) > 0)
    {
-      lsf_variab_factor = 4096;                                     move16();
+      lsf_variab_factor = 4096;
    }
-   test();
+
    if (lsf_variab_factor < 0)
    {
-      lsf_variab_factor = 0;                                        move16(); 
+      lsf_variab_factor = 0;
    }
-   lsf_variab_factor = shl(lsf_variab_factor, 3); /* -> Q15 */      move16();
+   lsf_variab_factor = shl(lsf_variab_factor, 3); /* -> Q15 */
 
    /* get index of vector to do variability with */
-   lsf_variab_index = pseudonoise(&st->L_pn_seed_rx, 3);            move16();
+   lsf_variab_index = pseudonoise(&st->L_pn_seed_rx, 3);
 
    /* convert to lsf */
    Lsp_lsf(lsp_int, lsf_int, M);
@@ -534,7 +534,7 @@ int dtx_dec(
    Copy(lsf_int, lsf_int_variab, M);
    for(i = 0; i < M; i++)
    {
-      move16();
+
       lsf_int_variab[i] = add(lsf_int_variab[i], 
                               mult(lsf_variab_factor,
                                    st->lsf_hist_mean[i+lsf_variab_index*M]));
@@ -570,7 +570,7 @@ int dtx_dec(
    A_Refl(&acoeff[1], refl);
    
    /* Compute prediction error in Q15 */
-   pred_err = MAX_16; /* 0.99997 in Q15 */                          move16();
+   pred_err = MAX_16; /* 0.99997 in Q15 */
    for (i = 0; i < M; i++)
    { 
       pred_err = mult(pred_err, sub(MAX_16, mult(refl[i], refl[i])));
@@ -580,29 +580,29 @@ int dtx_dec(
    Log2(L_deposit_l(pred_err), &log_pg_e, &log_pg_m);
    
    /* convert exponent and mantissa to Word16 Q12 */
-   log_pg = shl(sub(log_pg_e,15), 12);  /* Q12 */                   move16();
-   log_pg = shr(sub(0,add(log_pg, shr(log_pg_m, 15-12))), 1);       move16();
+   log_pg = shl(sub(log_pg_e,15), 12);  /* Q12 */
+   log_pg = shr(sub(0,add(log_pg, shr(log_pg_m, 15-12))), 1);
    st->log_pg_mean = add(mult(29491,st->log_pg_mean),
-                         mult(3277, log_pg));                       move16();
+                         mult(3277, log_pg));
 
    /* Compute interpolated log energy */
-   L_log_en_int = L_shr(L_log_en_int, 10); /* Q26 -> Q16 */         move32();
+   L_log_en_int = L_shr(L_log_en_int, 10); /* Q26 -> Q16 */
 
    /* Add 4 in Q16 */
-   L_log_en_int = L_add(L_log_en_int, 4 * 65536L);                  move32();
+   L_log_en_int = L_add(L_log_en_int, 4 * 65536L);
 
    /* subtract prediction gain */
-   L_log_en_int = L_sub(L_log_en_int, L_shl(L_deposit_l(log_pg), 4));move32();
+   L_log_en_int = L_sub(L_log_en_int, L_shl(L_deposit_l(log_pg), 4));
 
    /* adjust level to speech coder mode */
    L_log_en_int = L_add(L_log_en_int, 
-                        L_shl(L_deposit_l(st->log_en_adjust), 5));  move32();
+                        L_shl(L_deposit_l(st->log_en_adjust), 5));
        
-   log_en_int_e = extract_h(L_log_en_int);                    move16();
-   move16();
+   log_en_int_e = extract_h(L_log_en_int);
+
    log_en_int_m = extract_l(L_shr(L_sub(L_log_en_int, 
                                         L_deposit_h(log_en_int_e)), 1));
-   level = extract_l(Pow2(log_en_int_e, log_en_int_m)); /* Q4 */ move16();
+   level = extract_l(Pow2(log_en_int_e, log_en_int_m)); /* Q4 */
    
    for (i = 0; i < 4; i++)
    {             
@@ -610,7 +610,7 @@ int dtx_dec(
       build_CN_code(&st->L_pn_seed_rx, ex);
       for (j = 0; j < L_SUBFR; j++)
       {
-         ex[j] = mult(level, ex[j]);                                move16();
+         ex[j] = mult(level, ex[j]);
       }
       /* Synthesize */
       Syn_filt(acoeff_variab, ex, &synth[i * L_SUBFR], L_SUBFR, 
@@ -619,47 +619,47 @@ int dtx_dec(
    } /* next i */
    
    /* reset codebook averaging variables */ 
-   averState->hangVar = 20;                                         move16();
-   averState->hangCount = 0;                                        move16();
+   averState->hangVar = 20;
+   averState->hangCount = 0;
     
-   test();
+
    if (sub(new_state, DTX_MUTE) == 0)
    {
       /* mute comfort noise as it has been quite a long time since  
        * last SID update  was performed                            */
       
-      tmp_int_length = st->since_last_sid;                          move16();
-      test();
+      tmp_int_length = st->since_last_sid;
+
       if (sub(tmp_int_length, 32) > 0)
       {
-         tmp_int_length = 32;                                       move16();
+         tmp_int_length = 32;
       }
       
       /* safety guard against division by zero */
-      test();
+
       if(tmp_int_length <= 0) {
-         tmp_int_length = 8;                                       move16();
+         tmp_int_length = 8;
       }      
       
-      move16();
+
       st->true_sid_period_inv = div_s(1 << 10, shl(tmp_int_length, 10)); 
 
-      st->since_last_sid = 0;                                       move16();
+      st->since_last_sid = 0;
       Copy(st->lsp, st->lsp_old, M);
-      st->old_log_en = st->log_en;                                  move16();
+      st->old_log_en = st->log_en;
       /* subtract 1/8 in Q11 i.e -6/8 dB */
-      st->log_en = sub(st->log_en, 256);                            move16();  
+      st->log_en = sub(st->log_en, 256);
    }
 
    /* reset interpolation length timer 
     * if data has been updated.        */
-   test(); test(); test(); test();
+
    if ((st->sid_frame != 0) && 
        ((st->valid_data != 0) || 
         ((st->valid_data == 0) &&  (st->dtxHangoverAdded) != 0))) 
    {
-      st->since_last_sid =  0;                                      move16();
-      st->data_updated = 1;                                         move16();
+      st->since_last_sid =  0;
+      st->data_updated = 1;
    }
          
    return 0;
@@ -675,16 +675,16 @@ void dtx_dec_activity_update(dtx_decState *st,
    Word16 log_en_e, log_en_m, log_en;
 
    /* update lsp history */
-   st->lsf_hist_ptr = add(st->lsf_hist_ptr,M);                     move16();
-   test();
+   st->lsf_hist_ptr = add(st->lsf_hist_ptr,M);
+
    if (sub(st->lsf_hist_ptr, 80) == 0)
    {
-      st->lsf_hist_ptr = 0;                                        move16();
+      st->lsf_hist_ptr = 0;
    }
    Copy(lsf, &st->lsf_hist[st->lsf_hist_ptr], M); 
 
    /* compute log energy based on frame energy */
-   L_frame_en = 0;     /* Q0 */                                    move32();
+   L_frame_en = 0;     /* Q0 */
    for (i=0; i < L_FRAME; i++)
    {
       L_frame_en = L_mac(L_frame_en, frame[i], frame[i]); 
@@ -701,12 +701,12 @@ void dtx_dec_activity_update(dtx_decState *st,
    /* insert into log energy buffer, no division by two as  *
     * log_en in decoder is Q11                              */
    st->log_en_hist_ptr = add(st->log_en_hist_ptr, 1);
-   test();
+
    if (sub(st->log_en_hist_ptr, DTX_HIST_SIZE) == 0)
    {
-      st->log_en_hist_ptr = 0;                                     move16();
+      st->log_en_hist_ptr = 0;
    }
-   st->log_en_hist[st->log_en_hist_ptr] = log_en; /* Q11 */        move16();
+   st->log_en_hist[st->log_en_hist_ptr] = log_en; /* Q11 */
 }
 
 /*   
@@ -744,9 +744,9 @@ enum DTXStateType rx_dtx_handler(
    enum DTXStateType encState;
 
    /* DTX if SID frame or previously in DTX{_MUTE} and (NO_RX OR BAD_SPEECH) */
-   test(); test(); test();
-   test(); test(); test();
-   test(); test();   
+
+
+
    if ((sub(frame_type, RX_SID_FIRST) == 0)   ||
        (sub(frame_type, RX_SID_UPDATE) == 0)  ||
        (sub(frame_type, RX_SID_BAD) == 0)     ||
@@ -756,39 +756,39 @@ enum DTXStateType rx_dtx_handler(
          (sub(frame_type, RX_SPEECH_BAD) == 0) || 
          (sub(frame_type, RX_ONSET) == 0))))
    {
-      newState = DTX;                                              move16();
+      newState = DTX;
 
       /* stay in mute for these input types */
-      test(); test(); test(); test(); test();
+
       if ((sub(st->dtxGlobalState, DTX_MUTE) == 0) &&
           ((sub(frame_type, RX_SID_BAD) == 0) ||
            (sub(frame_type, RX_SID_FIRST) ==  0) ||
            (sub(frame_type, RX_ONSET) ==  0) ||
            (sub(frame_type, RX_NO_DATA) == 0)))
       {
-         newState = DTX_MUTE;                                      move16();
+         newState = DTX_MUTE;
       }
 
       /* evaluate if noise parameters are too old                     */
       /* since_last_sid is reset when CN parameters have been updated */
-      st->since_last_sid = add(st->since_last_sid, 1);             move16();
+      st->since_last_sid = add(st->since_last_sid, 1);
 
       /* no update of sid parameters in DTX for a long while */
       /* Due to the delayed update of  st->since_last_sid counter
          SID_UPDATE frames need to be handled separately to avoid
          entering DTX_MUTE for late SID_UPDATE frames
          */
-      test(); test(); logic16();
+
       if((sub(frame_type, RX_SID_UPDATE) != 0) &&
          (sub(st->since_last_sid, DTX_MAX_EMPTY_THRESH) > 0))
       {
-         newState = DTX_MUTE;                                      move16();
+         newState = DTX_MUTE;
       }
    }
    else 
    {
-      newState = SPEECH;                                           move16();
-      st->since_last_sid = 0;                                      move16();
+      newState = SPEECH;
+      st->since_last_sid = 0;
    }
    
    /* 
@@ -796,26 +796,26 @@ enum DTXStateType rx_dtx_handler(
       time, to robustify counter missmatch after handover
       this might delay the bwd CNI analysis in the new decoder slightly.
    */    
-   test(); test();
+
    if ((st->data_updated == 0) &&
        (sub(frame_type, RX_SID_UPDATE) == 0))
    {
-      st->decAnaElapsedCount = 0;                                  move16();
+      st->decAnaElapsedCount = 0;
    }
 
    /* update the SPE-SPD DTX hangover synchronization */
    /* to know when SPE has added dtx hangover         */
-   st->decAnaElapsedCount = add(st->decAnaElapsedCount, 1);        move16();
-   st->dtxHangoverAdded = 0;                                       move16();
+   st->decAnaElapsedCount = add(st->decAnaElapsedCount, 1);
+   st->dtxHangoverAdded = 0;
    
-   test(); test(); test(); test(); test();
+
    if ((sub(frame_type, RX_SID_FIRST) == 0)  ||
        (sub(frame_type, RX_SID_UPDATE) == 0) ||
        (sub(frame_type, RX_SID_BAD) == 0)    ||
        (sub(frame_type, RX_ONSET) == 0)      ||
        (sub(frame_type, RX_NO_DATA) == 0))
    {
-      encState = DTX;                                              move16();
+      encState = DTX;
       
       /*         
          In frame errors simulations RX_NO_DATA may occasionally mean that
@@ -823,11 +823,11 @@ enum DTXStateType rx_dtx_handler(
          the assumed _encoder_ state should be SPEECH in such cases.
       */
       
-      test(); logic16(); 
+
       if((sub(frame_type, RX_NO_DATA) == 0) &&
          (sub(newState, SPEECH) == 0)) 
       {
-         encState = SPEECH;                                       move16();
+         encState = SPEECH;
       }
       
       
@@ -839,30 +839,31 @@ enum DTXStateType rx_dtx_handler(
    }
    else 
    {
-      encState = SPEECH;                                           move16();
+      encState = SPEECH;
    }
  
-   test();
+
    if (sub(encState, SPEECH) == 0)
    {
-      st->dtxHangoverCount = DTX_HANG_CONST;                       move16();
+      st->dtxHangoverCount = DTX_HANG_CONST;
    }
    else
    {
-      test();
+
       if (sub(st->decAnaElapsedCount, DTX_ELAPSED_FRAMES_THRESH) > 0)
       {
-         st->dtxHangoverAdded = 1;                                 move16();
-         st->decAnaElapsedCount = 0;                               move16();
-         st->dtxHangoverCount = 0;                                 move16();
+         st->dtxHangoverAdded = 1;
+         st->decAnaElapsedCount = 0;
+         st->dtxHangoverCount = 0;
       }
-      else if (test(), st->dtxHangoverCount == 0)
+      /*else if (test(), st->dtxHangoverCount == 0)*/
+      else if ( st->dtxHangoverCount == 0 )
       {
-         st->decAnaElapsedCount = 0;                               move16();
+         st->decAnaElapsedCount = 0;
       }
       else
       {
-         st->dtxHangoverCount = sub(st->dtxHangoverCount, 1);      move16();
+         st->dtxHangoverCount = sub(st->dtxHangoverCount, 1);
       }
    }
    
@@ -874,23 +875,25 @@ enum DTXStateType rx_dtx_handler(
        *  according to the state machine above 
        */
       
-      st->sid_frame = 0;                                           move16();
-      st->valid_data = 0;                                          move16();
+      st->sid_frame = 0;
+      st->valid_data = 0;
             
-      test(); 
+
       if (sub(frame_type, RX_SID_FIRST) == 0)
       {
-         st->sid_frame = 1;                                        move16();
+         st->sid_frame = 1;
       }
-      else if (test(), sub(frame_type, RX_SID_UPDATE) == 0)
+      /*else if (test(), sub(frame_type, RX_SID_UPDATE) == 0)*/
+      else if (frame_type == RX_SID_UPDATE)
       {
-         st->sid_frame = 1;                                        move16();
-         st->valid_data = 1;                                       move16();
+         st->sid_frame = 1;
+         st->valid_data = 1;
       }
-      else if (test(), sub(frame_type, RX_SID_BAD) == 0)
+      /*else if (test(), sub(frame_type, RX_SID_BAD) == 0)*/
+      else if (frame_type == RX_SID_BAD)
       {
-         st->sid_frame = 1;                                        move16();
-         st->dtxHangoverAdded = 0; /* use old data */              move16();
+         st->sid_frame = 1;
+         st->dtxHangoverAdded = 0; /* use old data */
       } 
    }
 

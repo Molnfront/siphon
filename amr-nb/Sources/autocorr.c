@@ -27,7 +27,6 @@ const char autocorr_id[] = "@(#)$Id $" autocorr_h;
 #include "typedef.h"
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
 #include "cnst.h"
 
 /*
@@ -66,17 +65,17 @@ Word16 Autocorr (
 
     for (i = 0; i < L_WINDOW; i++)
     {
-        y[i] = mult_r (x[i], wind[i]); move16 (); 
+        y[i] = mult_r (x[i], wind[i]);
     }
 
     /* Compute r[0] and test for overflow */
 
-    overfl_shft = 0;                   move16 (); 
+    overfl_shft = 0;
 
     do
     {
-        overfl = 0;                    move16 (); 
-        sum = 0L;                      move32 ();
+        overfl = 0;
+        sum = 0L;
 
         for (i = 0; i < L_WINDOW; i++)
         {
@@ -85,18 +84,18 @@ Word16 Autocorr (
 
         /* If overflow divide y[] by 4 */
 
-        test (); 
+
         if (L_sub (sum, MAX_32) == 0L)
         {
             overfl_shft = add (overfl_shft, 4);
-            overfl = 1;                move16 (); /* Set the overflow flag */
+            overfl = 1;                 /* Set the overflow flag */
 
             for (i = 0; i < L_WINDOW; i++)
             {
-                y[i] = shr (y[i], 2);  move16 (); 
+                y[i] = shr (y[i], 2);
             }
         }
-        test (); 
+
     }
     while (overfl != 0);
 
@@ -112,7 +111,7 @@ Word16 Autocorr (
 
     for (i = 1; i <= m; i++)
     {
-        sum = 0;                       move32 (); 
+        sum = 0;
 
         for (j = 0; j < L_WINDOW - i; j++)
         {

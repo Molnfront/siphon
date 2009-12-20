@@ -96,16 +96,15 @@ void Pred_lt_3or6 (
     const Word16 *c1, *c2;
     Word32 s;
 
-    x0 = &exc[-T0];             move16 (); 
+    x0 = &exc[-T0];
 
     frac = negate (frac);
-    test();
     if (flag3 != 0)
     {
       frac = shl (frac, 1);   /* inter_3l[k] = inter_6[2*k] -> k' = 2*k */
     }
     
-    test (); 
+
     if (frac < 0)
     {
         frac = add (frac, UP_SAMP_MAX);
@@ -114,19 +113,19 @@ void Pred_lt_3or6 (
 
     for (j = 0; j < L_subfr; j++)
     {
-        x1 = x0++;              move16 (); 
-        x2 = x0;                move16 (); 
+        x1 = x0++;
+        x2 = x0;
         c1 = &inter_6[frac];
         c2 = &inter_6[sub (UP_SAMP_MAX, frac)];
 
-        s = 0;                  move32 (); 
+        s = 0;
         for (i = 0, k = 0; i < L_INTER10; i++, k += UP_SAMP_MAX)
         {
             s = L_mac (s, x1[-i], c1[k]);
             s = L_mac (s, x2[i], c2[k]);
         }
 
-        exc[j] = round (s);     move16 (); 
+        exc[j] = round (s);
     }
 
     return;

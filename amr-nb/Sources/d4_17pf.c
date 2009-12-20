@@ -64,50 +64,50 @@ void decode_4i40_17bits(
 
     /* Decode the positions */
 
-    i = index & 7;                                       logic16 ();
-    i = dgray[i];                                        move16 ();
+    i = index & 7;
+    i = dgray[i];
 
-    pos[0] = add(i, shl(i, 2));   /* pos0 =i*5 */        move16 ();
+    pos[0] = add(i, shl(i, 2));   /* pos0 =i*5 */
 
     index = shr(index, 3);
-    i = index & 7;                                       logic16 ();
-    i = dgray[i];                                        move16 ();
+    i = index & 7;
+    i = dgray[i];
 
     i = add(i, shl(i, 2));        /* pos1 =i*5+1 */
-    pos[1] = add(i, 1);                                  move16 ();
+    pos[1] = add(i, 1);
 
     index = shr(index, 3);
-    i = index & 7;                                       logic16 ();
-    i = dgray[i];                                        move16 ();
+    i = index & 7;
+    i = dgray[i];
 
     i = add(i, shl(i, 2));        /* pos2 =i*5+1 */
-    pos[2] = add(i, 2);                                  move16 ();
+    pos[2] = add(i, 2);
 
     index = shr(index, 3);
-    j = index & 1;                                       logic16 ();
+    j = index & 1;
     index = shr(index, 1);
-    i = index & 7;                                       logic16 ();
-    i = dgray[i];                                        move16 ();
+    i = index & 7;
+    i = dgray[i];
 
     i = add(i, shl(i, 2));        /* pos3 =i*5+3+j */
     i = add(i, 3);
-    pos[3] = add(i, j);                                  move16 ();
+    pos[3] = add(i, j);
 
     /* decode the signs  and build the codeword */
 
     for (i = 0; i < L_SUBFR; i++) {
-        cod[i] = 0;                                      move16 ();
+        cod[i] = 0;
     }
 
     for (j = 0; j < NB_PULSE; j++) {
-        i = sign & 1;                                    logic16 ();
+        i = sign & 1;
         sign = shr(sign, 1);
 
-        test ();
+
         if (i != 0) {
-            cod[pos[j]] = 8191;                          move16 ();
+            cod[pos[j]] = 8191;
         } else {
-            cod[pos[j]] = -8192;                         move16 ();
+            cod[pos[j]] = -8192;
         }
     }
 

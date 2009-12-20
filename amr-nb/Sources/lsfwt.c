@@ -80,28 +80,28 @@ void Lsf_wt (
     Word16 temp;
     Word16 i;
     /* wf[0] = lsf[1] - 0  */
-    wf[0] = lsf[1];                                     move16 (); 
+    wf[0] = lsf[1];
     for (i = 1; i < 9; i++)
     {
-        wf[i] = sub (lsf[i + 1], lsf[i - 1]);           move16 (); 
+        wf[i] = sub (lsf[i + 1], lsf[i - 1]);
     }
     /* wf[9] = 0.5 - lsf[8] */    
-    wf[9] = sub (16384, lsf[8]);move16 ();      
+    wf[9] = sub (16384, lsf[8]);
 
     for (i = 0; i < 10; i++)
     {
         temp = sub (wf[i], 1843);
-        test (); 
+
         if (temp < 0)
         {
-            wf[i] = sub (3427, mult (wf[i], 28160));    move16 (); 
+            wf[i] = sub (3427, mult (wf[i], 28160));
         }
         else
         {
-            wf[i] = sub (1843, mult (temp, 6242));      move16 (); 
+            wf[i] = sub (1843, mult (temp, 6242));
         }
 
-        wf[i] = shl (wf[i], 3); move16 (); 
+        wf[i] = shl (wf[i], 3);
     }
     return;
 }

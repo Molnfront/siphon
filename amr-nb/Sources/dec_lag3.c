@@ -72,9 +72,9 @@ void Dec_lag3(Word16 index,     /* i : received pitch index                 */
     Word16 i;
     Word16 tmp_lag;
     
-    test (); 
+
     if (i_subfr == 0) {    /* if 1st or 3rd subframe */
-       test ();
+
 	   if (sub(index, 197) < 0) {
           
           *T0 = add(mult(add(index, 2), 10923), 19);
@@ -83,12 +83,12 @@ void Dec_lag3(Word16 index,     /* i : received pitch index                 */
           *T0_frac = add(sub(index, i), 58);
        } else {
           *T0 = sub(index, 112);
-          *T0_frac = 0;                                        move16 ();
+          *T0_frac = 0;
        }
        
     } else {    /* 2nd or 4th subframe */
 
-       test ();
+
        if (flag4 == 0) {
           
           /* 'normal' decoding: either with 5 or 6 bit resolution */
@@ -103,25 +103,25 @@ void Dec_lag3(Word16 index,     /* i : received pitch index                 */
           
           /* decoding with 4 bit resolution */
           
-          tmp_lag = T0_prev;                                   move16 ();
+          tmp_lag = T0_prev;
 
-          test ();
+
           if ( sub( sub(tmp_lag, t0_min), 5) > 0)
              tmp_lag = add (t0_min, 5);
-          test ();
+
           if ( sub( sub(t0_max, tmp_lag), 4) > 0)
              tmp_lag = sub (t0_max, 4);
           
-          test ();          
+
           if (sub(index, 4) < 0)
           {
              i = sub(tmp_lag, 5);
              *T0 = add(i, index);
-             *T0_frac = 0;                                     move16 ();
+             *T0_frac = 0;
           }
           else
           {
-             test ();
+
              if (sub(index, 12) < 0)
              {
                 i = sub(mult(sub(index, 5), 10923), 1);
@@ -134,7 +134,7 @@ void Dec_lag3(Word16 index,     /* i : received pitch index                 */
              {
                 i = add( sub (index, 12), tmp_lag);
                 *T0 = add (i, 1);                
-                *T0_frac = 0;                                  move16 ();
+                *T0_frac = 0;
              }
           }
           

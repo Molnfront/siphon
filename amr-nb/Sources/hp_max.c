@@ -54,8 +54,8 @@ Word16 hp_max (
     Word16 max16, t016, cor_max;
     Word16 shift, shift1, shift2;
     
-    max = MIN_32;               move32 (); 
-    t0 = 0L;                    move32 ();    
+    max = MIN_32;
+    t0 = 0L;
    
     for (i = lag_max-1; i > lag_min; i--)
     {
@@ -63,25 +63,25 @@ Word16 hp_max (
        t0 = L_sub (L_sub(L_shl(corr[-i], 1), corr[-i-1]), corr[-i+1]);   
        t0 = L_abs (t0);
        
-       test (); 
+
        if (L_sub (t0, max) >= 0)
        {
-          max = t0;             move32 (); 
+          max = t0;
        }
     }
 
     /* compute energy */
-    p = scal_sig;               move16 (); 
-    p1 = &scal_sig[0];          move16 (); 
-    t0 = 0L;                    move32 (); 
+    p = scal_sig;
+    p1 = &scal_sig[0];
+    t0 = 0L;
     for (i = 0; i < L_frame; i++, p++, p1++)
     {
        t0 = L_mac (t0, *p, *p1);
     }
 
-    p = scal_sig;               move16 (); 
-    p1 = &scal_sig[-1];         move16 (); 
-    t1 = 0L;                    move32 (); 
+    p = scal_sig;
+    p1 = &scal_sig[-1];
+    t1 = 0L;
     for (i = 0; i < L_frame; i++, p++, p1++)
     {
        t1 = L_mac (t1, *p, *p1);
@@ -97,26 +97,26 @@ Word16 hp_max (
     shift2 = norm_l(t0);                          
     t016 =  extract_h(L_shl(t0, shift2));         
 
-    test ();
+
     if (t016 != 0)
     {
        cor_max = div_s(max16, t016);              
     }
     else
     {
-       cor_max = 0;                                move16 ();
+       cor_max = 0;
     }
     
     shift = sub(shift1, shift2);       
 
-    test ();
+
     if (shift >= 0)
     {
-       *cor_hp_max = shr(cor_max, shift);          move16 (); /* Q15 */
+       *cor_hp_max = shr(cor_max, shift);           /* Q15 */
     }
     else
     {
-       *cor_hp_max = shl(cor_max, negate(shift));  move16 (); /* Q15 */
+       *cor_hp_max = shl(cor_max, negate(shift));   /* Q15 */
     }
 
     return 0;

@@ -171,19 +171,19 @@ Word16 block_norm (Word16 * in, Word16 * out, Word16 length, Word16 headroom)
         max = abs_s(in[0]);
 	for (i = 1; i < length; i++)
 	{
-                adata = abs_s(in[i]);                           test();
+                adata = abs_s(in[i]);
 		if (sub(adata, max) > 0)
 		{
-			max = adata;				move16();
+			max = adata;
 		}
 	}
-	test();
+
 	if (max != 0)
 	{
 		scnt = sub(norm_s(max), headroom);
 		for (i = 0; i < length; i++)
 		{
-			out[i] = shl(in[i], scnt);	       	move16();
+			out[i] = shl(in[i], scnt);
 		}
 	}
 	else
@@ -191,7 +191,7 @@ Word16 block_norm (Word16 * in, Word16 * out, Word16 length, Word16 headroom)
 		scnt = sub(16, headroom);
 		for (i = 0; i < length; i++)
 		{
-			out[i] = 0;                             move16();
+			out[i] = 0;
 		}
 	}
 	return (scnt);
@@ -344,23 +344,23 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 	/* Pre-emphasize the input data and store in the data buffer with the appropriate offset */
 	for (i = 0; i < DELAY; i++)
 	{
-		data_buffer[i] = 0;									move16();
+		data_buffer[i] = 0;
 	}
 
 	st->pre_emp_mem = shr_r(st->pre_emp_mem, sub(st->last_normb_shift, normb_shift));
-	st->last_normb_shift = normb_shift;								move16();
+	st->last_normb_shift = normb_shift;
 
-	data_buffer[DELAY] = add(input_buffer[0], mult(PRE_EMP_FAC, st->pre_emp_mem));			move16();
+	data_buffer[DELAY] = add(input_buffer[0], mult(PRE_EMP_FAC, st->pre_emp_mem));
 
 	for (i = DELAY + 1, j = 1; i < DELAY + FRM_LEN; i++, j++)
 	{
-		data_buffer[i] = add(input_buffer[j], mult(PRE_EMP_FAC, input_buffer[j-1]));		move16();
+		data_buffer[i] = add(input_buffer[j], mult(PRE_EMP_FAC, input_buffer[j-1]));
 	}
-	st->pre_emp_mem = input_buffer[FRM_LEN-1];							move16();
+	st->pre_emp_mem = input_buffer[FRM_LEN-1];
 
 	for (i = DELAY + FRM_LEN; i < FFT_LEN; i++)
 	{
-		data_buffer[i] = 0;									move16();
+		data_buffer[i] = 0;
 	}
 
 
@@ -369,53 +369,53 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 
 
 	/* Use normb_shift factor to determine the scaling of the energy estimates */
-	state_change = 0;										move16();
-													test();
+	state_change = 0;
+
 	if (st->shift_state == 0)
-	{												test();
+	{
 		if (sub(normb_shift, -FFT_HEADROOM+2) <= 0)
 		{
-			state_change = 1;								move16();
-			st->shift_state = 1;								move16();
+			state_change = 1;
+			st->shift_state = 1;
 		}
 	}
 	else
-	{												test();
+	{
 		if (sub(normb_shift, -FFT_HEADROOM+5) >= 0)
 		{
-			state_change = 1;								move16();
-			st->shift_state = 0;								move16();
+			state_change = 1;
+			st->shift_state = 0;
 		}
 	}
 
-	/* Scale channel energy estimate */								test();
+	/* Scale channel energy estimate */
 	if (state_change)
 	{
 		for (i = LO_CHAN; i <= HI_CHAN; i++)
 		{
-			st->Lch_enrg[i] = L_shr(st->Lch_enrg[i], state_change_shift_r[st->shift_state]);	move32();
+			st->Lch_enrg[i] = L_shr(st->Lch_enrg[i], state_change_shift_r[st->shift_state]);
 		}
 	}
 
 
 	/* Estimate the energy in each channel */
-													test();
+
 	if (L_sub(st->Lframe_cnt, 1) == 0)
 	{
-		alpha = 32767;										move16();
-		one_m_alpha = 0;									move16();
+		alpha = 32767;
+		one_m_alpha = 0;
 	}
 	else
 	{
-		alpha = CEE_SM_FAC;									move16();
-		one_m_alpha = ONE_MINUS_CEE_SM_FAC;							move16();
+		alpha = CEE_SM_FAC;
+		one_m_alpha = ONE_MINUS_CEE_SM_FAC;
 	}
 
 	for (i = LO_CHAN; i <= HI_CHAN; i++)
 	{
-		Lenrg = 0;										move16();
-		j1 = ch_tbl[i][0];									move16();
-		j2 = ch_tbl[i][1];									move16();
+		Lenrg = 0;
+		j1 = ch_tbl[i][0];
+		j2 = ch_tbl[i][1];
 
 		for (j = j1; j <= j2; j++)
 		{
@@ -432,18 +432,18 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 		Ltmp = Mpy_32_16(hi1, lo1, tmp);
 
 		L_Extract (st->Lch_enrg[i], &hi1, &lo1);
-		st->Lch_enrg[i] = L_add(Ltmp, Mpy_32_16(hi1, lo1, one_m_alpha));			move32();
-													test();
+		st->Lch_enrg[i] = L_add(Ltmp, Mpy_32_16(hi1, lo1, one_m_alpha));
+
 		if (L_sub(st->Lch_enrg[i], min_chan_enrg[st->shift_state]) < 0)
 		{
-			st->Lch_enrg[i] = min_chan_enrg[st->shift_state];				move32();
+			st->Lch_enrg[i] = min_chan_enrg[st->shift_state];
 		}
 
 	}
 
 
 	/* Compute the total channel energy estimate (Ltce) */
-	Ltce = 0;											move16();
+	Ltce = 0;
 	for (i = LO_CHAN; i <= HI_CHAN; i++)
 	{
 		Ltce = L_add(Ltce, st->Lch_enrg[i]);
@@ -451,12 +451,12 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 
 
 	/* Calculate spectral peak-to-average ratio, set flag if p2a > 10 dB */
-	Lpeak = 0;											move32();
+	Lpeak = 0;
 	for (i = LO_CHAN+2; i <= HI_CHAN; i++)	/* Sine waves not valid for low frequencies */
-	{												test();
+	{
 		if (L_sub(st->Lch_enrg [i], Lpeak) > 0)
 		{
-			Lpeak = st->Lch_enrg [i];							move32();
+			Lpeak = st->Lch_enrg [i];
 		}
 	}
 
@@ -466,47 +466,47 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 
 	L_Extract (Ltce, &hi1, &lo1);
 	Ltmp = Mpy_32_16(hi1, lo1, 20480);
-													test();
+
 	if (L_sub(Lpeak, Ltmp) > 0)
 	{
-		p2a_flag = TRUE;									move16();
+		p2a_flag = TRUE;
 	}
 	else
 	{
-		p2a_flag = FALSE;									move16();
+		p2a_flag = FALSE;
 	}
 
 
 	/* Initialize channel noise estimate to either the channel energy or fixed level  */
 	/*   Scale the energy appropriately to yield state 0 (22,9) scaling for noise */
-													test();
+
 	if (L_sub(st->Lframe_cnt, 4) <= 0)
-	{												test();
+	{
 		if (p2a_flag == TRUE)
 		{
 			for (i = LO_CHAN; i <= HI_CHAN; i++)
 			{
-				st->Lch_noise[i] = INE_NOISE_0;						move32();
+				st->Lch_noise[i] = INE_NOISE_0;
 			}
 		}
 		else
 		{
 			for (i = LO_CHAN; i <= HI_CHAN; i++)
-			{										test();
+			{
 				if (L_sub(st->Lch_enrg[i], ine_noise[st->shift_state]) < 0)
 				{
-					st->Lch_noise[i] = INE_NOISE_0;					move32();
+					st->Lch_noise[i] = INE_NOISE_0;
 				}
 				else
-				{									test();
+				{
 					if (st->shift_state == 1)
 					{
 						st->Lch_noise[i] = L_shr(st->Lch_enrg[i], state_change_shift_r[0]);
-													move32();
+
 					}
 					else
 					{
-						st->Lch_noise[i] = st->Lch_enrg[i];			move32();
+						st->Lch_noise[i] = st->Lch_enrg[i];
 					}
 				}
 			}
@@ -515,13 +515,13 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 
 
 	/* Compute the channel energy (in dB), the channel SNRs, and the sum of voice metrics */
-	vm_sum = 0;											move16();
+	vm_sum = 0;
 	for (i = LO_CHAN; i <= HI_CHAN; i++)
 	{
-		ch_enrg_db[i] = fn10Log10(st->Lch_enrg[i], fbits[st->shift_state]);			move16();
+		ch_enrg_db[i] = fn10Log10(st->Lch_enrg[i], fbits[st->shift_state]);
 		ch_noise_db = fn10Log10(st->Lch_noise[i], FRACTIONAL_BITS_0);
 
-		ch_snr[i] = sub(ch_enrg_db[i], ch_noise_db);						move16();
+		ch_snr[i] = sub(ch_enrg_db[i], ch_noise_db);
 
 		/* quantize channel SNR in 3/8 dB steps (scaled 7,8 => 15,0) */
 		/*   ch_snr = round((snr/(3/8))>>8)                          */
@@ -530,37 +530,37 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 
 		ch_snrq = shr_r(mult(21845, ch_snr[i]), 6);
 
-		/* Accumulate the sum of voice metrics	*/						test();
+		/* Accumulate the sum of voice metrics	*/
 		if (sub(ch_snrq, 89) < 0)
-		{											test();
+		{
 			if (ch_snrq > 0)
 			{
-				j = ch_snrq;								move16();
+				j = ch_snrq;
 			}
 			else
 			{
-				j = 0;									move16();
+				j = 0;
 			}
 		}
 		else
 		{
-			j = 89;										move16();
+			j = 89;
 		}
 		vm_sum = add(vm_sum, vm_tbl[j]);
 	}
 
 
 	/* Initialize NOMINAL peak voice energy and average noise energy, calculate instantaneous SNR */ 
-												test(),test(),logic16();
+												/*test(),test(),*/
 	if (L_sub(st->Lframe_cnt, 4) <= 0 || st->fupdate_flag == TRUE)
 	{
 		/* tce_db = (96 - 22 - 10*log10(64) (due to FFT)) scaled as 7,8 */
-		tce_db = 14320;										move16();
-		st->negSNRvar = 0;									move16();
-		st->negSNRbias = 0;									move16();
+		tce_db = 14320;
+		st->negSNRvar = 0;
+		st->negSNRbias = 0;
 
 		/* Compute the total noise estimate (Ltne) */
-		Ltne = 0;										move32();
+		Ltne = 0;
 		for (i = LO_CHAN; i <= HI_CHAN; i++)
 		{
 			Ltne = L_add(Ltne, st->Lch_noise[i]);
@@ -571,13 +571,13 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 
 		/* Initialise instantaneous and long-term peak signal-to-noise ratios */
 		xt = sub(tce_db, tne_db);
-		st->tsnr = xt;										move16();
+		st->tsnr = xt;
 	}
 	else
 	{
 		/* Calculate instantaneous frame signal-to-noise ratio */
 		/* xt = 10*log10( sum(2.^(ch_snr*0.1*log2(10)))/length(ch_snr) ) */
-		Ltmp1 = 0;										move32();
+		Ltmp1 = 0;
 		for (i=LO_CHAN; i<=HI_CHAN; i++) {
 			/* Ltmp2 = ch_snr[i] * 0.1 * log2(10); (ch_snr scaled as 7,8) */
 			Ltmp2 = L_shr(L_mult(ch_snr[i], 10885), 8);
@@ -587,7 +587,7 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 		}
 		xt = fn10Log10(Ltmp1, 4+3);			/* average by 16, inverse compensation 2^3 */
 
-		/* Estimate long-term "peak" SNR */							test(),test();
+		/* Estimate long-term "peak" SNR */							/*test(),test()*/
 		if (sub(xt, st->tsnr) > 0)
 		{
 			/* tsnr = 0.9*tsnr + 0.1*xt; */
@@ -604,18 +604,18 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 	/* Quantize the long-term SNR in 3 dB steps, limit to 0 <= tsnrq <= 19 */
 	tsnrq = shr(mult(st->tsnr, 10923), 8);
 
-	/* tsnrq = min(19, max(0, tsnrq)); */								test(),test();
+	/* tsnrq = min(19, max(0, tsnrq)); */								/*test(),*/
 	if (sub(tsnrq, 19) > 0)
 	{
-		tsnrq = 19;										move16();
+		tsnrq = 19;
 	}
 	else if (tsnrq < 0)
 	{
-		tsnrq = 0;										move16();
+		tsnrq = 0;
 	}
 
 	/* Calculate the negative SNR sensitivity bias */
-													test();
+
 	if (xt < 0)
 	{
 		/* negSNRvar = 0.99*negSNRvar + 0.01*xt*xt; */
@@ -623,18 +623,18 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 		tmp = round(L_shl(L_mult(xt, xt), 7));
 		st->negSNRvar = round(L_add(L_mult(32440, st->negSNRvar), L_mult(328, tmp)));
 
-		/* if (negSNRvar > 4.0) negSNRvar = 4.0;  */						test();
+		/* if (negSNRvar > 4.0) negSNRvar = 4.0;  */
 		if (sub(st->negSNRvar, 1024) > 0)
 		{
-			st->negSNRvar = 1024;								move16();
+			st->negSNRvar = 1024;
 		}
 
 		/* negSNRbias = max(12.0*(negSNRvar - 0.65), 0.0); */
-		tmp = mult_r(shl(sub(st->negSNRvar, 166), 4), 24576);					test();
+		tmp = mult_r(shl(sub(st->negSNRvar, 166), 4), 24576);
 
 		if (tmp < 0)
 		{
-			st->negSNRbias = 0;								move16();
+			st->negSNRbias = 0;
 		}
 		else
 		{
@@ -645,40 +645,40 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 
 	/* Determine VAD as a function of the voice metric sum and quantized SNR */
 
-	tmp = add(vm_threshold_table[tsnrq], st->negSNRbias);						test();
+	tmp = add(vm_threshold_table[tsnrq], st->negSNRbias);
 	if (sub(vm_sum, tmp) > 0)
 	{
-		ivad = 1;										move16();
-		st->burstcount = add(st->burstcount, 1);						test();
+		ivad = 1;
+		st->burstcount = add(st->burstcount, 1);
 		if (sub(st->burstcount, burstcount_table[tsnrq]) > 0)
 		{
-			st->hangover = hangover_table[tsnrq];						move16();
+			st->hangover = hangover_table[tsnrq];
 		}
 	}
 	else
 	{
-		st->burstcount = 0;									move16();
-		st->hangover = sub(st->hangover, 1);							test();
+		st->burstcount = 0;
+		st->hangover = sub(st->hangover, 1);
 		if (st->hangover <= 0)
 		{
-			ivad = 0;									move16();
-			st->hangover = 0;								move16();
+			ivad = 0;
+			st->hangover = 0;
 		}
 		else
 		{
-			ivad = 1;									move16();
+			ivad = 1;
 		}
 	}
 
 
 	/* Calculate log spectral deviation */
-	ch_enrg_dev = 0;										move16();
-													test();
+	ch_enrg_dev = 0;
+
 	if (L_sub(st->Lframe_cnt, 1) == 0)
 	{
 		for (i = LO_CHAN; i <= HI_CHAN; i++)
 		{
-			st->ch_enrg_long_db[i] = ch_enrg_db[i];						move16();
+			st->ch_enrg_long_db[i] = ch_enrg_db[i];
 		}
 	}
 	else
@@ -697,16 +697,16 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 	 */
 
 	/* alpha = HIGH_ALPHA - ALPHA_RANGE * (tsnr - xt) / tsnr, low <= alpha <= high */
-	tmp = sub(st->tsnr, xt);						test(),logic16(),test(),test();
+	tmp = sub(st->tsnr, xt);
 	if (tmp <= 0 || st->tsnr <= 0)
 	{
-		alpha = HIGH_ALPHA;								move16();
-		one_m_alpha = 32768L-HIGH_ALPHA;						move16();
+		alpha = HIGH_ALPHA;
+		one_m_alpha = 32768L-HIGH_ALPHA;
 	}
 	else if (sub(tmp, st->tsnr) > 0)
 	{
-		alpha = LOW_ALPHA;								move16();
-		one_m_alpha = 32768L-LOW_ALPHA;							move16();
+		alpha = LOW_ALPHA;
+		one_m_alpha = 32768L-LOW_ALPHA;
 	}
 	else
 	{
@@ -725,84 +725,84 @@ Word16 vad2 (Word16 * farray_ptr, vadState2 * st)
 
 
 	/* Set or clear the noise update flags */
-	update_flag = FALSE;										move16();
-	st->fupdate_flag = FALSE;									move16();
-													test(),test();
+	update_flag = FALSE;
+	st->fupdate_flag = FALSE;
+													/*test(),*/
 	if (sub(vm_sum, UPDATE_THLD) <= 0)
-	{												test();
+	{
 		if (st->burstcount == 0)
 		{
-			update_flag = TRUE;								move16();
-			st->update_cnt = 0;								move16();
+			update_flag = TRUE;
+			st->update_cnt = 0;
 		}
 	}
 	else if (L_sub(Ltce, noise_floor_chan[st->shift_state]) > 0)
-	{												test();
+	{
 		if (sub(ch_enrg_dev, DEV_THLD) < 0)
-		{											test();
+		{
 			if (p2a_flag == FALSE)
-			{										test();
+			{
 				if (st->LTP_flag == FALSE)
 				{
-					st->update_cnt = add(st->update_cnt, 1);			test();
+					st->update_cnt = add(st->update_cnt, 1);
 					if (sub(st->update_cnt, UPDATE_CNT_THLD) >= 0)
 					{
-						update_flag = TRUE;					move16();
-						st->fupdate_flag = TRUE;				move16();
+						update_flag = TRUE;
+						st->fupdate_flag = TRUE;
 					}
 				}
 			}
 		}
 	}
-													test();
+
 	if (sub(st->update_cnt, st->last_update_cnt) == 0)
 	{
 		st->hyster_cnt = add(st->hyster_cnt, 1);
 	}
 	else
 	{
-		st->hyster_cnt = 0;									move16();
+		st->hyster_cnt = 0;
 	}
 
-	st->last_update_cnt = st->update_cnt;								move16();
-													test();
+	st->last_update_cnt = st->update_cnt;
+
 	if (sub(st->hyster_cnt, HYSTER_CNT_THLD) > 0)
 	{
-		st->update_cnt = 0;									move16();
+		st->update_cnt = 0;
 	}
 
 
 	/* Conditionally update the channel noise estimates */
-													test();
+
 	if (update_flag == TRUE)
 	{
-		/* Check shift state */									test();
+		/* Check shift state */
 		if (st->shift_state == 1)
 		{
 			/* get factor to shift ch_enrg[] from state 1 to 0 (noise always state 0) */
-			tmp = state_change_shift_r[0];							move16();
+			tmp = state_change_shift_r[0];
 		}
 		else
 		{
 			/* No shift if already state 0 */
-			tmp = 0;									move16();
+			tmp = 0;
 		}
 
 		/* Update noise energy estimate */
 		for (i = LO_CHAN; i <= HI_CHAN; i++)
-		{											test();
+		{
 			/* integrate over time: en[i] = (1-alpha)*en[i] + alpha*e[n] */
 			/* (extract with shift compensation for state 1) */
 			L_Extract (L_shr(st->Lch_enrg[i], tmp), &hi1, &lo1);
 			Ltmp = Mpy_32_16(hi1, lo1, CNE_SM_FAC);
 
 			L_Extract (st->Lch_noise[i], &hi1, &lo1);
-			st->Lch_noise[i] = L_add(Ltmp, Mpy_32_16(hi1, lo1, ONE_MINUS_CNE_SM_FAC));	move32();
+			st->Lch_noise[i] = L_add(Ltmp, Mpy_32_16(hi1, lo1, ONE_MINUS_CNE_SM_FAC));
 
-			/* Limit low level noise */							test();
+			/* Limit low level noise */
 			if (L_sub(st->Lch_noise[i], MIN_NOISE_ENRG_0) < 0)
 			{
-				st->Lch_noise[i] = MIN_NOISE_ENRG_0;					move32();
+				st->Lch_noise[i] = MIN_NOISE_ENRG_0;
 			}
 		}
 	}
@@ -883,11 +883,11 @@ int vad2_reset (vadState2 * st)
 		fprintf(stderr, "vad2_reset: invalid parameter\n");
 		return -1;
 	}
-	ptr = (Word16 *)st;				move16();
+	ptr = (Word16 *)st;
 
 	for (i = 0; i < sizeof(vadState2)/2; i++)
 	{
-		*ptr++ = 0;				move16();
+		*ptr++ = 0;
 	}
 
 	return 0;

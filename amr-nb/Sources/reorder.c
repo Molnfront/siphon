@@ -61,13 +61,12 @@ void Reorder_lsf (
     Word16 i;
     Word16 lsf_min;
 
-    lsf_min = min_dist;         move16 (); 
+    lsf_min = min_dist;
     for (i = 0; i < n; i++)
     {
-        test (); 
         if (sub (lsf[i], lsf_min) < 0)
         {
-            lsf[i] = lsf_min;   move16 (); 
+            lsf[i] = lsf_min;
         }
         lsf_min = add (lsf[i], min_dist);
     }

@@ -88,23 +88,23 @@ void Int_lpc_1and3 (
     for (i = 0; i < M; i++)
     {
         lsp[i] = add (shr (lsp_mid[i], 1), shr (lsp_old[i], 1));
-                                move16 (); 
+
     }
 
     Lsp_Az (lsp, Az);           /* Subframe 1 */
-    Az += MP1;                  move16 (); 
+    Az += MP1;
 
     Lsp_Az (lsp_mid, Az);       /* Subframe 2 */
-    Az += MP1;                  move16 (); 
+    Az += MP1;
 
     for (i = 0; i < M; i++)
     {
         lsp[i] = add (shr (lsp_mid[i], 1), shr (lsp_new[i], 1));
-                                move16 (); 
+
     }
 
     Lsp_Az (lsp, Az);           /* Subframe 3 */
-    Az += MP1;                  move16 (); 
+    Az += MP1;
 
     Lsp_Az (lsp_new, Az);       /* Subframe 4 */
 
@@ -140,15 +140,15 @@ void Int_lpc_1and3_2 (
     for (i = 0; i < M; i++)
     {
         lsp[i] = add (shr (lsp_mid[i], 1), shr (lsp_old[i], 1));
-                                move16 (); 
+
     }
     Lsp_Az (lsp, Az);           /* Subframe 1 */
-    Az += MP1 * 2;              move16 (); 
+    Az += MP1 * 2;
 
     for (i = 0; i < M; i++)
     {
         lsp[i] = add (shr (lsp_mid[i], 1), shr (lsp_new[i], 1));
-                                move16 (); 
+
     }
     Lsp_Az (lsp, Az);           /* Subframe 3 */
 
@@ -185,28 +185,28 @@ void Int_lpc_1to3(
 
     for (i = 0; i < M; i++) {
         lsp[i] = add(shr(lsp_new[i], 2), sub(lsp_old[i], shr(lsp_old[i], 2)));
-		                    move16 ();
+
     }
 
     Lsp_Az(lsp, Az);        /* Subframe 1 */
-    Az += MP1;              move16 (); 
+    Az += MP1;
 
 
     for (i = 0; i < M; i++) {
         lsp[i] = add(shr(lsp_old[i], 1), shr(lsp_new[i], 1));
-		                    move16 ();
+
     }
 
     Lsp_Az(lsp, Az);        /* Subframe 2 */
-    Az += MP1;              move16 ();
+    Az += MP1;
 
     for (i = 0; i < M; i++) {
         lsp[i] = add(shr(lsp_old[i], 2), sub(lsp_new[i], shr(lsp_new[i], 2)));
-		                    move16 ();
+
     }
 
     Lsp_Az(lsp, Az);       /* Subframe 3 */
-    Az += MP1;              move16 ();
+    Az += MP1;
 
     Lsp_Az(lsp_new, Az);        /* Subframe 4 */
 
@@ -231,23 +231,23 @@ void Int_lpc_1to3_2(
 
     for (i = 0; i < M; i++) {
         lsp[i] = add(shr(lsp_new[i], 2), sub(lsp_old[i], shr(lsp_old[i], 2)));
-		                    move16 ();
+
     }
 
     Lsp_Az(lsp, Az);        /* Subframe 1 */
-    Az += MP1;              move16 ();
+    Az += MP1;
 
     for (i = 0; i < M; i++) {
         lsp[i] = add(shr(lsp_old[i], 1), shr(lsp_new[i], 1));
-		                    move16 ();
+
     }
 
     Lsp_Az(lsp, Az);        /* Subframe 2 */
-    Az += MP1;              move16 ();
+    Az += MP1;
 
     for (i = 0; i < M; i++) {
         lsp[i] = add(shr(lsp_old[i], 2), sub(lsp_new[i], shr(lsp_new[i], 2)));
-		                    move16 ();
+
     }
 
     Lsp_Az(lsp, Az);        /* Subframe 3 */

@@ -142,7 +142,7 @@ void lsp_avg (
        L_tmp = L_mac(L_tmp, EXPCONST, lsp[i]);
 
        /* Save means */
-       st->lsp_meanSave[i] = round(L_tmp);          move16();   /* Q15 */
+       st->lsp_meanSave[i] = round(L_tmp);             /* Q15 */
     }
 
     return;

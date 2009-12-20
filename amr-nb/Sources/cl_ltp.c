@@ -170,9 +170,9 @@ int cl_ltp (
    *T0 = Pitch_fr(clSt->pitchSt,
                   mode, T_op, exc, xn, h1, 
                   L_SUBFR, frameOffset,
-                  T0_frac, &resu3, &index); move16 ();
+                  T0_frac, &resu3, &index);
    
-   *(*anap)++ = index;                              move16 ();
+   *(*anap)++ = index;
    
    /*-----------------------------------------------------------------*
     *   - find unity gain pitch excitation (adapitve codebook entry)  *
@@ -188,47 +188,48 @@ int cl_ltp (
    Convolve(exc, h1, y1, L_SUBFR);
    
    /* gain_pit is Q14 for all modes */
-   *gain_pit = G_pitch(mode, xn, y1, g_coeff, L_SUBFR); move16 ();
+   *gain_pit = G_pitch(mode, xn, y1, g_coeff, L_SUBFR);
 
    
    /* check if the pitch gain should be limit due to resonance in LPC filter */
-   gpc_flag = 0;                                        move16 ();
-   *gp_limit = MAX_16;                                  move16 ();
-   test (); test ();
+   gpc_flag = 0;
+   *gp_limit = MAX_16;
+
    if ((lsp_flag != 0) &&
        (sub(*gain_pit, GP_CLIP) > 0))
    {
-       gpc_flag = check_gp_clipping(tonSt, *gain_pit);  move16 ();
+       gpc_flag = check_gp_clipping(tonSt, *gain_pit);
    }
 
    /* special for the MR475, MR515 mode; limit the gain to 0.85 to */
    /* cope with bit errors in the decoder in a better way.         */
-   test (); test (); 
+
    if ((sub (mode, MR475) == 0) || (sub (mode, MR515) == 0)) {
-      test ();
+
       if ( sub (*gain_pit, 13926) > 0) {
-         *gain_pit = 13926;   /* 0.85 in Q14 */    move16 ();
+         *gain_pit = 13926;   /* 0.85 in Q14 */
       }
 
-      test ();
+
       if (gpc_flag != 0) {
-          *gp_limit = GP_CLIP;                     move16 ();
+          *gp_limit = GP_CLIP;
       }
    }
    else
    {
-       test ();
+
        if (gpc_flag != 0)
        {
-           *gp_limit = GP_CLIP;                    move16 ();
-           *gain_pit = GP_CLIP;                    move16 ();
+           *gp_limit = GP_CLIP;
+           *gain_pit = GP_CLIP;
        }           
        /* For MR122, gain_pit is quantized here and not in gainQuant */
-       if (test (), sub(mode, MR122)==0)
+       /*if (test (), sub(mode, MR122)==0)*/
+       if ( mode ==  MR122 )
        {
            *(*anap)++ = q_gain_pitch(MR122, *gp_limit, gain_pit,
                                      NULL, NULL);
-                                                   move16 ();
+
        }
    }
 
@@ -236,11 +237,11 @@ int cl_ltp (
    for (i = 0; i < L_SUBFR; i++) {
        L_temp = L_mult(y1[i], *gain_pit);
        L_temp = L_shl(L_temp, 1);
-       xn2[i] = sub(xn[i], extract_h(L_temp));     move16 ();
+       xn2[i] = sub(xn[i], extract_h(L_temp));
       
        L_temp = L_mult(exc[i], *gain_pit);
        L_temp = L_shl(L_temp, 1);
-       res2[i] = sub(res2[i], extract_h(L_temp));  move16 ();
+       res2[i] = sub(res2[i], extract_h(L_temp));
    }
    
    return 0;

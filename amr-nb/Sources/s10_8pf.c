@@ -76,34 +76,34 @@ void search_10and8i40 (
    Word16 gsmefrFlag;
    
 
-   test(); 
+
    if (sub(nbPulse, 10) == 0)
    {
-      gsmefrFlag=1;                             move16 ();
+      gsmefrFlag=1;
    }
    else
    {
-      gsmefrFlag=0;                             move16 (); 
+      gsmefrFlag=0;
    }
 
    /* fix i0 on maximum of correlation position */
-   i0 = pos_max[ipos[0]];                       move16 (); 
+   i0 = pos_max[ipos[0]];
    
    /*------------------------------------------------------------------*
     * i1 loop:                                                         *
     *------------------------------------------------------------------*/
    
    /* Default value */
-   psk = -1;                                    move16 (); 
-   alpk = 1;                                    move16 (); 
+   psk = -1;
+   alpk = 1;
    for (i = 0; i < nbPulse; i++)
    {
-      codvec[i] = i;                            move16 ();
+      codvec[i] = i;
    }
 
    for (i = 1; i < nbTracks; i++)
    {
-      i1 = pos_max[ipos[1]];                    move16 (); 
+      i1 = pos_max[ipos[1]];
       ps0 = add (dn[i0], dn[i1]);
       alp0 = L_mult (rr[i0][i0], _1_16);
       alp0 = L_mac (alp0, rr[i1][i1], _1_16);
@@ -114,31 +114,31 @@ void search_10and8i40 (
        *----------------------------------------------------------------*/
       
       /* initialize 4 indices for next loop. */
-      move16 (); /* initialize "rr[i3][i3]" pointer */
-      move16 (); /* initialize "rr[i0][i3]" pointer */
-      move16 (); /* initialize "rr[i1][i3]" pointer */
-      move16 (); /* initialize "rrv[i3]" pointer    */
+       /* initialize "rr[i3][i3]" pointer */
+       /* initialize "rr[i0][i3]" pointer */
+       /* initialize "rr[i1][i3]" pointer */
+       /* initialize "rrv[i3]" pointer    */
       
       for (i3 = ipos[3]; i3 < L_CODE; i3 += step)
       {
          s = L_mult (rr[i3][i3], _1_8);       /* index incr= step+L_CODE */
          s = L_mac (s, rr[i0][i3], _1_4);     /* index increment = step  */
          s = L_mac (s, rr[i1][i3], _1_4);     /* index increment = step  */
-         rrv[i3] = round (s);                 move16 (); 
+         rrv[i3] = round (s);
       }
       
       /* Default value */
-      sq = -1;                                 move16 (); 
-      alp = 1;                                 move16 (); 
-      ps = 0;                                  move16 ();
-      ia = ipos[2];                            move16 ();
-      ib = ipos[3];                            move16 ();
+      sq = -1;
+      alp = 1;
+      ps = 0;
+      ia = ipos[2];
+      ib = ipos[3];
       
       /* initialize 4 indices for i2 loop. */
-      move16 (); /* initialize "dn[i2]" pointer     */
-      move16 (); /* initialize "rr[i2][i2]" pointer */
-      move16 (); /* initialize "rr[i0][i2]" pointer */
-      move16 (); /* initialize "rr[i1][i2]" pointer */
+       /* initialize "dn[i2]" pointer     */
+       /* initialize "rr[i2][i2]" pointer */
+       /* initialize "rr[i0][i2]" pointer */
+       /* initialize "rr[i1][i2]" pointer */
         
       for (i2 = ipos[2]; i2 < L_CODE; i2 += step)
       {
@@ -153,9 +153,9 @@ void search_10and8i40 (
          alp1 = L_mac (alp1, rr[i1][i2], _1_8);
          
          /* initialize 3 indices for i3 inner loop */
-         move16 (); /* initialize "dn[i3]" pointer     */
-         move16 (); /* initialize "rrv[i3]" pointer    */
-         move16 (); /* initialize "rr[i2][i3]" pointer */
+          /* initialize "dn[i3]" pointer     */
+          /* initialize "rrv[i3]" pointer    */
+          /* initialize "rr[i2][i3]" pointer */
          
          for (i3 = ipos[3]; i3 < L_CODE; i3 += step)
          {
@@ -173,29 +173,29 @@ void search_10and8i40 (
             
             s = L_msu (L_mult (alp, sq2), sq, alp_16);
                 
-            test (); 
+
             if (s > 0)
             {
-               sq = sq2;                    move16 (); 
-               ps = ps2;                    move16 (); 
-               alp = alp_16;                move16 (); 
-               ia = i2;                     move16 (); 
-               ib = i3;                     move16 (); 
+               sq = sq2;
+               ps = ps2;
+               alp = alp_16;
+               ia = i2;
+               ib = i3;
             }
          }
       }
-      i2 = ia;                                 move16 (); 
-      i3 = ib;                                 move16 (); 
+      i2 = ia;
+      i3 = ib;
       
         /*----------------------------------------------------------------*
          * i4 and i5 loop:                                                *
          *----------------------------------------------------------------*/
         
-        ps0 = ps;                                move16 (); 
+        ps0 = ps;
         alp0 = L_mult (alp, _1_2);
         
         /* initialize 6 indices for next loop (see i2-i3 loop) */
-        move16 (); move16 (); move16 (); move16 (); move16 (); move16 (); 
+
         
         for (i5 = ipos[5]; i5 < L_CODE; i5 += step)
         {
@@ -204,18 +204,18 @@ void search_10and8i40 (
             s = L_mac (s, rr[i1][i5], _1_4);
             s = L_mac (s, rr[i2][i5], _1_4);
             s = L_mac (s, rr[i3][i5], _1_4);
-            rrv[i5] = round (s);                 move16 (); 
+            rrv[i5] = round (s);
         }
         
         /* Default value */
-        sq = -1;                                 move16 (); 
-        alp = 1;                                 move16 (); 
-        ps = 0;                                  move16 ();
-        ia = ipos[4];                            move16 ();
-        ib = ipos[5];                            move16 ();
+        sq = -1;
+        alp = 1;
+        ps = 0;
+        ia = ipos[4];
+        ib = ipos[5];
         
         /* initialize 6 indices for i4 loop (see i2-i3 loop) */
-        move16 (); move16 (); move16 (); move16 (); move16 (); move16 (); 
+
         
         for (i4 = ipos[4]; i4 < L_CODE; i4 += step)
         {
@@ -228,7 +228,7 @@ void search_10and8i40 (
             alp1 = L_mac (alp1, rr[i3][i4], _1_16);
             
             /* initialize 3 indices for i5 inner loop (see i2-i3 loop) */
-            move16 (); move16 (); move16 (); 
+
             
             for (i5 = ipos[5]; i5 < L_CODE; i5 += step)
             {
@@ -243,30 +243,30 @@ void search_10and8i40 (
                 
                 s = L_msu (L_mult (alp, sq2), sq, alp_16);
                 
-                test (); 
+
                 if (s > 0)
                 {
-                    sq = sq2;                    move16 (); 
-                    ps = ps2;                    move16 (); 
-                    alp = alp_16;                move16 (); 
-                    ia = i4;                     move16 (); 
-                    ib = i5;                     move16 (); 
+                    sq = sq2;
+                    ps = ps2;
+                    alp = alp_16;
+                    ia = i4;
+                    ib = i5;
                 }
             }
         }
-        i4 = ia;                                 move16 (); 
-        i5 = ib;                                 move16 (); 
+        i4 = ia;
+        i5 = ib;
         
         /*----------------------------------------------------------------*
          * i6 and i7 loop:                                                *
          *----------------------------------------------------------------*/
         
-        ps0 = ps;                                move16 (); 
+        ps0 = ps;
         alp0 = L_mult (alp, _1_2);
         
         /* initialize 8 indices for next loop (see i2-i3 loop) */
-        move16 (); move16 (); move16 (); move16 (); 
-        move16 (); move16 (); move16 (); move16 (); 
+
+
         
         for (i7 = ipos[7]; i7 < L_CODE; i7 += step)
         {
@@ -277,19 +277,19 @@ void search_10and8i40 (
             s = L_mac (s, rr[i3][i7], _1_8);
             s = L_mac (s, rr[i4][i7], _1_8);
             s = L_mac (s, rr[i5][i7], _1_8);
-            rrv[i7] = round (s);                 move16 (); 
+            rrv[i7] = round (s);
         }
         
         /* Default value */
-        sq = -1;                                 move16 (); 
-        alp = 1;                                 move16 (); 
-        ps = 0;                                  move16 ();
-        ia = ipos[6];                            move16 ();
-        ib = ipos[7];                            move16 ();
+        sq = -1;
+        alp = 1;
+        ps = 0;
+        ia = ipos[6];
+        ib = ipos[7];
         
         /* initialize 8 indices for i6 loop (see i2-i3 loop) */
-        move16 (); move16 (); move16 (); move16 (); 
-        move16 (); move16 (); move16 (); move16 (); 
+
+
         
         for (i6 = ipos[6]; i6 < L_CODE; i6 += step)
         {
@@ -304,7 +304,7 @@ void search_10and8i40 (
             alp1 = L_mac (alp1, rr[i5][i6], _1_32);
             
             /* initialize 3 indices for i7 inner loop (see i2-i3 loop) */
-            move16 (); move16 (); move16 (); 
+
             
             for (i7 = ipos[7]; i7 < L_CODE; i7 += step)
             {
@@ -319,35 +319,35 @@ void search_10and8i40 (
                 
                 s = L_msu (L_mult (alp, sq2), sq, alp_16);
                 
-                test (); 
+
                 if (s > 0)
                 {
-                    sq = sq2;                    move16 (); 
-                    ps = ps2;                    move16 (); 
-                    alp = alp_16;                move16 (); 
-                    ia = i6;                     move16 (); 
-                    ib = i7;                     move16 (); 
+                    sq = sq2;
+                    ps = ps2;
+                    alp = alp_16;
+                    ia = i6;
+                    ib = i7;
                 }
             }
         }
-        i6 = ia;                                 move16 (); 
-        i7 = ib;                                 move16 (); 
+        i6 = ia;
+        i7 = ib;
         
         /* now finished searching a set of 8 pulses */
 
-        test();
+
         if(gsmefrFlag != 0){
            /* go on with the two last pulses for GSMEFR                      */
            /*----------------------------------------------------------------*
             * i8 and i9 loop:                                                *
             *----------------------------------------------------------------*/
         
-           ps0 = ps;                                move16 (); 
+           ps0 = ps;
            alp0 = L_mult (alp, _1_2);
            
            /* initialize 10 indices for next loop (see i2-i3 loop) */
-           move16 (); move16 (); move16 (); move16 (); move16 (); 
-           move16 (); move16 (); move16 (); move16 (); move16 (); 
+
+
            
            for (i9 = ipos[9]; i9 < L_CODE; i9 += step)
            {
@@ -360,19 +360,19 @@ void search_10and8i40 (
               s = L_mac (s, rr[i5][i9], _1_8);
               s = L_mac (s, rr[i6][i9], _1_8);
               s = L_mac (s, rr[i7][i9], _1_8);
-              rrv[i9] = round (s);                 move16 (); 
+              rrv[i9] = round (s);
            }
            
            /* Default value */
-           sq = -1;                                 move16 (); 
-           alp = 1;                                 move16 (); 
-           ps = 0;                                  move16 ();
-           ia = ipos[8];                            move16 ();
-           ib = ipos[9];                            move16 ();
+           sq = -1;
+           alp = 1;
+           ps = 0;
+           ia = ipos[8];
+           ib = ipos[9];
            
            /* initialize 10 indices for i8 loop (see i2-i3 loop) */
-           move16 (); move16 (); move16 (); move16 (); move16 (); 
-           move16 (); move16 (); move16 (); move16 (); move16 (); 
+
+
            
            for (i8 = ipos[8]; i8 < L_CODE; i8 += step)
            {
@@ -389,7 +389,7 @@ void search_10and8i40 (
               alp1 = L_mac (alp1, rr[i7][i8], _1_64);
               
               /* initialize 3 indices for i9 inner loop (see i2-i3 loop) */
-              move16 (); move16 (); move16 (); 
+
               
               for (i9 = ipos[9]; i9 < L_CODE; i9 += step)
               {
@@ -404,14 +404,14 @@ void search_10and8i40 (
                  
                  s = L_msu (L_mult (alp, sq2), sq, alp_16);
                  
-                 test (); 
+
                  if (s > 0)
                  {
-                    sq = sq2;                    move16 (); 
-                    ps = ps2;                    move16 (); 
-                    alp = alp_16;                move16 (); 
-                    ia = i8;                     move16 (); 
-                    ib = i9;                     move16 (); 
+                    sq = sq2;
+                    ps = ps2;
+                    alp = alp_16;
+                    ia = i8;
+                    ib = i9;
                  }
               }
            }
@@ -423,36 +423,36 @@ void search_10and8i40 (
         
         s = L_msu (L_mult (alpk, sq), psk, alp);
         
-        test (); 
+
         if (s > 0)
         {
-            psk = sq;                            move16 (); 
-            alpk = alp;                          move16 (); 
-            codvec[0] = i0;                      move16 (); 
-            codvec[1] = i1;                      move16 (); 
-            codvec[2] = i2;                      move16 (); 
-            codvec[3] = i3;                      move16 (); 
-            codvec[4] = i4;                      move16 (); 
-            codvec[5] = i5;                      move16 (); 
-            codvec[6] = i6;                      move16 (); 
-            codvec[7] = i7;                      move16 ();
+            psk = sq;
+            alpk = alp;
+            codvec[0] = i0;
+            codvec[1] = i1;
+            codvec[2] = i2;
+            codvec[3] = i3;
+            codvec[4] = i4;
+            codvec[5] = i5;
+            codvec[6] = i6;
+            codvec[7] = i7;
          
-            test();
+
             if (gsmefrFlag != 0)
             {
-               codvec[8] = ia;                   move16 (); 
-               codvec[9] = ib;                   move16 (); 
+               codvec[8] = ia;
+               codvec[9] = ib;
             }
         }
         /*----------------------------------------------------------------*
          * Cyclic permutation of i1,i2,i3,i4,i5,i6,i7,(i8 and i9).          *
          *----------------------------------------------------------------*/
         
-        pos = ipos[1];                           move16 (); 
+        pos = ipos[1];
         for (j = 1, k = 2; k < nbPulse; j++, k++)
         {
-            ipos[j] = ipos[k];                   move16 (); 
+            ipos[j] = ipos[k];
         }
-        ipos[sub(nbPulse,1)] = pos;              move16 (); 
+        ipos[sub(nbPulse,1)] = pos;
    } /* end 1..nbTracks  loop*/
 }

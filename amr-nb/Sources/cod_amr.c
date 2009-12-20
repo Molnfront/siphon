@@ -360,7 +360,7 @@ int cod_amr(
 
    Copy(new_speech, st->new_speech, L_FRAME);
 
-   *usedMode = mode;                     move16 ();
+   *usedMode = mode;
 
    /* DTX processing */
    if (st->dtx)
@@ -369,11 +369,10 @@ int cod_amr(
 
 #ifdef  VAD2
       vad_flag = vad2 (st->new_speech,    st->vadSt);
-      vad_flag = vad2 (st->new_speech+80, st->vadSt) || vad_flag;      logic16();
+      vad_flag = vad2 (st->new_speech+80, st->vadSt) || vad_flag;
 #else
       vad_flag = vad1(st->vadSt, st->new_speech);     
 #endif
-      fwc ();                 /* function worst case */
 
       /* NB! usedMode may change here */
       compute_sid_flag = tx_dtx_handler(st->dtx_encSt,
@@ -382,7 +381,7 @@ int cod_amr(
    }
    else 
    {
-      compute_sid_flag = 0;              move16 ();
+      compute_sid_flag = 0;
    }
    
    /*------------------------------------------------------------------------*
@@ -398,12 +397,8 @@ int cod_amr(
    /* LP analysis */
    lpc(st->lpcSt, mode, st->p_window, st->p_window_12k2, A_t);
 
-   fwc ();                 /* function worst case */
-
    /* From A(z) to lsp. LSP quantization and interpolation */
    lsp(st->lspSt, mode, *usedMode, A_t, Aq_t, lsp_new, &ana);
-   
-   fwc ();                 /* function worst case */
 
    /* Buffer lsp's and energy */
    dtx_buffer(st->dtx_encSt,
@@ -411,7 +406,7 @@ int cod_amr(
 	      st->new_speech);
 
    /* Check if in DTX mode */
-   test();
+
    if (sub(*usedMode, MRDTX) == 0)
    {
       dtx_enc(st->dtx_encSt,
@@ -432,12 +427,12 @@ int cod_amr(
       
       /* Reset clLtp states */
       cl_ltp_reset(st->clLtpSt);
-      st->sharp = SHARPMIN;       move16 ();
+      st->sharp = SHARPMIN;
    }
    else
    {
        /* check resonance in the filter */
-      lsp_flag = check_lsp(st->tonStabSt, st->lspSt->lsp_old);  move16 ();
+      lsp_flag = check_lsp(st->tonStabSt, st->lspSt->lsp_old);
    }
    
    /*----------------------------------------------------------------------*
@@ -450,8 +445,8 @@ int cod_amr(
 #ifdef VAD2
    if (st->dtx)
    {  /* no test() call since this if is only in simulation env */
-       st->vadSt->L_Rmax = 0;			move32 ();
-       st->vadSt->L_R0 = 0;			move32 ();
+       st->vadSt->L_Rmax = 0;
+       st->vadSt->L_R0 = 0;
    }
 #endif
    for(subfrNr = 0, i_subfr = 0; 
@@ -462,7 +457,7 @@ int cod_amr(
       pre_big(mode, gamma1, gamma1_12k2, gamma2, A_t, i_subfr, st->speech,
               st->mem_w, st->wsp);
     
-      test (); test ();
+
       if ((sub(mode, MR475) != 0) && (sub(mode, MR515) != 0))
       {
          /* Find open loop pitch lag for two subframes */
@@ -471,9 +466,7 @@ int cod_amr(
                 st->dtx);
       }
    }
-   fwc ();                 /* function worst case */
 
-   test (); test();
    if ((sub(mode, MR475) == 0) || (sub(mode, MR515) == 0))
    {
       /* Find open loop pitch lag for ONE FRAME ONLY */
@@ -481,10 +474,9 @@ int cod_amr(
       
       ol_ltp(st->pitchOLWghtSt, st->vadSt, mode, &st->wsp[0], &T_op[0],
              st->old_lags, st->ol_gain_flg, 1, st->dtx);
-      T_op[1] = T_op[0];                                     move16 ();
+      T_op[1] = T_op[0];
    }         
-   fwc ();                 /* function worst case */
-   
+
 #ifdef VAD2
    if (st->dtx)
    {  /* no test() call since this if is only in simulation env */
@@ -499,7 +491,6 @@ int cod_amr(
       vad_pitch_detection(st->vadSt, T_op);
    } 
 #endif
-   fwc ();                 /* function worst case */
 
    if (sub(*usedMode, MRDTX) == 0)
    {
@@ -529,15 +520,15 @@ int cod_amr(
    A = A_t;      /* pointer to interpolated LPC parameters */
    Aq = Aq_t;    /* pointer to interpolated quantized LPC parameters */
 
-   evenSubfr = 0;                                                  move16 ();
-   subfrNr = -1;                                                   move16 ();
+   evenSubfr = 0;
+   subfrNr = -1;
    for (i_subfr = 0; i_subfr < L_FRAME; i_subfr += L_SUBFR)
    {
       subfrNr = add(subfrNr, 1);
       evenSubfr = sub(1, evenSubfr);
 
       /* Save states for the MR475 mode */
-      test(); test();
+
       if ((evenSubfr != 0) && (sub(*usedMode, MR475) == 0))
       {
          Copy(st->mem_syn, mem_syn_save, M);
@@ -549,7 +540,7 @@ int cod_amr(
       /*-----------------------------------------------------------------*
        * - Preprocessing of subframe                                     *
        *-----------------------------------------------------------------*/
-      test();
+
       if (sub(*usedMode, MR475) != 0)
       {
          subframePreProc(*usedMode, gamma1, gamma1_12k2,
@@ -567,7 +558,7 @@ int cod_amr(
                          st->h1, xn, res, st->error);
 
          /* save impulse response (modified in cbsearch) */
-         test ();
+
          if (evenSubfr != 0)
          {
              Copy (st->h1, h1_sf0, L_SUBFR);
@@ -576,8 +567,6 @@ int cod_amr(
       
       /* copy the LP residual (res2 is modified in the CL LTP search)    */
       Copy (res, res2, L_SUBFR);
-
-      fwc ();                 /* function worst case */
     
       /*-----------------------------------------------------------------*
        * - Closed-loop LTP search                                        *
@@ -588,27 +577,23 @@ int cod_amr(
              &gp_limit);
 
       /* update LTP lag history */
-      move16 (); test(); test ();
+
       if ((subfrNr == 0) && (st->ol_gain_flg[0] > 0))
       {
-         st->old_lags[1] = T0;     move16 ();
+         st->old_lags[1] = T0;
       }
       
-      move16 (); test(); test ();
+
       if ((sub(subfrNr, 3) == 0) && (st->ol_gain_flg[1] > 0))
       {
-         st->old_lags[0] = T0;     move16 ();
+         st->old_lags[0] = T0;
       }      
-
-      fwc ();                 /* function worst case */
       
       /*-----------------------------------------------------------------*
        * - Inovative codebook search (find index and gain)               *
        *-----------------------------------------------------------------*/
       cbsearch(xn2, st->h1, T0, st->sharp, gain_pit, res2, 
                code, y2, &ana, *usedMode, subfrNr);
-      
-      fwc ();                 /* function worst case */
     
       /*------------------------------------------------------*
        * - Quantization of gains.                             *
@@ -617,13 +602,11 @@ int cod_amr(
                 xn, xn2,  y1, y2, gCoeff, evenSubfr, gp_limit,
                 &gain_pit_sf0, &gain_code_sf0,
                 &gain_pit, &gain_code, &ana);
-      
-      fwc ();                 /* function worst case */
 
       /* update gain history */
       update_gp_clipping(st->tonStabSt, gain_pit);
       
-      test(); 
+
       if (sub(*usedMode, MR475) != 0)
       {
          /* Subframe Post Porcessing */
@@ -633,22 +616,22 @@ int cod_amr(
       }
       else
       {
-         test();
+
          if (evenSubfr != 0)
          {
-            i_subfr_sf0 = i_subfr;             move16 ();
+            i_subfr_sf0 = i_subfr;
             Copy(xn, xn_sf0, L_SUBFR);
             Copy(y2, y2_sf0, L_SUBFR);          
             Copy(code, code_sf0, L_SUBFR);
-            T0_sf0 = T0;                       move16 ();
-            T0_frac_sf0 = T0_frac;             move16 ();
+            T0_sf0 = T0;
+            T0_frac_sf0 = T0_frac;
             
             /* Subframe Post Porcessing */
             subframePostProc(st->speech, *usedMode, i_subfr, gain_pit,
                              gain_code, Aq, synth, xn, code, y1, y2,
                              mem_syn_save, st->mem_err, mem_w0_save,
                              st->exc, &st->sharp);
-            st->sharp = sharp_save;                         move16();
+            st->sharp = sharp_save;
          }
          else
          {
@@ -688,8 +671,6 @@ int cod_amr(
                              st->exc, &st->sharp);
          }
       }      
-               
-      fwc ();                 /* function worst case */
           
       A += MP1;    /* interpolated LPC parameters for next subframe */
       Aq += MP1;
@@ -706,8 +687,6 @@ the_end:
    
    Copy(&st->old_speech[L_FRAME], &st->old_speech[0], L_TOTAL - L_FRAME);
 
-   fwc ();                 /* function worst case */
-       
    return 0;
 }
 

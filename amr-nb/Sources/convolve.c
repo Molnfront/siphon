@@ -70,13 +70,13 @@ void Convolve (
 
     for (n = 0; n < L; n++)
     {
-        s = 0;                  move32 (); 
+        s = 0;
         for (i = 0; i <= n; i++)
         {
             s = L_mac (s, x[i], h[n - i]);
         }
         s = L_shl (s, 3);
-        y[n] = extract_h (s);   move16 (); 
+        y[n] = extract_h (s);
     }
 
     return;

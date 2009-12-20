@@ -144,7 +144,7 @@ int lsp(lspState *st,        /* i/o : State struct                            */
   
    Word16 pred_init_i; /* init index for MA prediction in DTX mode */
 
-   test ();
+
    if ( sub (req_mode, MR122) == 0)
    {
        Az_lsp (&az[MP1], lsp_mid, st->lsp_old);
@@ -158,7 +158,7 @@ int lsp(lspState *st,        /* i/o : State struct                            */
         *--------------------------------------------------------------------*/
        Int_lpc_1and3_2 (st->lsp_old, lsp_mid, lsp_new, az);
 
-       test ();
+
        if ( sub (used_mode, MRDTX) != 0)
        {
           /* LSP quantization (lsp_mid[] and lsp_new[] jointly quantized) */
@@ -167,7 +167,7 @@ int lsp(lspState *st,        /* i/o : State struct                            */
           Int_lpc_1and3 (st->lsp_old_q, lsp_mid_q, lsp_new_q, azQ);
           
           /* Advance analysis parameters pointer */
-          (*anap) += add(0,5); move16 ();
+          (*anap) += add(0,5);
        }	 
    }
    else
@@ -183,7 +183,7 @@ int lsp(lspState *st,        /* i/o : State struct                            */
        
        Int_lpc_1to3_2(st->lsp_old, lsp_new, az);
        
-       test ();
+
        if ( sub (used_mode, MRDTX) != 0)
        {
           /* LSP quantization */
@@ -192,7 +192,7 @@ int lsp(lspState *st,        /* i/o : State struct                            */
           Int_lpc_1to3(st->lsp_old_q, lsp_new_q, azQ);
           
           /* Advance analysis parameters pointer */
-          (*anap) += add (0, 3); move16 ();
+          (*anap) += add (0, 3);
        }
    }
        

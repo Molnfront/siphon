@@ -59,40 +59,38 @@ Word16 pseudonoise (
 {
    Word16 noise_bits, Sn, i;
    
-   noise_bits = 0;                              move16 ();
+   noise_bits = 0;
    for (i = 0; i < no_bits; i++)
    {
       /* State n == 31 */
-      test (); logic32 ();
       if ((*shift_reg & 0x00000001L) != 0)
       {
-         Sn = 1;                                move16 ();                         
+         Sn = 1;
       }
       else
       {
-         Sn = 0;                                move16 ();                        
+         Sn = 0;
       }
       
       /* State n == 3 */
-      test (); logic32 ();
       if ((*shift_reg & 0x10000000L) != 0)
       {
-         Sn = Sn ^ 1;                           move16 (); logic16 ();
+         Sn = Sn ^ 1;
       }
       else
       {
-         Sn = Sn ^ 0;                           move16 (); logic16 ();  
+         Sn = Sn ^ 0;
       }
       
       noise_bits = shl (noise_bits, 1);
       noise_bits = noise_bits | (extract_l (*shift_reg) & 1);
-      logic16 (); logic16 (); move16 ();
+
       
       *shift_reg = L_shr (*shift_reg, 1);         
-      test ();
+
       if (Sn & 1)
       {
-         *shift_reg = *shift_reg | 0x40000000L; move32 (); logic32 ();
+         *shift_reg = *shift_reg | 0x40000000L;
       }
    }
    return noise_bits;
@@ -112,7 +110,7 @@ void build_CN_code (
    
    for (i = 0; i < L_SUBFR; i++)
    {
-      cod[i] = 0;                    move16 ();     
+      cod[i] = 0;
    }
    
    for (k = 0; k < NB_PULSE; k++)
@@ -123,14 +121,14 @@ void build_CN_code (
       
       j = pseudonoise (seed, 1);      /* generate sign           */
 
-      test ();   
+
       if (j > 0)
       {
-         cod[i] = 4096;              move16 ();                   
+         cod[i] = 4096;
       }
       else
       {
-         cod[i] = -4096;             move16 ();                         
+         cod[i] = -4096;
       }
    }
    
@@ -154,9 +152,9 @@ void build_CN_param (
 
    *seed = extract_l(L_add(L_shr(L_mult(*seed, 31821), 1), 13849L));
 
-   p = &window_200_40[*seed & 0x7F]; logic16();
+   p = &window_200_40[*seed & 0x7F];
    for(i=0; i< n_param;i++){
-     move16 (); logic16(); logic16(); logic16();
+
      parm[i] = *p++ & ~(0xFFFF<<param_size_table[i]);  
    }
 }

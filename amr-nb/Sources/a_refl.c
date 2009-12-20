@@ -30,8 +30,9 @@ const char a_refl_id[] = "@(#)$Id $" a_refl_h;
 #include "typedef.h"
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
 #include "cnst.h"
+#include "copy.h"
+#include "set_zero.h"
 
 /*
 ********************************************************************************
@@ -69,10 +70,11 @@ void A_Refl(
    Word16 mult;
 
    /* initialize states */
-   for (i = 0; i < M; i++)
+   Copy(a, aState, M);
+   /*for (i = 0; i < M; i++)
    {
-      aState[i] = a[i];                         move16 ();
-   }
+      aState[i] = a[i];
+   }*/
    
    /* backward Levinson recursion */
    for (i = M-1; i >= 0; i--)
@@ -112,16 +114,18 @@ void A_Refl(
          bState[j] = extract_l(L_temp);
       }
       
-      for (j = 0; j < i; j++)
+      Copy(bState, aState, i);
+      /*for (j = 0; j < i; j++)
       {
-         aState[j] = bState[j];              move16 ();
-      }
+         aState[j] = bState[j];
+      }*/
    }
    return;
 
 ExitRefl:
-   for (i = 0; i < M; i++)
+  Set_zero(refl, M);
+   /*for (i = 0; i < M; i++)
    {
-      refl[i] = 0;                           move16 ();
-   }
+      refl[i] = 0;
+   }*/
 }

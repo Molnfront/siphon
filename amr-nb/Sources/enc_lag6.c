@@ -86,11 +86,11 @@ Word16 Enc_lag6 (        /* o : Return index of encoding             */
 {
     Word16 index, i;
 
-    test (); 
+
     if (delta_flag == 0)          /* if 1st or 3rd subframe */
     {
        /* encode pitch delay (with fraction) */
-       test (); 
+
        if (sub (T0, 94) <= 0)
        {
           /* index = T0*6 - 105 + T0_frac */

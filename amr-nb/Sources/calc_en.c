@@ -80,17 +80,17 @@ calc_unfilt_energies(
         s = L_mac(s, res[i], res[i]);
 
     /* ResEn := 0 if ResEn < 200.0 (= 400 Q1) */
-    test();
+    /**/
     if (L_sub (s, 400L) < 0)
     {
-        frac_en[0] = 0;                      move16 ();
-        exp_en[0] = -15;                     move16 ();
+        frac_en[0] = 0;
+        exp_en[0] = -15;
     }
     else
     {
         exp = norm_l(s);
-        frac_en[0] = extract_h(L_shl(s, exp));   move16 ();
-        exp_en[0] = sub(15, exp);                move16 ();
+        frac_en[0] = extract_h(L_shl(s, exp));
+        exp_en[0] = sub(15, exp);
     }
     
     /* Compute ltp excitation energy */
@@ -99,8 +99,8 @@ calc_unfilt_energies(
         s = L_mac(s, exc[i], exc[i]);
 
     exp = norm_l(s);
-    frac_en[1] = extract_h(L_shl(s, exp));   move16 ();
-    exp_en[1] = sub(15, exp);                move16 ();
+    frac_en[1] = extract_h(L_shl(s, exp));
+    exp_en[1] = sub(15, exp);
 
     /* Compute scalar product <exc[],code[]> */
     s = L_mac((Word32) 0, exc[0], code[0]);
@@ -108,11 +108,11 @@ calc_unfilt_energies(
         s = L_mac(s, exc[i], code[i]);
 
     exp = norm_l(s);
-    frac_en[2] = extract_h(L_shl(s, exp));   move16 ();
-    exp_en[2] = sub(16-14, exp);             move16 ();
+    frac_en[2] = extract_h(L_shl(s, exp));
+    exp_en[2] = sub(16-14, exp);
 
     /* Compute energy of LTP residual */
-    s = 0L;                                  move32 ();
+    s = 0L;
     for (i = 0; i < L_subfr; i++)
     {
         L_temp = L_mult(exc[i], gain_pit);
@@ -125,11 +125,11 @@ calc_unfilt_energies(
     ltp_res_en = extract_h (L_shl (s, exp));
     exp = sub (15, exp);
 
-    frac_en[3] = ltp_res_en;                 move16 ();
-    exp_en[3] = exp;                         move16 ();
+    frac_en[3] = ltp_res_en;
+    exp_en[3] = exp;
     
     /* calculate LTP coding gain, i.e. energy reduction LP res -> LTP res */
-    test (); test ();
+
     if (ltp_res_en > 0 && frac_en[0] != 0)
     {
         /* gain = ResEn / LTPResEn */
@@ -150,7 +150,7 @@ calc_unfilt_energies(
     }
     else
     {
-        *ltpg = 0;                           move16 ();
+        *ltpg = 0;
     }
 }
 
@@ -197,23 +197,24 @@ calc_filt_energies(
     Word16 i, exp, frac;
     Word16 y2[L_SUBFR];
 
-    if (test(), sub(mode, MR795) == 0 || sub(mode, MR475) == 0)
+    /*if (test(), sub(mode, MR795) == 0 || sub(mode, MR475) == 0)*/
+    if (( mode == MR795 ) || ( mode == MR475))
     {
-        ener_init = 0L; move32 ();
+        ener_init = 0L; /**/
     }
     else
     {
-        ener_init = 1L; move32 ();
+        ener_init = 1L; /**/
     }
     
     for (i = 0; i < L_SUBFR; i++) {
-        y2[i] = shr(Y2[i], 3);         move16 ();
+        y2[i] = shr(Y2[i], 3);
     }
 
-    frac_coeff[0] = g_coeff[0];          move16 ();
-    exp_coeff[0] = g_coeff[1];           move16 ();
-    frac_coeff[1] = negate(g_coeff[2]);  move16 ();   /* coeff[1] = -2 xn y1 */
-    exp_coeff[1] = add(g_coeff[3], 1);   move16 ();
+    frac_coeff[0] = g_coeff[0];
+    exp_coeff[0] = g_coeff[1];
+    frac_coeff[1] = negate(g_coeff[2]);     /* coeff[1] = -2 xn y1 */
+    exp_coeff[1] = add(g_coeff[3], 1);
 
 
     /* Compute scalar product <y2[],y2[]> */
@@ -223,8 +224,8 @@ calc_filt_energies(
         s = L_mac(s, y2[i], y2[i]);
 
     exp = norm_l(s);
-    frac_coeff[2] = extract_h(L_shl(s, exp)); move16 ();
-    exp_coeff[2] = sub(15 - 18, exp);    move16();
+    frac_coeff[2] = extract_h(L_shl(s, exp));
+    exp_coeff[2] = sub(15 - 18, exp);
 
     /* Compute scalar product -2*<xn[],y2[]> */
 
@@ -233,8 +234,8 @@ calc_filt_energies(
         s = L_mac(s, xn[i], y2[i]);
 
     exp = norm_l(s);
-    frac_coeff[3] = negate(extract_h(L_shl(s, exp))); move16 ();
-    exp_coeff[3] = sub(15 - 9 + 1, exp);         move16 ();
+    frac_coeff[3] = negate(extract_h(L_shl(s, exp)));
+    exp_coeff[3] = sub(15 - 9 + 1, exp);
 
 
     /* Compute scalar product 2*<y1[],y2[]> */
@@ -244,10 +245,11 @@ calc_filt_energies(
         s = L_mac(s, y1[i], y2[i]);
 
     exp = norm_l(s);
-    frac_coeff[4] = extract_h(L_shl(s, exp)); move16 ();
-    exp_coeff[4] = sub(15 - 9 + 1, exp);  move16();
+    frac_coeff[4] = extract_h(L_shl(s, exp));
+    exp_coeff[4] = sub(15 - 9 + 1, exp);
 
-    if (test(), test (), sub(mode, MR475) == 0 || sub(mode, MR795) == 0)
+    /*if (test(), test (), sub(mode, MR475) == 0 || sub(mode, MR795) == 0)*/
+    if ((mode == MR475) || (mode == MR795))
     {
         /* Compute scalar product <xn2[],y2[]> */
 
@@ -260,10 +262,11 @@ calc_filt_energies(
         exp = sub(15 - 9, exp);
 
         
-        if (test (), frac <= 0)
+        /*if (test (), frac <= 0)*/
+        if (frac <= 0)
         {
-            *cod_gain_frac = 0; move16 ();
-            *cod_gain_exp = 0;  move16 ();
+            *cod_gain_frac = 0;
+            *cod_gain_exp = 0;
         }
         else
         {
@@ -273,8 +276,8 @@ calc_filt_energies(
                   = div_s(frac>>1, frac[2])*2^-15 * 2^(exp+1-exp[2])
                   = div_s * 2^(exp-exp[2]-14)
              */  
-            *cod_gain_frac = div_s (shr (frac,1), frac_coeff[2]); move16 ();
-            *cod_gain_exp = sub (sub (exp, exp_coeff[2]), 14);    move16 ();
+            *cod_gain_frac = div_s (shr (frac,1), frac_coeff[2]);
+            *cod_gain_exp = sub (sub (exp, exp_coeff[2]), 14);
 
         }
     }
@@ -307,5 +310,5 @@ calc_target_energy(
     /* s = SUM 2*xn(i) * xn(i) = <xn xn> * 2 */
     exp = norm_l(s);
     *en_frac = extract_h(L_shl(s, exp));
-    *en_exp = sub(16, exp);    move16();
+    *en_exp = sub(16, exp);
 }

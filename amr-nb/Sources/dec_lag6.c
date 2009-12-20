@@ -69,10 +69,10 @@ void Dec_lag6 (
     Word16 i;
     Word16 T0_min, T0_max;
 
-    test ();
+
     if (i_subfr == 0)          /* if 1st or 3rd subframe */
     {
-       test (); 
+
        if (sub (index, 463) < 0)
        {
           /* T0 = (index+5)/6 + 17 */
@@ -80,12 +80,12 @@ void Dec_lag6 (
           i = add (add (*T0, *T0), *T0);
           /* *T0_frac = index - T0*6 + 105 */
           *T0_frac = add (sub (index, add (i, i)), 105);
-                                            move16 (); 
+
        }
        else
        {
           *T0 = sub (index, 368);
-          *T0_frac = 0;                     move16 (); 
+          *T0_frac = 0;
        }
     }
     else
@@ -95,17 +95,17 @@ void Dec_lag6 (
         
        T0_min = sub (*T0, 5);
 
-       test (); 
+
        if (sub (T0_min, pit_min) < 0)
        {
-          T0_min = pit_min;                 move16 (); 
+          T0_min = pit_min;
        }
        T0_max = add (T0_min, 9);
 
-       test (); 
+
        if (sub (T0_max, pit_max) > 0)
        {
-          T0_max = pit_max;                 move16 (); 
+          T0_max = pit_max;
           T0_min = sub (T0_max, 9);
        }
        
@@ -114,6 +114,6 @@ void Dec_lag6 (
        *T0 = add (i, T0_min);
        i = add (add (i, i), i);
        *T0_frac = sub (sub (index, 3), add (i, i));
-                                            move16 (); 
+
     }
 }

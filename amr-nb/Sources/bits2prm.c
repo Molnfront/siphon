@@ -60,12 +60,12 @@ static Word16 Bin2int ( /* Reconstructed parameter                      */
 {
     Word16 value, i, bit;
 
-    value = 0;                                  move16 (); 
+    value = 0;
     for (i = 0; i < no_of_bits; i++)
     {
         value = shl (value, 1);
-        bit = *bitstream++;                     move16 (); 
-        test (); 
+        bit = *bitstream++;
+
         if (sub (bit, BIT_1) == 0)
             value = add (value, 1);
     }
@@ -93,12 +93,11 @@ void Bits2prm (
 )
 {
     Word16 i;
-
-    move16();           /* account for pointer init (bitno[mode])  */
+    /* account for pointer init (bitno[mode])  */
     
     for (i = 0; i < prmno[mode]; i++)
     {
-        prm[i] = Bin2int (bitno[mode][i], bits);      move16 (); 
+        prm[i] = Bin2int (bitno[mode][i], bits);
         bits += bitno[mode][i];
         add(0,0);       /* account for above pointer update  */
     }

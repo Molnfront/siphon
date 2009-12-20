@@ -129,16 +129,16 @@ Word16 code_2i40_9bits(
     Word16 i, index, sharp;
     
     sharp = shl(pitch_sharp, 1);
-    test ();
+
     if (sub(T0, L_CODE) < 0)
        for (i = T0; i < L_CODE; i++) {
-          h[i] = add(h[i], mult(h[i - T0], sharp));         move16 ();
+          h[i] = add(h[i], mult(h[i - T0], sharp));
        }
     cor_h_x(h, x, dn, 1);
     set_sign(dn, dn_sign, dn2, 8); /* dn2[] not used in this codebook search */
     cor_h(h, dn_sign, rr);
     search_2i40(subNr, dn, rr, codvec);
-                                    move16 (); /* function result */
+                                     /* function result */
     index = build_code(subNr, codvec, dn_sign, code, h, y, sign);
     
   /*-----------------------------------------------------------------*
@@ -146,10 +146,10 @@ Word16 code_2i40_9bits(
    * Include fixed-gain pitch contribution into code[].              *
    *-----------------------------------------------------------------*/
     
-    test ();
+
     if (sub(T0, L_CODE) < 0)
        for (i = T0; i < L_CODE; i++) {
-          code[i] = add(code[i], mult(code[i - T0], sharp));  move16 ();
+          code[i] = add(code[i], mult(code[i - T0], sharp));
        }
     return index;
 }
@@ -190,37 +190,37 @@ static void search_2i40(
     Word32 s, alp0, alp1;
     Word16 i;    
 
-    psk = -1;                     move16 ();
-    alpk = 1;                     move16 ();
+    psk = -1;
+    alpk = 1;
     for (i = 0; i < NB_PULSE; i++)
     {
-       codvec[i] = i;             move16 ();
+       codvec[i] = i;
     }
  
     for (track1 = 0; track1 < 2; track1++) {		
        /* fix starting position */
        
-       ipos[0] = startPos[subNr*2+8*track1];     move16 ();
-       ipos[1] = startPos[subNr*2+1+8*track1];   move16 ();          
+       ipos[0] = startPos[subNr*2+8*track1];
+       ipos[1] = startPos[subNr*2+1+8*track1];
        
 
           /*----------------------------------------------------------------*
            * i0 loop: try 8 positions.                                      *
            *----------------------------------------------------------------*/
           
-			                  move16 (); /* account for ptr. init. (rr[io]) */
+			                   /* account for ptr. init. (rr[io]) */
           for (i0 = ipos[0]; i0 < L_CODE; i0 += STEP) {
              
-             ps0 = dn[i0];                    move16 ();
+             ps0 = dn[i0];
              alp0 = L_mult(rr[i0][i0], _1_4);
              
           /*----------------------------------------------------------------*
            * i1 loop: 8 positions.                                          *
            *----------------------------------------------------------------*/
              
-             sq = -1;                         move16 ();
-             alp = 1;                         move16 ();
-             ix = ipos[1];                    move16 ();
+             sq = -1;
+             alp = 1;
+             ix = ipos[1];
              
         /*-------------------------------------------------------------------*
         *  These index have low complexity address computation because      *
@@ -229,9 +229,9 @@ static void search_2i40(
         *  and incremented by "STEP".                                       *
         *-------------------------------------------------------------------*/
              
-             move16 (); /* account for ptr. init. (rr[i1]) */
-             move16 (); /* account for ptr. init. (dn[i1]) */
-             move16 (); /* account for ptr. init. (rr[io]) */
+              /* account for ptr. init. (rr[i1]) */
+              /* account for ptr. init. (dn[i1]) */
+              /* account for ptr. init. (rr[io]) */
              for (i1 = ipos[1]; i1 < L_CODE; i1 += STEP) {
                 ps1 = add(ps0, dn[i1]);   /* idx increment = STEP */
                 
@@ -246,11 +246,11 @@ static void search_2i40(
                 
                 s = L_msu(L_mult(alp, sq1), sq, alp_16);
 
-                test ();
+
                 if (s > 0) {
-                   sq = sq1;                  move16 ();
-                   alp = alp_16;              move16 ();
-                   ix = i1;                   move16 ();
+                   sq = sq1;
+                   alp = alp_16;
+                   ix = i1;
                 }
              }
              
@@ -260,12 +260,12 @@ static void search_2i40(
              
              s = L_msu(L_mult(alpk, sq), psk, alp);
              
-             test ();
+
              if (s > 0) {
-                psk = sq;                     move16 ();
-                alpk = alp;                   move16 ();
-                codvec[0] = i0;               move16 ();
-                codvec[1] = ix;               move16 ();
+                psk = sq;
+                alpk = alp;
+                codvec[0] = i0;
+                codvec[1] = ix;
              }
           }
     }
@@ -304,63 +304,63 @@ static Word16 build_code(
     pt = &trackTable[add(subNr, shl(subNr, 2))];
 	
     for (i = 0; i < L_CODE; i++) {
-        cod[i] = 0;                                 move16 ();
+        cod[i] = 0;
     }
     
-    indx = 0; move16 ();
-    rsign = 0; move16 ();
+    indx = 0;
+    rsign = 0;
     for (k = 0; k < NB_PULSE; k++) {
-       i = codvec[k];    /* read pulse position */  move16 ();
-       j = dn_sign[i];   /* read sign           */  move16 ();
+       i = codvec[k];    /* read pulse position */
+       j = dn_sign[i];   /* read sign           */
 
        index = mult(i, 6554);    /* index = pos/5 */
                                  /* track = pos%5 */
        track = sub(i, extract_l(L_shr(L_mult(index, 5), 1)));
        
-       first = pt[track];                           move16 ();
+       first = pt[track];
 
-       test ();
+
        if (first == 0) {
-          test ();
+
           if (k == 0) {
-             track = 0;                             move16 ();
+             track = 0;
           } else {
-             track = 1;                             move16 ();           
+             track = 1;
              index = shl(index, 3);
           }             
        } else {
-          test ();
+
           if (k == 0) {
-             track = 0;                             move16 ();            
+             track = 0;
              index = add(index, 64);  /* table bit is MSB */
           } else {
-             track = 1;                             move16 ();           
+             track = 1;
              index = shl(index, 3);
           }             
        }
 
-       test ();
+
        if (j > 0) {
-          cod[i] = 8191;                            move16 ();
-          _sign[k] = 32767;                         move16 ();
+          cod[i] = 8191;
+          _sign[k] = 32767;
           rsign = add(rsign, shl(1, track));
        } else {
-          cod[i] = -8192;                           move16 ();
-          _sign[k] = (Word16) - 32768L;             move16 ();
+          cod[i] = -8192;
+          _sign[k] = (Word16) - 32768L;
         }
        
        indx = add(indx, index);
     }
-    *sign = rsign;                                  move16 ();
+    *sign = rsign;
                                   
-    p0 = h - codvec[0];                             move16 ();
-    p1 = h - codvec[1];                             move16 ();
+    p0 = h - codvec[0];
+    p1 = h - codvec[1];
     
     for (i = 0; i < L_CODE; i++) {
-       s = 0;                                       move32 ();
+       s = 0;
        s = L_mac(s, *p0++, _sign[0]);
        s = L_mac(s, *p1++, _sign[1]);
-       y[i] = round(s);                             move16 ();
+       y[i] = round(s);
     }
     
     return indx;

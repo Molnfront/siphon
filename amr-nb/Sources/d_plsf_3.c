@@ -80,7 +80,7 @@ void D_plsf_3(
     Word16 lsf1_r[M];
     Word16 lsf1_q[M];
     
-    test ();
+
     if (bfi != 0)   /* if bad frame */
     {
         /* use the past LSFs slightly shifted towards their mean */
@@ -91,93 +91,93 @@ void D_plsf_3(
 
             lsf1_q[i] = add(mult(st->past_lsf_q[i], ALPHA),
                             mult(mean_lsf[i], ONE_ALPHA));
-                                                move16 ();
+
         }
 
         /* estimate past quantized residual to be used in next frame */
-	test();
+
 	if (sub(mode, MRDTX) != 0) {
 	  for (i = 0; i < M; i++) {
             /* temp  = mean_lsf[i] +  past_r2_q[i] * PRED_FAC; */
 	    
             temp = add(mean_lsf[i], mult(st->past_r_q[i], pred_fac[i]));
 	    
-            st->past_r_q[i] = sub(lsf1_q[i], temp);                   move16 ();
+            st->past_r_q[i] = sub(lsf1_q[i], temp);
 	  }
 	} else {
 	  for (i = 0; i < M; i++) {
             /* temp  = mean_lsf[i] +  past_r2_q[i]; */
 	    
             temp = add(mean_lsf[i], st->past_r_q[i]);
-            st->past_r_q[i] = sub(lsf1_q[i], temp);                   move16 ();
+            st->past_r_q[i] = sub(lsf1_q[i], temp);
 	  }	  
 	}
     }
     else  /* if good LSFs received */
     {
-       test (); test ();
+
        if (sub (mode, MR475) == 0 || sub (mode, MR515) == 0)
        {   /* MR475, MR515 */
-          p_cb1 = dico1_lsf;                  move16 ();
-          p_cb2 = dico2_lsf;                  move16 ();
-          p_cb3 = mr515_3_lsf;                move16 ();
+          p_cb1 = dico1_lsf;
+          p_cb2 = dico2_lsf;
+          p_cb3 = mr515_3_lsf;
        }
        else if (sub (mode, MR795) == 0)
        {   /* MR795 */
-          test();
-          p_cb1 = mr795_1_lsf;                move16 ();
-          p_cb2 = dico2_lsf;                  move16 ();
-          p_cb3 = dico3_lsf;                  move16 ();
+
+          p_cb1 = mr795_1_lsf;
+          p_cb2 = dico2_lsf;
+          p_cb3 = dico3_lsf;
        }
        else 
        {   /* MR59, MR67, MR74, MR102, MRDTX */
-          test();          
-          p_cb1 = dico1_lsf;                  move16 ();
-          p_cb2 = dico2_lsf;                  move16 ();
-          p_cb3 = dico3_lsf;                  move16 ();
+
+          p_cb1 = dico1_lsf;
+          p_cb2 = dico2_lsf;
+          p_cb3 = dico3_lsf;
        }
        
        /* decode prediction residuals from 3 received indices */
 
-        index = *indice++;                      move16 ();
-        p_dico = &p_cb1[add(index, add(index, index))];               move16 ();
-        lsf1_r[0] = *p_dico++;                  move16 ();
-        lsf1_r[1] = *p_dico++;                  move16 ();
-        lsf1_r[2] = *p_dico++;                  move16 ();
+        index = *indice++;
+        p_dico = &p_cb1[add(index, add(index, index))];
+        lsf1_r[0] = *p_dico++;
+        lsf1_r[1] = *p_dico++;
+        lsf1_r[2] = *p_dico++;
 
-        index = *indice++;                      move16 ();
+        index = *indice++;
         
-        test (); test ();
+
         if ((sub (mode, MR475) == 0) || (sub (mode, MR515) == 0))
         {   /* MR475, MR515 only using every second entry */
             index = shl(index,1);
         }
         
-        p_dico = &p_cb2[add(index, add(index, index))];               move16 ();
-        lsf1_r[3] = *p_dico++;                  move16 ();
-        lsf1_r[4] = *p_dico++;                  move16 ();
-        lsf1_r[5] = *p_dico++;                  move16 ();
+        p_dico = &p_cb2[add(index, add(index, index))];
+        lsf1_r[3] = *p_dico++;
+        lsf1_r[4] = *p_dico++;
+        lsf1_r[5] = *p_dico++;
 
-        index = *indice++;                      move16 ();
-        p_dico = &p_cb3[shl(index, 2)];         move16 ();
-        lsf1_r[6] = *p_dico++;                  move16 ();
-        lsf1_r[7] = *p_dico++;                  move16 ();
-        lsf1_r[8] = *p_dico++;                  move16 ();
-        lsf1_r[9] = *p_dico++;                  move16 ();
+        index = *indice++;
+        p_dico = &p_cb3[shl(index, 2)];
+        lsf1_r[6] = *p_dico++;
+        lsf1_r[7] = *p_dico++;
+        lsf1_r[8] = *p_dico++;
+        lsf1_r[9] = *p_dico++;
 
         /* Compute quantized LSFs and update the past quantized residual */
 
 	if (sub(mode, MRDTX) != 0) 
            for (i = 0; i < M; i++) {
               temp = add(mean_lsf[i], mult(st->past_r_q[i], pred_fac[i]));
-              lsf1_q[i] = add(lsf1_r[i], temp);   move16 ();
-              st->past_r_q[i] = lsf1_r[i];        move16 ();
+              lsf1_q[i] = add(lsf1_r[i], temp);
+              st->past_r_q[i] = lsf1_r[i];
            }
         else
            for (i = 0; i < M; i++) {
               temp = add(mean_lsf[i], st->past_r_q[i]);
-              lsf1_q[i] = add(lsf1_r[i], temp);   move16 ();
-              st->past_r_q[i] = lsf1_r[i];        move16 ();
+              lsf1_q[i] = add(lsf1_r[i], temp);
+              st->past_r_q[i] = lsf1_r[i];
            }
     }
 

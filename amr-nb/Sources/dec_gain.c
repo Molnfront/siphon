@@ -78,28 +78,28 @@ void Dec_gain(
     /* Read the quantized gains (table depends on mode) */
     index = shl (index, 2);
     
-    test(); test(); test();
+
     if (    sub (mode, MR102) == 0
          || sub (mode, MR74) == 0
          || sub (mode, MR67) == 0)
     {
-        p = &table_gain_highrates[index];                  move16 ();
+        p = &table_gain_highrates[index];
         
-        *gain_pit = *p++;                                  move16 ();
-        g_code = *p++;                                     move16 ();
-        qua_ener_MR122 = *p++;                             move16 ();
-        qua_ener = *p;                                     move16 ();
+        *gain_pit = *p++;
+        g_code = *p++;
+        qua_ener_MR122 = *p++;
+        qua_ener = *p;
     }
     else
     {
-        test();
+
         if (sub (mode, MR475) == 0)
         {
             index = add (index, shl(sub(1, evenSubfr), 1));
-            p = &table_gain_MR475[index];                  move16 ();
+            p = &table_gain_MR475[index];
             
-            *gain_pit = *p++;                              move16 ();
-            g_code = *p++;                                 move16 ();
+            *gain_pit = *p++;
+            g_code = *p++;
             
             /*---------------------------------------------------------*
              *  calculate predictor update values (not stored in 4.75  *
@@ -122,12 +122,12 @@ void Dec_gain(
         }
         else
         {
-            p = &table_gain_lowrates[index];                move16 ();
+            p = &table_gain_lowrates[index];
             
-            *gain_pit = *p++;                               move16 ();
-            g_code = *p++;                                  move16 ();
-            qua_ener_MR122 = *p++;                          move16 ();
-            qua_ener = *p;                                  move16 ();
+            *gain_pit = *p++;
+            g_code = *p++;
+            qua_ener_MR122 = *p++;
+            qua_ener = *p;
         }
     }
     

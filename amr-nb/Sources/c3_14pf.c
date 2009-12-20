@@ -106,11 +106,11 @@ Word16 code_3i40_14bits(
     Word16 i, index, sharp;
 
     sharp = shl(pitch_sharp, 1);
-    test ();
+
     if (sub(T0, L_CODE) < 0)
     {
        for (i = T0; i < L_CODE; i++) {
-          h[i] = add(h[i], mult(h[i - T0], sharp));      move16 ();
+          h[i] = add(h[i], mult(h[i - T0], sharp));
        }
     }
     
@@ -118,7 +118,7 @@ Word16 code_3i40_14bits(
     set_sign(dn, dn_sign, dn2, 6);
     cor_h(h, dn_sign, rr);
     search_3i40(dn, dn2, rr, codvec);
-                                    move16 (); /* function result */
+                                     /* function result */
     index = build_code(codvec, dn_sign, code, h, y, sign);
 
   /*-----------------------------------------------------------------*
@@ -126,11 +126,11 @@ Word16 code_3i40_14bits(
   * Include fixed-gain pitch contribution into code[].              *
   *-----------------------------------------------------------------*/
 
-    test ();
+
     if (sub(T0, L_CODE) < 0)
     {
        for (i = T0; i < L_CODE; i++) { 
-          code[i] = add(code[i], mult(code[i - T0], sharp));    move16 ();
+          code[i] = add(code[i], mult(code[i - T0], sharp));
        }
     }
     return index;
@@ -171,11 +171,11 @@ static void search_3i40(
     Word16 alpk, alp, alp_16;
     Word32 s, alp0, alp1;
 
-    psk = -1;     move16 ();
-    alpk = 1;     move16 ();
+    psk = -1;
+    alpk = 1;
     for (i = 0; i < NB_PULSE; i++)
     {
-       codvec[i] = i;    move16 ();
+       codvec[i] = i;
     }
 
     for (track1 = 1; track1 < 4; track1 += 2)
@@ -184,9 +184,9 @@ static void search_3i40(
        {		
           /* fix starting position */
 
-          ipos[0] = 0;       move16 ();
-          ipos[1] = track1;  move16 ();
-          ipos[2] = track2;  move16 ();
+          ipos[0] = 0;
+          ipos[1] = track1;
+          ipos[2] = track2;
           
           /*------------------------------------------------------------------*
            * main loop: try 3 tracks.                                         *
@@ -198,23 +198,23 @@ static void search_3i40(
               * i0 loop: try 8 positions.                                      *
               *----------------------------------------------------------------*/
              
-             move16 (); /* account for ptr. init. (rr[io]) */
+              /* account for ptr. init. (rr[io]) */
              for (i0 = ipos[0]; i0 < L_CODE; i0 += STEP)
              {
-                test ();
+
                 if (dn2[i0] >= 0)
                 {
-                   ps0 = dn[i0];  move16 ();
+                   ps0 = dn[i0];
                    alp0 = L_mult(rr[i0][i0], _1_4);
                    
                    /*----------------------------------------------------------------*
                     * i1 loop: 8 positions.                                          *
                     *----------------------------------------------------------------*/
                    
-                   sq = -1;          move16 ();
-                   alp = 1;          move16 ();
-                   ps = 0;           move16 ();
-                   ix = ipos[1];     move16 ();
+                   sq = -1;
+                   alp = 1;
+                   ps = 0;
+                   ix = ipos[1];
                 
                    /* initialize 4 index for next loop. */
                    /*-------------------------------------------------------------------*
@@ -224,9 +224,9 @@ static void search_3i40(
                     *  and incremented by "STEP".                                       *
                     *-------------------------------------------------------------------*/
                    
-                   move16 (); /* account for ptr. init. (rr[i1]) */
-                   move16 (); /* account for ptr. init. (dn[i1]) */
-                   move16 (); /* account for ptr. init. (rr[io]) */
+                    /* account for ptr. init. (rr[i1]) */
+                    /* account for ptr. init. (dn[i1]) */
+                    /* account for ptr. init. (rr[io]) */
                    for (i1 = ipos[1]; i1 < L_CODE; i1 += STEP)
                    {
                       ps1 = add(ps0, dn[i1]);   /* idx increment = STEP */
@@ -242,35 +242,35 @@ static void search_3i40(
                       
                       s = L_msu(L_mult(alp, sq1), sq, alp_16);
                       
-                      test ();
+
                       if (s > 0)
                       {
-                         sq = sq1;      move16 ();
-                         ps = ps1;      move16 ();
-                         alp = alp_16;  move16 ();
-                         ix = i1;       move16 ();
+                         sq = sq1;
+                         ps = ps1;
+                         alp = alp_16;
+                         ix = i1;
                       }
                    }
-                   i1 = ix;             move16 ();
+                   i1 = ix;
                    
                    /*----------------------------------------------------------------*
                     * i2 loop: 8 positions.                                          *
                     *----------------------------------------------------------------*/
                    
-                   ps0 = ps;            move16 ();
+                   ps0 = ps;
                    alp0 = L_mult(alp, _1_4);
                    
-                   sq = -1;             move16 ();
-                   alp = 1;             move16 ();
-                   ps = 0;              move16 ();
-                   ix = ipos[2];        move16 ();
+                   sq = -1;
+                   alp = 1;
+                   ps = 0;
+                   ix = ipos[2];
                    
                    /* initialize 4 index for next loop (see i1 loop) */
                    
-                   move16 (); /* account for ptr. init. (rr[i2]) */
-                   move16 (); /* account for ptr. init. (rr[i1]) */
-                   move16 (); /* account for ptr. init. (dn[i2]) */
-                   move16 (); /* account for ptr. init. (rr[io]) */
+                    /* account for ptr. init. (rr[i2]) */
+                    /* account for ptr. init. (rr[i1]) */
+                    /* account for ptr. init. (dn[i2]) */
+                    /* account for ptr. init. (rr[io]) */
                    for (i2 = ipos[2]; i2 < L_CODE; i2 += STEP)
                    {
                       ps1 = add(ps0, dn[i2]); /* index increment = STEP */
@@ -287,16 +287,16 @@ static void search_3i40(
                       
                       s = L_msu(L_mult(alp, sq1), sq, alp_16);
                       
-                      test ();
+
                       if (s > 0)
                       {
-                         sq = sq1;      move16 ();
-                         ps = ps1;      move16 ();
-                         alp = alp_16;  move16 ();
-                         ix = i2;       move16 ();
+                         sq = sq1;
+                         ps = ps1;
+                         alp = alp_16;
+                         ix = i2;
                       }
                    }
-                   i2 = ix;             move16 ();
+                   i2 = ix;
                    
                    /*----------------------------------------------------------------*
                     * memorise codevector if this one is better than the last one.   *
@@ -304,14 +304,14 @@ static void search_3i40(
                    
                    s = L_msu(L_mult(alpk, sq), psk, alp);
                    
-                   test ();
+
                    if (s > 0)
                    {
-                      psk = sq;         move16 ();
-                      alpk = alp;       move16 ();
-                      codvec[0] = i0;   move16 ();
-                      codvec[1] = i1;   move16 ();
-                      codvec[2] = i2;   move16 ();
+                      psk = sq;
+                      alpk = alp;
+                      codvec[0] = i0;
+                      codvec[1] = i1;
+                      codvec[2] = i2;
                    }
                 }
              }
@@ -319,10 +319,10 @@ static void search_3i40(
               * Cyclic permutation of i0, i1 and i2.                           *
               *----------------------------------------------------------------*/
              
-             pos = ipos[2];          move16 ();
-             ipos[2] = ipos[1];      move16 ();
-             ipos[1] = ipos[0];      move16 ();
-             ipos[0] = pos;          move16 ();
+             pos = ipos[2];
+             ipos[2] = ipos[1];
+             ipos[1] = ipos[0];
+             ipos[0] = pos;
           }
        }
     }    
@@ -353,68 +353,68 @@ build_code(
     Word32 s;
 
     for (i = 0; i < L_CODE; i++) {
-       cod[i] = 0;         move16 ();
+       cod[i] = 0;
     }
     
-    indx = 0;               move16 ();
-    rsign = 0;              move16 ();
+    indx = 0;
+    rsign = 0;
     for (k = 0; k < NB_PULSE; k++)
     {
-       i = codvec[k];      move16 ();  /* read pulse position */
-       j = dn_sign[i];     move16 ();  /* read sign           */
+       i = codvec[k];        /* read pulse position */
+       j = dn_sign[i];       /* read sign           */
        
        index = mult(i, 6554);    /* index = pos/5 */
                                  /* track = pos%5 */
        track = sub(i, extract_l(L_shr(L_mult(index, 5), 1)));
        
-       test ();
+
        if (sub(track, 1) == 0)
           index = shl(index, 4);
        else if (sub(track, 2) == 0)
        {
-          test ();
-          track = 2;                          move16 ();
+
+          track = 2;
           index = shl(index, 8);
        }
        else if (sub(track, 3) == 0)
        {
-          test (); test ();
-          track = 1;                          move16 ();         
+
+          track = 1;
           index = add(shl(index, 4), 8);
        }
        else if (sub(track, 4) == 0)
        {
-          test (); test (); test ();
-          track = 2;                          move16 ();
+
+          track = 2;
           index = add(shl(index, 8), 128);
        }
        
-       test ();
+
        if (j > 0)
        {
-          cod[i] = 8191;                       move16 ();
-          _sign[k] = 32767;                    move16 ();
+          cod[i] = 8191;
+          _sign[k] = 32767;
           rsign = add(rsign, shl(1, track));
        } else {
-          cod[i] = -8192;                      move16 ();
-          _sign[k] = (Word16) - 32768L;        move16 ();
+          cod[i] = -8192;
+          _sign[k] = (Word16) - 32768L;
        }
        
        indx = add(indx, index);
     }
-    *sign = rsign;                             move16 ();
+    *sign = rsign;
 
-    p0 = h - codvec[0];                        move16 ();
-    p1 = h - codvec[1];                        move16 ();
-    p2 = h - codvec[2];                        move16 ();
+    p0 = h - codvec[0];
+    p1 = h - codvec[1];
+    p2 = h - codvec[2];
     
     for (i = 0; i < L_CODE; i++)
     {
-       s = 0;                                  move32 ();
+       s = 0;
        s = L_mac(s, *p0++, _sign[0]);
        s = L_mac(s, *p1++, _sign[1]);
        s = L_mac(s, *p2++, _sign[2]);
-       y[i] = round(s);                        move16 ();
+       y[i] = round(s);
     }
     
     return indx;

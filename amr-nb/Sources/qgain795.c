@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -32,7 +61,6 @@ const char qgain795_id[] = "@(#)$Id $" qgain795_h;
 #include "typedef.h"
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
 #include "cnst.h"
 #include "log2.h"
 #include "pow2.h"
@@ -40,7 +68,6 @@ const char qgain795_id[] = "@(#)$Id $" qgain795_h;
 #include "g_adapt.h"
 #include "calc_en.h"
 #include "q_gain_p.h"
-#include "mac_32.h"
 
 /*
 ********************************************************************************
@@ -106,11 +133,11 @@ MR795_gain_code_quant3(
     exp_code = sub(exp_gcode0, 10);
 
     /* calculate exp_max[i] = s[i]-1 */
-    exp_max[0] = sub(exp_coeff[0], 13);                        move16 ();
-    exp_max[1] = sub(exp_coeff[1], 14);                        move16 ();
-    exp_max[2] = add(exp_coeff[2], add(15, shl(exp_code, 1))); move16 ();
-    exp_max[3] = add(exp_coeff[3], exp_code);                  move16 ();
-    exp_max[4] = add(exp_coeff[4], add(exp_code,1));           move16 ();
+    exp_max[0] = sub(exp_coeff[0], 13);
+    exp_max[1] = sub(exp_coeff[1], 14);
+    exp_max[2] = add(exp_coeff[2], add(15, shl(exp_code, 1)));
+    exp_max[3] = add(exp_coeff[3], exp_code);
+    exp_max[4] = add(exp_coeff[4], add(exp_code,1));
 
 
     /*-------------------------------------------------------------------*
@@ -127,13 +154,12 @@ MR795_gain_code_quant3(
      *    c[i] = c[i]*2^e                                                *
      *-------------------------------------------------------------------*/
 
-    e_max = exp_max[0];                                        move16 ();
+    e_max = exp_max[0];
     for (i = 1; i < 5; i++)     /* implemented flattened */
     {
-        move16(); test();
         if (sub(exp_max[i], e_max) > 0)
         {
-            e_max = exp_max[i];                                move16 ();
+            e_max = exp_max[i];
         }
     }
 
@@ -160,23 +186,23 @@ MR795_gain_code_quant3(
      *-------------------------------------------------------------------*/
 
     /* start with "infinite" MSE */
-    dist_min = MAX_32;        move16 ();
-    cod_ind = 0;              move16 ();
-    pit_ind = 0;              move16 ();
+    dist_min = MAX_32;
+    cod_ind = 0;
+    pit_ind = 0;
 
     /* loop through LTP gain candidates */
     for (j = 0; j < 3; j++)
     {
         /* pre-calculate terms only dependent on pitch gain */
-        g_pitch = g_pitch_cand[j];    move16 ();
+        g_pitch = g_pitch_cand[j];
         g2_pitch = mult(g_pitch, g_pitch);
         L_tmp0 = Mpy_32_16(        coeff[0], coeff_lo[0], g2_pitch);
-        L_tmp0 = Mac_32_16(L_tmp0, coeff[1], coeff_lo[1], g_pitch);
+        L_tmp0 += Mpy_32_16(       coeff[1], coeff_lo[1], g_pitch);
 
         p = &qua_gain_code[0];
         for (i = 0; i < NB_QUA_CODE; i++)
         {
-            g_code = *p++;        move16 (); /* this is g_fac        Q11 */
+            g_code = *p++;         /* this is g_fac        Q11 */
             p++;                             /* skip log2(g_fac)         */
             p++;                             /* skip 20*log10(g_fac)     */
 
@@ -188,22 +214,22 @@ MR795_gain_code_quant3(
             L_tmp = L_mult(g_code, g_pitch);
             L_Extract (L_tmp, &g_pit_cod_h, &g_pit_cod_l);
 
-            L_tmp = Mac_32  (L_tmp0, coeff[2], coeff_lo[2],
+            L_tmp = L_tmp0 + Mpy_32 (coeff[2], coeff_lo[2],
                                      g2_code_h, g2_code_l);
-            L_tmp = Mac_32_16(L_tmp, coeff[3], coeff_lo[3],
+            L_tmp +=      Mpy_32_16 (coeff[3], coeff_lo[3],
                                      g_code);
-            L_tmp = Mac_32   (L_tmp, coeff[4], coeff_lo[4],
+            L_tmp +=         Mpy_32 (coeff[4], coeff_lo[4],
                                      g_pit_cod_h, g_pit_cod_l);
 
             /* store table index if MSE for this index is lower
                than the minimum MSE seen so far; also store the
                pitch gain for this (so far) lowest MSE          */
-            test ();
+            /**/
             if (L_sub(L_tmp, dist_min) < (Word32) 0)
             {
-                dist_min = L_tmp;                move32 ();
-                cod_ind = i;                     move16 ();
-                pit_ind = j;                     move16 ();
+                dist_min = L_tmp;
+                cod_ind = i;
+                pit_ind = j;
             }
         }
     }
@@ -214,10 +240,10 @@ MR795_gain_code_quant3(
      *------------------------------------------------------------------*/
 
     /* Read the quantized gains */
-    p = &qua_gain_code[add (add (cod_ind, cod_ind), cod_ind)]; move16 ();
-    g_code = *p++;            move16();
-    *qua_ener_MR122 = *p++;   move16();
-    *qua_ener = *p;           move16();
+    p = &qua_gain_code[add (add (cod_ind, cod_ind), cod_ind)];
+    g_code = *p++;
+    *qua_ener_MR122 = *p++;
+    *qua_ener = *p;
 
     /*------------------------------------------------------------------*
      *  calculate final fixed codebook gain:                            *
@@ -229,9 +255,9 @@ MR795_gain_code_quant3(
     L_tmp = L_mult(g_code, gcode0);
     L_tmp = L_shr(L_tmp, sub(9, exp_gcode0));
     *gain_cod = extract_h(L_tmp);
-    *gain_cod_ind = cod_ind;                move16 ();
-    *gain_pit = g_pitch_cand[pit_ind];      move16 ();
-    *gain_pit_ind = g_pitch_cind[pit_ind];  move16 ();
+    *gain_cod_ind = cod_ind;
+    *gain_pit = g_pitch_cand[pit_ind];
+    *gain_pit_ind = g_pitch_cind[pit_ind];
 }
 
 
@@ -327,24 +353,24 @@ MR795_gain_code_quant_mod(  /* o  : index of quantization.            */
     /*  alpha <= 0.5 -> mult. by 2 to keep precision; compensate in exponent */
     tmp = extract_h (L_shl (L_mult (alpha, frac_en[1]), 1));
     /* directly store in 32 bit variable because no further mult. required */
-    L_t1 = L_mult (tmp, g2_pitch);                    move16 ();
-    exp_coeff[1] = sub (exp_en[1], 15);               move16 ();
+    L_t1 = L_mult (tmp, g2_pitch);
+    exp_coeff[1] = sub (exp_en[1], 15);
 
 
     tmp = extract_h (L_shl (L_mult (alpha, frac_en[2]), 1));
-    coeff[2] = mult (tmp, gain_pit);                  move16 ();
+    coeff[2] = mult (tmp, gain_pit);
     exp = sub (exp_gcode0, 10);
-    exp_coeff[2] = add (exp_en[2], exp);              move16 ();
+    exp_coeff[2] = add (exp_en[2], exp);
 
 
     /* alpha <= 0.5 -> mult. by 2 to keep precision; compensate in exponent */
     coeff[3] = extract_h (L_shl (L_mult (alpha, frac_en[3]), 1));
     exp = sub (shl (exp_gcode0, 1), 7);
-    exp_coeff[3] = add (exp_en[3], exp);              move16 ();
+    exp_coeff[3] = add (exp_en[3], exp);
 
 
-    coeff[4] = mult (one_alpha, frac_en[3]);          move16 ();
-    exp_coeff[4] = add (exp_coeff[3], 1);             move16 ();
+    coeff[4] = mult (one_alpha, frac_en[3]);
+    exp_coeff[4] = add (exp_coeff[3], 1);
 
 
     L_tmp = L_mult (alpha, frac_en[0]);
@@ -353,9 +379,9 @@ MR795_gain_code_quant_mod(  /* o  : index of quantization.            */
        exp_coeff holds 2*exponent for c[0]            */
     /* directly store in 32 bit variable because no further mult. required */
     L_t0 = sqrt_l_exp (L_tmp, &exp); /* normalization included in sqrt_l_exp */
-                                     move32 (); /* function result */
+                                      /* function result */
     exp = add (exp, 47);
-    exp_coeff[0] = sub (exp_en[0], exp);              move16 ();
+    exp_coeff[0] = sub (exp_en[0], exp);
 
     /*
      * Determine the maximum exponent occuring in the distance calculation
@@ -367,10 +393,10 @@ MR795_gain_code_quant_mod(  /* o  : index of quantization.            */
     e_max = add (exp_coeff[0], 31);
     for (i = 1; i <= 4; i++)
     {
-        test ();
+        /**/
         if (sub (exp_coeff[i], e_max) > 0)
         {
-            e_max = exp_coeff[i];                     move16 ();
+            e_max = exp_coeff[i];
         }
     }
 
@@ -392,7 +418,7 @@ MR795_gain_code_quant_mod(  /* o  : index of quantization.            */
     tmp = sub (exp, exp_coeff[0]);
     L_t0 = L_shr (L_t0, shr (tmp, 1));
     /* perform correction by 1/sqrt(2) if exponent difference is odd */
-    test (); logic16 ();
+    /* */
     if ((tmp & 0x1) != 0)
     {
         L_Extract(L_t0, &coeff[0], &coeff_lo[0]);
@@ -402,20 +428,20 @@ MR795_gain_code_quant_mod(  /* o  : index of quantization.            */
 
     /* search the quantizer table for the lowest value
        of the search criterion                           */
-    dist_min = MAX_32; move32 ();
-    index = 0;         move16 ();
-    p = &qua_gain_code[0]; move16 ();
+    dist_min = MAX_32;
+    index = 0;
+    p = &qua_gain_code[0];
 
     for (i = 0; i < NB_QUA_CODE; i++)
     {
-        g_code = *p++;        move16 (); /* this is g_fac (Q11)  */
+        g_code = *p++;         /* this is g_fac (Q11)  */
         p++;                             /* skip log2(g_fac)     */
         p++;                             /* skip 20*log10(g_fac) */
         g_code = mult (g_code, gcode0);
 
         /* only continue if    gc[i]            < 2.0*gc
            which is equiv. to  g_code (Q10-ec0) < gain_code (Q11-ec0) */
-        test ();
+        /**/
         if (sub (g_code, gain_code) >= 0)
             break;
 
@@ -427,8 +453,8 @@ MR795_gain_code_quant_mod(  /* o  : index of quantization.            */
         L_Extract (L_tmp, &d2_code_h, &d2_code_l);
 
         /* t2, t3, t4 */
-        L_tmp = Mac_32_16 (L_t1, coeff[2], coeff_lo[2], g_code);
-        L_tmp = Mac_32(L_tmp,    coeff[3], coeff_lo[3], g2_code_h, g2_code_l);
+        L_tmp = L_t1 + Mpy_32_16 (coeff[2], coeff_lo[2], g_code);
+        L_tmp += Mpy_32 (coeff[3], coeff_lo[3], g2_code_h, g2_code_l);
 
         L_tmp = sqrt_l_exp (L_tmp, &exp);
         L_tmp = L_shr (L_tmp, shr (exp, 1));
@@ -438,15 +464,15 @@ MR795_gain_code_quant_mod(  /* o  : index of quantization.            */
         L_tmp = L_mult (tmp, tmp);
 
         /* dist */
-        L_tmp = Mac_32(L_tmp, coeff[4], coeff_lo[4], d2_code_h, d2_code_l);
+        L_tmp += Mpy_32(coeff[4], coeff_lo[4], d2_code_h, d2_code_l);
 
         /* store table index if distance measure for this
             index is lower than the minimum seen so far   */
-        test ();
+
         if (L_sub (L_tmp, dist_min) < (Word32) 0)
         {
-            dist_min = L_tmp;                move16 ();
-            index = i;                       move16 ();
+            dist_min = L_tmp;
+            index = i;
         }
     }
 
@@ -456,10 +482,10 @@ MR795_gain_code_quant_mod(  /* o  : index of quantization.            */
      *------------------------------------------------------------------*/
 
     /* Read the quantized gains */
-    p = &qua_gain_code[add (add (index, index), index)]; move16 ();
-    g_code = *p++;            move16();
-    *qua_ener_MR122 = *p++;   move16();
-    *qua_ener = *p;           move16();
+    p = &qua_gain_code[add (add (index, index), index)];
+    g_code = *p++;
+    *qua_ener_MR122 = *p++;
+    *qua_ener = *p;
 
     /*------------------------------------------------------------------*
      *  calculate final fixed codebook gain:                            *
@@ -531,7 +557,7 @@ MR795_gain_quant(
      */
     gain_pit_index = q_gain_pitch (MR795, gp_limit, gain_pit,
                                    g_pitch_cand, g_pitch_cind); 
-                     move16 (); /* function result */
+                      /* function result */
 
     /*-------------------------------------------------------------------*
      *  predicted codebook gain                                          *
@@ -565,13 +591,13 @@ MR795_gain_quant(
     /* if this is a very low energy signal (threshold: see
      * calc_unfilt_energies) or alpha <= 0 then don't run the modified quantizer
      */
-    test (); move16 (); test ();
+    /*  */
     if (frac_en[0] != 0 && alpha > 0)
     {
         /* innovation energy <cod cod> was already computed in gc_pred() */
         /* (this overwrites the LtpResEn which is no longer needed)      */
-        frac_en[3] = frac_code_en;          move16 ();
-        exp_en[3] = exp_code_en;            move16 ();
+        frac_en[3] = frac_code_en;
+        exp_en[3] = exp_code_en;
         
         /* store optimum codebook gain in Q(10-exp_gcode0) */
         exp = add (sub (cod_gain_exp, exp_gcode0), 10);
@@ -581,9 +607,9 @@ MR795_gain_quant(
         gain_cod_index = MR795_gain_code_quant_mod(
             *gain_pit, exp_gcode0, gcode0,
             frac_en, exp_en, alpha, gain_cod_unq,
-            gain_cod, qua_ener_MR122, qua_ener); move16 (); /* function result */
+            gain_cod, qua_ener_MR122, qua_ener);  /* function result */
     }
 
-    *(*anap)++ = gain_pit_index;        move16 ();
-    *(*anap)++ = gain_cod_index;        move16 ();
+    *(*anap)++ = gain_pit_index;
+    *(*anap)++ = gain_cod_index;
 }

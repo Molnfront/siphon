@@ -64,25 +64,24 @@ Word16 Interpol_3or6 (  /* o : interpolated value                        */
     const Word16 *c1, *c2;
     Word32 s;
 
-    test();
     if (flag3 != 0)
     {
       frac = shl (frac, 1);   /* inter_3[k] = inter_6[2*k] -> k' = 2*k */
     }
     
-    test (); 
+
     if (frac < 0)
     {
         frac = add (frac, UP_SAMP_MAX);
         x--;
     }
     
-    x1 = &x[0];                         move16 (); 
-    x2 = &x[1];                         move16 (); 
-    c1 = &inter_6[frac];                move16 (); 
-    c2 = &inter_6[sub (UP_SAMP_MAX, frac)]; move16 (); 
+    x1 = &x[0];
+    x2 = &x[1];
+    c1 = &inter_6[frac];
+    c2 = &inter_6[sub (UP_SAMP_MAX, frac)];
 
-    s = 0;                              move32 (); 
+    s = 0;
     for (i = 0, k = 0; i < L_INTER_SRCH; i++, k += UP_SAMP_MAX)
     {
         s = L_mac (s, x1[-i], c1[k]);

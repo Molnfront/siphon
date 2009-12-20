@@ -29,7 +29,6 @@
 #include "typedef.h"
 #include "basic_op.h"
 #include "cnst.h"
-#include "count.h"
 #include "set_zero.h"
 #include "pre_proc.h"
 #include "prm2bits.h"
@@ -92,8 +91,6 @@ int Speech_Encode_Frame_init (Speech_Encode_FrameState **state,
       return -1;
   }
 
-  s->complexityCounter = getCounterId(id);
-
   s->pre_state = NULL;
   s->cod_amr_state = NULL;
   s->dtx = dtx;
@@ -127,10 +124,6 @@ int Speech_Encode_Frame_reset (Speech_Encode_FrameState *state)
   Pre_Process_reset(state->pre_state);
   cod_amr_reset(state->cod_amr_state);
 
-  setCounter(state->complexityCounter);
-  Init_WMOPS_counter();
-  setCounter(0); /* set counter to global counter */
-
   return 0;
 }
  
@@ -148,10 +141,6 @@ void Speech_Encode_Frame_exit (Speech_Encode_FrameState **state)
  
   Pre_Process_exit(&(*state)->pre_state);
   cod_amr_exit(&(*state)->cod_amr_state);
-
-  setCounter((*state)->complexityCounter);
-  WMOPS_output(0);
-  setCounter(0); /* set counter to global counter */
  
   /* deallocate memory */
   free(*state);
@@ -169,13 +158,11 @@ int Speech_Encode_Frame_First (
    Word16 i;
 #endif
 
-   setCounter(st->complexityCounter);
-
 #if !defined(NO13BIT)
   /* Delete the 3 LSBs (13-bit input) */
   for (i = 0; i < L_NEXT; i++) 
   {
-     new_speech[i] = new_speech[i] & 0xfff8;    move16 (); logic16 ();
+     new_speech[i] = new_speech[i] & 0xfff8;
   }
 #endif
 
@@ -183,8 +170,6 @@ int Speech_Encode_Frame_First (
   Pre_Process (st->pre_state, new_speech, L_NEXT);
 
   cod_amr_first(st->cod_amr_state, new_speech);
-
-  Init_WMOPS_counter (); /* reset WMOPS counter for the new frame */
 
   return 0;
 }
@@ -201,20 +186,17 @@ int Speech_Encode_Frame (
   Word16 syn[L_FRAME];        /* Buffer for synthesis speech           */
   Word16 i;
 
-  setCounter(st->complexityCounter);
-  Reset_WMOPS_counter (); /* reset WMOPS counter for the new frame */
-
   /* initialize the serial output frame to zero */
   for (i = 0; i < MAX_SERIAL_SIZE; i++)   
   {
-    serial[i] = 0;                                           move16 ();
+    serial[i] = 0;
   }
 
 #if !defined(NO13BIT)
   /* Delete the 3 LSBs (13-bit input) */
   for (i = 0; i < L_FRAME; i++)   
   {
-     new_speech[i] = new_speech[i] & 0xfff8;    move16 (); logic16 ();
+     new_speech[i] = new_speech[i] & 0xfff8;
   }
 #endif
 
@@ -226,9 +208,6 @@ int Speech_Encode_Frame (
   
   /* Parameters to serial bits */
   Prm2bits (*usedMode, prm, &serial[0]); 
-
-  fwc();
-  setCounter(0); /* set counter to global counter */
 
   return 0;
 }

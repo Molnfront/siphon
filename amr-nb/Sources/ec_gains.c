@@ -152,16 +152,16 @@ void ec_gain_code (
     Word16 qua_ener;
     
     /* calculate median of last five gain values */
-    tmp = gmed_n (st->gbuf,5);                                 move16 ();
+    tmp = gmed_n (st->gbuf,5);
 
     /* new gain = minimum(median, past_gain) * cdown[state] */
-    test (); 
+
     if (sub (tmp, st->past_gain_code) > 0)
     {
-        tmp = st->past_gain_code;                              move16 (); 
+        tmp = st->past_gain_code;
     }
     tmp = mult (tmp, cdown[state]);
-    *gain_code = tmp;                                          move16 (); 
+    *gain_code = tmp;
 
     /* update table of past quantized energies with average of
      * current values
@@ -191,29 +191,29 @@ void ec_gain_code_update (
     Word16 i;
     
     /* limit gain_code by previous good gain if previous frame was bad */
-    test ();
+
     if (bfi == 0)
     {
-		test ();
+
         if (prev_bf != 0)
         {
-            test (); 
+
             if (sub (*gain_code, st->prev_gc) > 0)
             {
-                *gain_code = st->prev_gc;     move16 (); 
+                *gain_code = st->prev_gc;
             }
         }
-        st->prev_gc = *gain_code;                          move16 (); 
+        st->prev_gc = *gain_code;
     }
 
     /* update EC states: previous gain, gain buffer */
-    st->past_gain_code = *gain_code;                       move16 (); 
+    st->past_gain_code = *gain_code;
     
     for (i = 1; i < 5; i++)
     {
-        st->gbuf[i - 1] = st->gbuf[i];                     move16 (); 
+        st->gbuf[i - 1] = st->gbuf[i];
     }
-    st->gbuf[4] = *gain_code;                              move16 (); 
+    st->gbuf[4] = *gain_code;
 
     return;
 }
@@ -318,13 +318,13 @@ void ec_gain_pitch (
     Word16 tmp;
 
     /* calculate median of last five gains */
-    tmp = gmed_n (st->pbuf, 5);                        move16 (); 
+    tmp = gmed_n (st->pbuf, 5);
 
     /* new gain = minimum(median, past_gain) * pdown[state] */
-    test (); 
+
     if (sub (tmp, st->past_gain_pit) > 0)
     {
-        tmp = st->past_gain_pit;                       move16 (); 
+        tmp = st->past_gain_pit;
     }
     *gain_pitch = mult (tmp, pdown[state]);
 }
@@ -349,31 +349,31 @@ void ec_gain_pitch_update (
 {
     Word16 i;
 
-    test (); 
+
     if (bfi == 0)
     {
-        test ();
+
         if (prev_bf != 0)
         {
-            test (); 
+
             if (sub (*gain_pitch, st->prev_gp) > 0)
             {
                 *gain_pitch = st->prev_gp;
             }
         }
-        st->prev_gp = *gain_pitch;                         move16 (); 
+        st->prev_gp = *gain_pitch;
     }
     
-    st->past_gain_pit = *gain_pitch;                       move16 ();
+    st->past_gain_pit = *gain_pitch;
 
-    test (); 
+
     if (sub (st->past_gain_pit, 16384) > 0)  /* if (st->past_gain_pit > 1.0) */
     {
-        st->past_gain_pit = 16384;                         move16 (); 
+        st->past_gain_pit = 16384;
     }
     for (i = 1; i < 5; i++)
     {
-        st->pbuf[i - 1] = st->pbuf[i];                     move16 (); 
+        st->pbuf[i - 1] = st->pbuf[i];
     }
-    st->pbuf[4] = st->past_gain_pit;                       move16 (); 
+    st->pbuf[4] = st->past_gain_pit;
 }

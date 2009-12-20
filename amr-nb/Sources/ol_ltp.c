@@ -58,41 +58,41 @@ int ol_ltp(
     Flag dtx              /* i   : dtx flag; use dtx=1, do not use dtx=0   */
     )
 {
-   test ();   
+
    if (sub (mode, MR102) != 0 )
    {
-      ol_gain_flg[0] = 0;                                       move16 ();
-      ol_gain_flg[1] = 0;                                       move16 ();
+      ol_gain_flg[0] = 0;
+      ol_gain_flg[1] = 0;
    }
    
-   test (); test ();
+
    if (sub (mode, MR475) == 0 || sub (mode, MR515) == 0 )
    {
       *T_op = Pitch_ol(vadSt, mode, wsp, PIT_MIN, PIT_MAX, L_FRAME, idx, dtx);
-                                                                move16 ();
+
    }
    else
    {
       if ( sub (mode, MR795) <= 0 )
       {
-         test();
+
          *T_op = Pitch_ol(vadSt, mode, wsp, PIT_MIN, PIT_MAX, L_FRAME_BY2,
                           idx, dtx);
-                                                                move16 ();
+
       }
       else if ( sub (mode, MR102) == 0 )
       {
-         test(); test();
+
          *T_op = Pitch_ol_wgh(st, vadSt, wsp, PIT_MIN, PIT_MAX, L_FRAME_BY2,
                               old_lags, ol_gain_flg, idx, dtx);
-                                                                move16 ();
+
       }
       else
       {
-         test(); test();          
+
          *T_op = Pitch_ol(vadSt, mode, wsp, PIT_MIN_MR122, PIT_MAX,
                           L_FRAME_BY2, idx, dtx);
-                                                                move16 ();
+
       }
    }
    return 0;

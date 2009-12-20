@@ -199,7 +199,7 @@ int Post_Filter (
     Word16 i;
     Word16 temp1, temp2;
     Word32 L_tmp;
-    Word16 *syn_work = &st->synth_buf[M]; move16 ();
+    Word16 *syn_work = &st->synth_buf[M];
     
 
     /*-----------------------------------------------------*
@@ -214,7 +214,7 @@ int Post_Filter (
     {
        /* Find weighted filter coefficients Ap3[] and ap[4] */
 
-       test (); test ();
+
        if (sub(mode, MR122) == 0 || sub(mode, MR102) == 0)
        {
           Weight_Ai (Az, gamma3_MR122, Ap3);
@@ -254,10 +254,10 @@ int Post_Filter (
        }
        temp2 = extract_h (L_tmp);
        
-       test (); 
+
        if (temp2 <= 0)
        {
-          temp2 = 0;          move16 (); 
+          temp2 = 0;
        }
        else
        {

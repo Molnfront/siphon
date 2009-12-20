@@ -129,19 +129,19 @@ int preemphasis (
 {
     Word16 *p1, *p2, temp, i;
 
-    p1 = signal + L - 1;                    move16 (); 
-    p2 = p1 - 1;                            move16 (); 
-    temp = *p1;                             move16 (); 
+    p1 = signal + L - 1;
+    p2 = p1 - 1;
+    temp = *p1;
 
     for (i = 0; i <= L - 2; i++)
     {
-        *p1 = sub (*p1, mult (g, *p2--));   move16 (); 
+        *p1 = sub (*p1, mult (g, *p2--));
         p1--;
     }
 
-    *p1 = sub (*p1, mult (g, st->mem_pre));     move16 (); 
+    *p1 = sub (*p1, mult (g, st->mem_pre));
 
-    st->mem_pre = temp;                         move16 (); 
+    st->mem_pre = temp;
 
     return 0;
 }

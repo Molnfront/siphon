@@ -71,21 +71,21 @@ void Log2_norm (
     Word16 i, a, tmp;
     Word32 L_y;
 
-    test (); 
+
     if (L_x <= (Word32) 0)
     {
-        *exponent = 0;          move16 (); 
-        *fraction = 0;          move16 (); 
+        *exponent = 0;
+        *fraction = 0;
         return;
     }
 
-    *exponent = sub (30, exp);  move16 (); 
+    *exponent = sub (30, exp);
 
     L_x = L_shr (L_x, 9);
     i = extract_h (L_x);                /* Extract b25-b31 */
     L_x = L_shr (L_x, 1);
     a = extract_l (L_x);                /* Extract b10-b24 of fraction */
-    a = a & (Word16) 0x7fff;    logic16 (); 
+    a = a & (Word16) 0x7fff;
 
     i = sub (i, 32);
 
@@ -93,7 +93,7 @@ void Log2_norm (
     tmp = sub (table[i], table[i + 1]); /* table[i] - table[i+1] */
     L_y = L_msu (L_y, tmp, a);          /* L_y -= tmp*a*2        */
 
-    *fraction = extract_h (L_y);move16 (); 
+    *fraction = extract_h (L_y);
 
     return;
 }

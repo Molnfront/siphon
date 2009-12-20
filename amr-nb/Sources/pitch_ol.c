@@ -97,23 +97,23 @@ static Word16 Lag_max ( /* o   : lag found                               */
     Word16 max_h, max_l, ener_h, ener_l;
     Word16 p_max = 0; /* initialization only needed to keep gcc silent */
     
-    max = MIN_32;               move32 (); 
-    p_max = lag_max;            move16 ();
+    max = MIN_32;
+    p_max = lag_max;
    
     for (i = lag_max, j = (PIT_MAX-lag_max-1); i >= lag_min; i--, j--)  
     {
-       test ();  
+
        if (L_sub (corr[-i], max) >= 0) 
        { 
-          max = corr[-i];       move32 ();  
-          p_max = i;            move16 ();  
+          max = corr[-i];
+          p_max = i;
        } 
     }
     
     /* compute energy */
 
-    t0 = 0;                     move32 ();     
-    p = &scal_sig[-p_max];      move16 (); 
+    t0 = 0;
+    p = &scal_sig[-p_max];
     for (i = 0; i < L_frame; i++, p++)
     {
         t0 = L_mac (t0, *p, *p);
@@ -123,17 +123,17 @@ static Word16 Lag_max ( /* o   : lag found                               */
     if (dtx)
     {  /* no test() call since this if is only in simulation env */
 #ifdef VAD2
-       *rmax = max;		move32();
-       *r0 = t0;		move32();
+       *rmax = max;
+       *r0 = t0;
 #else
        /* check tone */
        vad_tone_detection (vadSt, max, t0);
 #endif
     }
     
-    t0 = Inv_sqrt (t0); move32 (); /* function result */
+    t0 = Inv_sqrt (t0);  /* function result */
 
-    test();
+
     if (scal_flag)
     {
        t0 = L_shl (t0, 1);
@@ -146,7 +146,7 @@ static Word16 Lag_max ( /* o   : lag found                               */
 
     t0 = Mpy_32 (max_h, max_l, ener_h, ener_l);
     
-    test();
+
     if (scal_flag)
     {
       t0 = L_shr (t0, scal_fac);
@@ -219,7 +219,7 @@ Word16 Pitch_ol (      /* o   : open loop pitch lag                         */
     if (dtx)
     {  /* no test() call since this if is only in simulation env */
        /* update tone detection */
-       test(); test();
+
        if ((sub(mode, MR475) == 0) || (sub(mode, MR515) == 0))
        {
           vad_tone_detection_update (vadSt, 1);
@@ -231,9 +231,9 @@ Word16 Pitch_ol (      /* o   : open loop pitch lag                         */
     }
 #endif
     
-    scal_sig = &scaled_signal[pit_max]; move16 (); 
+    scal_sig = &scaled_signal[pit_max];
 
-    t0 = 0L;                            move32 (); 
+    t0 = 0L;
     for (i = -pit_max; i < L_frame; i++)
     {
         t0 = L_mac (t0, signal[i], signal[i]);
@@ -251,37 +251,37 @@ Word16 Pitch_ol (      /* o   : open loop pitch lag                         */
      *  Verification for risk of overflow.                    *
      *--------------------------------------------------------*/
 
-    test ();
+
     if (L_sub (t0, MAX_32) == 0L)               /* Test for overflow */
     {
         for (i = -pit_max; i < L_frame; i++)
         {
-            scal_sig[i] = shr (signal[i], 3);   move16 (); 
+            scal_sig[i] = shr (signal[i], 3);
         }
-        scal_fac = 3;                           move16 (); 
+        scal_fac = 3;
     }
     else if (L_sub (t0, (Word32) 1048576L) < (Word32) 0)
         /* if (t0 < 2^20) */
     {
-		test (); 
+
         for (i = -pit_max; i < L_frame; i++)
         {
-            scal_sig[i] = shl (signal[i], 3);   move16 (); 
+            scal_sig[i] = shl (signal[i], 3);
         }
-        scal_fac = -3;                          move16 (); 
+        scal_fac = -3;
     }
     else
     {
-		test (); 
+
         for (i = -pit_max; i < L_frame; i++)
         {
-            scal_sig[i] = signal[i];            move16 (); 
+            scal_sig[i] = signal[i];
         }
-        scal_fac = 0;                           move16 (); 
+        scal_fac = 0;
     }
 
     /* calculate all coreelations of scal_sig, from pit_min to pit_max */
-    corr_ptr = &corr[pit_max];                  move32 ();
+    corr_ptr = &corr[pit_max];
     comp_corr (scal_sig, L_frame, pit_max, pit_min, corr_ptr); 
     
     /*--------------------------------------------------------------------*
@@ -296,49 +296,49 @@ Word16 Pitch_ol (      /* o   : open loop pitch lag                         */
      *--------------------------------------------------------------------*/
 
     /* mode dependent scaling in Lag_max */
-    test (); 
+
     if (sub(mode, MR122) == 0)
     {
-       scal_flag = 1;                           move16 (); 
+       scal_flag = 1;
     }
     else
     {
-       scal_flag = 0;                           move16 ();    
+       scal_flag = 0;
     } 
     
 #ifdef VAD2
     j = shl (pit_min, 2);
     p_max1 = Lag_max (corr_ptr, scal_sig, scal_fac, scal_flag, L_frame,
                       pit_max, j, &max1, &rmax1, &r01, dtx);
-                      move16 (); /* function result */
+                       /* function result */
 
     i = sub (j, 1);
     j = shl (pit_min, 1);
     p_max2 = Lag_max (corr_ptr, scal_sig, scal_fac, scal_flag, L_frame,
                       i, j, &max2, &rmax2, &r02, dtx);
-                      move16 (); /* function result */
+                       /* function result */
 
     i = sub (j, 1);
     p_max3 = Lag_max (corr_ptr, scal_sig, scal_fac, scal_flag, L_frame,
                       i, pit_min, &max3, &rmax3, &r03, dtx);
-                      move16 (); /* function result */
+                       /* function result */
 #else
     j = shl (pit_min, 2);
     p_max1 = Lag_max (vadSt, corr_ptr, scal_sig, scal_fac, scal_flag, L_frame,
-                      pit_max, j, &max1, dtx);  move16 (); /* function result */
+                      pit_max, j, &max1, dtx);   /* function result */
 
     i = sub (j, 1);
     j = shl (pit_min, 1);
     p_max2 = Lag_max (vadSt, corr_ptr, scal_sig, scal_fac, scal_flag, L_frame,
-                      i, j, &max2, dtx);        move16 (); /* function result */
+                      i, j, &max2, dtx);         /* function result */
 
     i = sub (j, 1);
     p_max3 = Lag_max (vadSt, corr_ptr, scal_sig, scal_fac, scal_flag, L_frame,
-                      i, pit_min, &max3, dtx);  move16 (); /* function result */
+                      i, pit_min, &max3, dtx);   /* function result */
 
     if (dtx)
     {  /* no test() call since this if is only in simulation env */
-       test ();
+
        if (sub(idx, 1) == 0)
        {
           /* calculate max high-passed filtered correlation of all lags */
@@ -354,28 +354,28 @@ Word16 Pitch_ol (      /* o   : open loop pitch lag                         */
      * Compare the 3 sections maximum, and favor small lag.               *
      *--------------------------------------------------------------------*/
     
-    test (); 
+
     if (sub (mult (max1, THRESHOLD), max2) < 0)
     {
-        max1 = max2;                       move16 (); 
-        p_max1 = p_max2;                   move16 (); 
+        max1 = max2;
+        p_max1 = p_max2;
 #ifdef VAD2
         if (dtx)
         {
-            rmax1 = rmax2;                 move32 ();
-            r01 = r02;                     move32 ();
+            rmax1 = rmax2;
+            r01 = r02;
         }
 #endif
     }
-    test (); 
+
     if (sub (mult (max1, THRESHOLD), max3) < 0)
     {
-        p_max1 = p_max3;                   move16 (); 
+        p_max1 = p_max3;
 #ifdef VAD2
         if (dtx)
         {
-            rmax1 = rmax3;                 move32 ();
-            r01 = r03;                     move32 ();
+            rmax1 = rmax3;
+            r01 = r03;
         }
 #endif
     }

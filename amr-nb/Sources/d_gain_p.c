@@ -64,15 +64,15 @@ Word16 d_gain_pitch (      /* return value: gain (Q14)                */
 {
     Word16 gain;
 
-    test ();
+
     if (sub(mode, MR122) == 0)
     {
        /* clear 2 LSBits */
-       gain = shl (shr (qua_gain_pitch[index], 2), 2);    move16 ();
+       gain = shl (shr (qua_gain_pitch[index], 2), 2);
     }
     else
     {
-       gain = qua_gain_pitch[index];                      move16 (); 
+       gain = qua_gain_pitch[index];
     }
     
     return gain;

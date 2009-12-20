@@ -66,19 +66,19 @@ static void Int2bin (
 {
     Word16 *pt_bitstream, i, bit;
 
-    pt_bitstream = &bitstream[no_of_bits];      move16 (); 
+    pt_bitstream = &bitstream[no_of_bits];
 
     for (i = 0; i < no_of_bits; i++)
     {
-        bit = value & MASK;                     logic16 (); 
-        test (); 
+        bit = value & MASK;
+
         if (bit == 0)
         {
-            *--pt_bitstream = BIT_0;            move16 (); 
+            *--pt_bitstream = BIT_0;
         }
         else
         {
-            *--pt_bitstream = BIT_1;            move16 (); 
+            *--pt_bitstream = BIT_1;
         }
         value = shr (value, 1);
     }
@@ -109,7 +109,7 @@ void Prm2bits (
 {
    Word16 i;
 
-   move16();           /* account for pointer init (bitno[mode])    */
+              /* account for pointer init (bitno[mode])    */
 
    for (i = 0; i < prmno[mode]; i++)
    {

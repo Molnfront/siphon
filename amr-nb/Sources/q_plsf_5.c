@@ -67,8 +67,8 @@ static Word16 Vq_subvec (/* o : quantization index,            Q0  */
     const Word16 *p_dico;
     Word32 dist_min, dist;
 
-    dist_min = MAX_32;                                  move32 (); 
-    p_dico = dico;                                      move16 (); 
+    dist_min = MAX_32;
+    p_dico = dico;
 
     for (i = 0; i < dico_size; i++)
     {
@@ -88,21 +88,21 @@ static Word16 Vq_subvec (/* o : quantization index,            Q0  */
         temp = mult (wf2[1], temp);
         dist = L_mac (dist, temp, temp);
 
-        test (); 
+
         if (L_sub (dist, dist_min) < (Word32) 0)
         {
-            dist_min = dist;                            move32 (); 
-            index = i;                                  move16 (); 
+            dist_min = dist;
+            index = i;
         }
     }
 
     /* Reading the selected vector */
 
-    p_dico = &dico[shl (index, 2)];                     move16 (); 
-    lsf_r1[0] = *p_dico++;                              move16 (); 
-    lsf_r1[1] = *p_dico++;                              move16 (); 
-    lsf_r2[0] = *p_dico++;                              move16 (); 
-    lsf_r2[1] = *p_dico++;                              move16 (); 
+    p_dico = &dico[shl (index, 2)];
+    lsf_r1[0] = *p_dico++;
+    lsf_r1[1] = *p_dico++;
+    lsf_r2[0] = *p_dico++;
+    lsf_r2[1] = *p_dico++;
 
     return index;
 
@@ -124,8 +124,8 @@ static Word16 Vq_subvec_s ( /* o : quantization index            Q0  */
     const Word16 *p_dico;
     Word32 dist_min, dist;
 
-    dist_min = MAX_32;                                  move32 (); 
-    p_dico = dico;                                      move16 (); 
+    dist_min = MAX_32;
+    p_dico = dico;
 
     for (i = 0; i < dico_size; i++)
     {
@@ -147,16 +147,16 @@ static Word16 Vq_subvec_s ( /* o : quantization index            Q0  */
         temp = mult (wf2[1], temp);
         dist = L_mac (dist, temp, temp);
 
-        test (); 
+
         if (L_sub (dist, dist_min) < (Word32) 0)
         {
-            dist_min = dist;                            move32 (); 
-            index = i;                                  move16 (); 
-            sign = 0;                                   move16 (); 
+            dist_min = dist;
+            index = i;
+            sign = 0;
         }
         /* test negative */
 
-        p_dico -= 4;                                    move16 (); 
+        p_dico -= 4;
         temp = add (lsf_r1[0], *p_dico++);
         temp = mult (wf1[0], temp);
         dist = L_mult (temp, temp);
@@ -173,32 +173,32 @@ static Word16 Vq_subvec_s ( /* o : quantization index            Q0  */
         temp = mult (wf2[1], temp);
         dist = L_mac (dist, temp, temp);
 
-        test (); 
+
         if (L_sub (dist, dist_min) < (Word32) 0)
         {
-            dist_min = dist;                            move32 (); 
-            index = i;                                  move16 (); 
-            sign = 1;                                   move16 (); 
+            dist_min = dist;
+            index = i;
+            sign = 1;
         }
     }
 
     /* Reading the selected vector */
 
-    p_dico = &dico[shl (index, 2)];                     move16 (); 
-    test (); 
+    p_dico = &dico[shl (index, 2)];
+
     if (sign == 0)
     {
-        lsf_r1[0] = *p_dico++;                          move16 (); 
-        lsf_r1[1] = *p_dico++;                          move16 (); 
-        lsf_r2[0] = *p_dico++;                          move16 (); 
-        lsf_r2[1] = *p_dico++;                          move16 (); 
+        lsf_r1[0] = *p_dico++;
+        lsf_r1[1] = *p_dico++;
+        lsf_r2[0] = *p_dico++;
+        lsf_r2[1] = *p_dico++;
     }
     else
     {
-        lsf_r1[0] = negate (*p_dico++);                 move16 (); 
-        lsf_r1[1] = negate (*p_dico++);                 move16 (); 
-        lsf_r2[0] = negate (*p_dico++);                 move16 (); 
-        lsf_r2[1] = negate (*p_dico++);                 move16 (); 
+        lsf_r1[0] = negate (*p_dico++);
+        lsf_r1[1] = negate (*p_dico++);
+        lsf_r2[0] = negate (*p_dico++);
+        lsf_r2[1] = negate (*p_dico++);
     }
 
     index = shl (index, 1);
@@ -268,39 +268,39 @@ void Q_plsf_5 (
     for (i = 0; i < M; i++)
     {
         lsf_p[i] = add (mean_lsf[i], mult (st->past_rq[i], LSP_PRED_FAC_MR122));
-        move16 (); 
-        lsf_r1[i] = sub (lsf1[i], lsf_p[i]);           move16 (); 
-        lsf_r2[i] = sub (lsf2[i], lsf_p[i]);           move16 (); 
+
+        lsf_r1[i] = sub (lsf1[i], lsf_p[i]);
+        lsf_r2[i] = sub (lsf2[i], lsf_p[i]);
     }
 
     /*---- Split-MQ of prediction error ----*/
 
     indice[0] = Vq_subvec (&lsf_r1[0], &lsf_r2[0], dico1_lsf,
                            &wf1[0], &wf2[0], DICO1_SIZE);
-                                                        move16 (); 
+
 
     indice[1] = Vq_subvec (&lsf_r1[2], &lsf_r2[2], dico2_lsf,
                            &wf1[2], &wf2[2], DICO2_SIZE);
-                                                        move16 (); 
+
 
     indice[2] = Vq_subvec_s (&lsf_r1[4], &lsf_r2[4], dico3_lsf,
                              &wf1[4], &wf2[4], DICO3_SIZE);
-                                                        move16 (); 
+
 
     indice[3] = Vq_subvec (&lsf_r1[6], &lsf_r2[6], dico4_lsf,
                            &wf1[6], &wf2[6], DICO4_SIZE);
-                                                        move16 (); 
+
 
     indice[4] = Vq_subvec (&lsf_r1[8], &lsf_r2[8], dico5_lsf,
                            &wf1[8], &wf2[8], DICO5_SIZE);
-                                                        move16 (); 
+
 
     /* Compute quantized LSFs and update the past quantized residual */
     for (i = 0; i < M; i++)
     {
-        lsf1_q[i] = add (lsf_r1[i], lsf_p[i]);          move16 (); 
-        lsf2_q[i] = add (lsf_r2[i], lsf_p[i]);          move16 (); 
-        st->past_rq[i] = lsf_r2[i];                     move16 (); 
+        lsf1_q[i] = add (lsf_r1[i], lsf_p[i]);
+        lsf2_q[i] = add (lsf_r2[i], lsf_p[i]);
+        st->past_rq[i] = lsf_r2[i];
     }
 
     /* verification that LSFs has minimum distance of LSF_GAP */

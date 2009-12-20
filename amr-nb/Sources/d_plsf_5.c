@@ -86,7 +86,7 @@ int D_plsf_5 (
     Word16 lsf1_r[M], lsf2_r[M];
     Word16 lsf1_q[M], lsf2_q[M];
 
-    test (); 
+
     if (bfi != 0)                               /* if bad frame */
     {
         /* use the past LSFs slightly shifted towards their mean */
@@ -97,9 +97,9 @@ int D_plsf_5 (
 
             lsf1_q[i] = add (mult (st->past_lsf_q[i], ALPHA),
                              mult (mean_lsf[i], ONE_ALPHA));
-                                                move16 (); 
 
-            lsf2_q[i] = lsf1_q[i];              move16 (); 
+
+            lsf2_q[i] = lsf1_q[i];
         }
 
         /* estimate past quantized residual to be used in next frame */
@@ -112,7 +112,7 @@ int D_plsf_5 (
                                            LSP_PRED_FAC_MR122));
 
             st->past_r_q[i] = sub (lsf2_q[i], temp);
-                                                move16 (); 
+
         }
     }
     else
@@ -120,49 +120,49 @@ int D_plsf_5 (
     {
         /* decode prediction residuals from 5 received indices */
 
-        p_dico = &dico1_lsf[shl (indice[0], 2)];move16 ();
-        lsf1_r[0] = *p_dico++;                  move16 (); 
-        lsf1_r[1] = *p_dico++;                  move16 (); 
-        lsf2_r[0] = *p_dico++;                  move16 (); 
-        lsf2_r[1] = *p_dico++;                  move16 (); 
+        p_dico = &dico1_lsf[shl (indice[0], 2)];
+        lsf1_r[0] = *p_dico++;
+        lsf1_r[1] = *p_dico++;
+        lsf2_r[0] = *p_dico++;
+        lsf2_r[1] = *p_dico++;
 
-        p_dico = &dico2_lsf[shl (indice[1], 2)];move16 ();
-        lsf1_r[2] = *p_dico++;                  move16 (); 
-        lsf1_r[3] = *p_dico++;                  move16 (); 
-        lsf2_r[2] = *p_dico++;                  move16 (); 
-        lsf2_r[3] = *p_dico++;                  move16 (); 
+        p_dico = &dico2_lsf[shl (indice[1], 2)];
+        lsf1_r[2] = *p_dico++;
+        lsf1_r[3] = *p_dico++;
+        lsf2_r[2] = *p_dico++;
+        lsf2_r[3] = *p_dico++;
 
-        sign = indice[2] & 1;                   logic16 (); 
+        sign = indice[2] & 1;
         i = shr (indice[2], 1);
-        p_dico = &dico3_lsf[shl (i, 2)];        move16 (); 
+        p_dico = &dico3_lsf[shl (i, 2)];
 
-        test (); 
+
         if (sign == 0)
         {
-            lsf1_r[4] = *p_dico++;              move16 (); 
-            lsf1_r[5] = *p_dico++;              move16 (); 
-            lsf2_r[4] = *p_dico++;              move16 (); 
-            lsf2_r[5] = *p_dico++;              move16 (); 
+            lsf1_r[4] = *p_dico++;
+            lsf1_r[5] = *p_dico++;
+            lsf2_r[4] = *p_dico++;
+            lsf2_r[5] = *p_dico++;
         }
         else
         {
-            lsf1_r[4] = negate (*p_dico++);     move16 (); 
-            lsf1_r[5] = negate (*p_dico++);     move16 (); 
-            lsf2_r[4] = negate (*p_dico++);     move16 (); 
-            lsf2_r[5] = negate (*p_dico++);     move16 (); 
+            lsf1_r[4] = negate (*p_dico++);
+            lsf1_r[5] = negate (*p_dico++);
+            lsf2_r[4] = negate (*p_dico++);
+            lsf2_r[5] = negate (*p_dico++);
         }
 
-        p_dico = &dico4_lsf[shl (indice[3], 2)];move16 (); 
-        lsf1_r[6] = *p_dico++;                  move16 (); 
-        lsf1_r[7] = *p_dico++;                  move16 (); 
-        lsf2_r[6] = *p_dico++;                  move16 (); 
-        lsf2_r[7] = *p_dico++;                  move16 (); 
+        p_dico = &dico4_lsf[shl (indice[3], 2)];
+        lsf1_r[6] = *p_dico++;
+        lsf1_r[7] = *p_dico++;
+        lsf2_r[6] = *p_dico++;
+        lsf2_r[7] = *p_dico++;
 
-        p_dico = &dico5_lsf[shl (indice[4], 2)];move16 (); 
-        lsf1_r[8] = *p_dico++;                  move16 (); 
-        lsf1_r[9] = *p_dico++;                  move16 (); 
-        lsf2_r[8] = *p_dico++;                  move16 (); 
-        lsf2_r[9] = *p_dico++;                  move16 (); 
+        p_dico = &dico5_lsf[shl (indice[4], 2)];
+        lsf1_r[8] = *p_dico++;
+        lsf1_r[9] = *p_dico++;
+        lsf2_r[8] = *p_dico++;
+        lsf2_r[9] = *p_dico++;
 
         /* Compute quantized LSFs and update the past quantized residual */
         for (i = 0; i < M; i++)
@@ -170,10 +170,10 @@ int D_plsf_5 (
             temp = add (mean_lsf[i], mult (st->past_r_q[i],
                                            LSP_PRED_FAC_MR122));
             lsf1_q[i] = add (lsf1_r[i], temp);
-                                                move16 (); 
+
             lsf2_q[i] = add (lsf2_r[i], temp);
-                                                move16 (); 
-            st->past_r_q[i] = lsf2_r[i];        move16 (); 
+
+            st->past_r_q[i] = lsf2_r[i];
         }
     }
 

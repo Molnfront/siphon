@@ -180,101 +180,101 @@ void ph_disp (
    /* Update LTP gain memory */
    for (i = PHDGAINMEMSIZE-1; i > 0; i--)
    {
-       state->gainMem[i] = state->gainMem[i-1];                    move16 ();
+       state->gainMem[i] = state->gainMem[i-1];
    }
-   state->gainMem[0] = ltpGain;                                    move16 ();
+   state->gainMem[0] = ltpGain;
    
    /* basic adaption of phase dispersion */
-   test ();
+
    if (sub(ltpGain, PHDTHR2LTP) < 0) {    /* if (ltpGain < 0.9) */
-       test ();
+
        if (sub(ltpGain, PHDTHR1LTP) > 0)
        {  /* if (ltpGain > 0.6 */
-          impNr = 1; /* medium dispersion */                      move16 ();
+          impNr = 1; /* medium dispersion */
        }
        else
        {
-          impNr = 0; /* maximum dispersion */                     move16 ();
+          impNr = 0; /* maximum dispersion */
        }
    }
    else
    {
-      impNr = 2; /* no dispersion */                              move16 ();
+      impNr = 2; /* no dispersion */
    }
    
    /* onset indicator */
    /* onset = (cbGain  > onFact * cbGainMem[0]) */
-                                                                   move32 ();
+
    tmp1 = round(L_shl(L_mult(state->prevCbGain, ONFACTPLUS1), 2));
-   test ();
+
    if (sub(cbGain, tmp1) > 0)
    {
-       state->onset = ONLENGTH;                                    move16 ();
+       state->onset = ONLENGTH;
    }
    else
    {
-       test (); 
+
        if (state->onset > 0)
        {
-           state->onset = sub (state->onset, 1);                   move16 ();
+           state->onset = sub (state->onset, 1);
        }
    }
    
    /* if not onset, check ltpGain buffer and use max phase dispersion if
       half or more of the ltpGain-parameters say so */
-   test ();
+
    if (state->onset == 0)
    {
        /* Check LTP gain memory and set filter accordingly */
-       i1 = 0;                                                     move16 ();
+       i1 = 0;
        for (i = 0; i < PHDGAINMEMSIZE; i++)
        {
-           test ();
+
            if (sub(state->gainMem[i], PHDTHR1LTP) < 0)
            {
                i1 = add (i1, 1);
            }
        }
-       test ();
+
        if (sub(i1, 2) > 0)
        {
-           impNr = 0;                                              move16 ();
+           impNr = 0;
        }
        
    }
    /* Restrict decrease in phase dispersion to one step if not onset */
-   test (); test ();
+
    if ((sub(impNr, add(state->prevState, 1)) > 0) && (state->onset == 0))
    {
        impNr = sub (impNr, 1);
    }
    /* if onset, use one step less phase dispersion */
-   test (); test ();
+
    if((sub(impNr, 2) < 0) && (state->onset > 0))
    {
        impNr = add (impNr, 1);
    }
    
    /* disable for very low levels */
-   test ();
+
    if(sub(cbGain, 10) < 0)
    {
-       impNr = 2;                                                  move16 ();
+       impNr = 2;
    }
    
-   test ();
+
    if(sub(state->lockFull, 1) == 0)
    {
-       impNr = 0;                                                  move16 ();
+       impNr = 0;
    }
 
    /* update static memory */
-   state->prevState = impNr;                                       move16 ();
-   state->prevCbGain = cbGain;                                     move16 ();
+   state->prevState = impNr;
+   state->prevCbGain = cbGain;
   
    /* do phase dispersion for all modes but 12.2 and 7.4;
       don't modify the innovation if impNr >=2 (= no phase disp) */
-   test (); test (); test(); test();
+
    if (sub(mode, MR122) != 0 && 
        sub(mode, MR102) != 0 &&
        sub(mode, MR74) != 0 &&
@@ -282,64 +282,64 @@ void ph_disp (
    {
        /* track pulse positions, save innovation,
           and initialize new innovation          */
-       nze = 0;                                                    move16 ();
+       nze = 0;
        for (i = 0; i < L_SUBFR; i++)
        {
-           move16 (); test();
+
            if (inno[i] != 0)
            {
-               ps_poss[nze] = i;                                   move16 ();
+               ps_poss[nze] = i;
                nze = add (nze, 1);
            }
-           inno_sav[i] = inno[i];                                  move16 ();
-           inno[i] = 0;                                            move16 ();
+           inno_sav[i] = inno[i];
+           inno[i] = 0;
        }
        /* Choose filter corresponding to codec mode and dispersion criterium */
-       test ();
+
        if (sub (mode, MR795) == 0)
        {
-           test ();
+
            if (impNr == 0)
            {
-               ph_imp = ph_imp_low_MR795;                            move16 ();
+               ph_imp = ph_imp_low_MR795;
            }
            else
            {
-               ph_imp = ph_imp_mid_MR795;                            move16 ();
+               ph_imp = ph_imp_mid_MR795;
            }
        }
        else
        {
-           test ();
+
            if (impNr == 0)
            {
-               ph_imp = ph_imp_low;                                  move16 ();
+               ph_imp = ph_imp_low;
            }
            else
            {
-               ph_imp = ph_imp_mid;                                  move16 ();
+               ph_imp = ph_imp_mid;
            }
        }
        
        /* Do phase dispersion of innovation */
        for (nPulse = 0; nPulse < nze; nPulse++)
        {
-           ppos = ps_poss[nPulse];                                   move16 ();
+           ppos = ps_poss[nPulse];
            
            /* circular convolution with impulse response */
-           j = 0;                                                    move16 ();
+           j = 0;
            for (i = ppos; i < L_SUBFR; i++)
            {
                /* inno[i1] += inno_sav[ppos] * ph_imp[i1-ppos] */
                tmp1 = mult(inno_sav[ppos], ph_imp[j++]);
-               inno[i] = add(inno[i], tmp1);                         move16 ();
+               inno[i] = add(inno[i], tmp1);
            }    
            
            for (i = 0; i < ppos; i++)
            {
                /* inno[i] += inno_sav[ppos] * ph_imp[L_SUBFR-ppos+i] */
                tmp1 = mult(inno_sav[ppos], ph_imp[j++]);
-               inno[i] = add(inno[i], tmp1);                         move16 ();
+               inno[i] = add(inno[i], tmp1);
            }
        }
    }
@@ -356,7 +356,7 @@ void ph_disp (
                                                 /* 12.2: Q12 * Q1 */
                                                 /*  7.4: Q13 * Q1 */
        L_temp = L_shl (L_temp, tmp_shift);                 /* Q16 */           
-       x[i] = round (L_temp);                                        move16 (); 
+       x[i] = round (L_temp);
    }
 
    return;

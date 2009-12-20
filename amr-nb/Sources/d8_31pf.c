@@ -58,10 +58,10 @@ static void decompress10 (
      pos_indx[index3] = (MSBs/25)*2 + LSBs/4;
      */
 
-   test ();
+
    if (sub(MSBs, 124) > 0)
    {
-      MSBs = 124;                                              move16 (); 
+      MSBs = 124;
    }
    
    ia = mult(MSBs, 1311);
@@ -70,7 +70,7 @@ static void decompress10 (
    
    ic = shl(shr(LSBs, 2), 2);
    ic = sub(LSBs, ic);
-   pos_indx[index1] = add(ib, (ic & 1));                        logic16 ();
+   pos_indx[index1] = add(ib, (ic & 1));
    
    ib = shl(mult(ia, 6554), 1);
    pos_indx[index2] = add(ib, shr(ic, 1));
@@ -103,7 +103,7 @@ static void decompress_code (
 
     for (i = 0; i < NB_TRACK_MR102; i++)
     {
-       sign_indx[i] = indx[i];                                  move16 (); 
+       sign_indx[i] = indx[i];
     }
     
     /*
@@ -112,7 +112,7 @@ static void decompress_code (
       LSBs = indx[NB_TRACK]%8;
       */
     MSBs = shr(indx[NB_TRACK_MR102], 3);
-    LSBs = indx[NB_TRACK_MR102] & 7;                            logic16 ();
+    LSBs = indx[NB_TRACK_MR102] & 7;
     decompress10 (MSBs, LSBs, 0, 4, 1, pos_indx);               
     
     /*
@@ -121,7 +121,7 @@ static void decompress_code (
       LSBs = indx[NB_TRACK+1]%8;
       */
     MSBs = shr(indx[NB_TRACK_MR102+1], 3);
-    LSBs = indx[NB_TRACK_MR102+1] & 7;                          logic16 ();
+    LSBs = indx[NB_TRACK_MR102+1] & 7;
     decompress10 (MSBs, LSBs, 2, 6, 5, pos_indx);               
     
     /*
@@ -136,19 +136,19 @@ static void decompress_code (
       pos_indx[7] = (MSBs0_24/5)*2 + LSBs/2;
       */
     MSBs = shr(indx[NB_TRACK_MR102+2], 2);
-    LSBs = indx[NB_TRACK_MR102+2] & 3;                          logic16 ();
+    LSBs = indx[NB_TRACK_MR102+2] & 3;
 
     MSBs0_24 = shr(add(extract_l(L_shr(L_mult(MSBs, 25), 1)), 12), 5);
     
     ia = mult(MSBs0_24, 6554) & 1;
     ib = sub(MSBs0_24, extract_l(L_shr(L_mult(mult(MSBs0_24, 6554), 5), 1)));
 
-    test ();
+
     if (sub(ia, 1) == 0)
     {
        ib = sub(4, ib);
     }
-    pos_indx[3] = add(shl(ib, 1), (LSBs & 1));               logic16 ();           
+    pos_indx[3] = add(shl(ib, 1), (LSBs & 1));
     
     ia = shl(mult(MSBs0_24, 6554), 1);
     pos_indx[7] = add(ia, shr(LSBs, 1));
@@ -181,7 +181,7 @@ void dec_8i40_31bits (
     
     for (i = 0; i < L_CODE; i++)
     {
-        cod[i] = 0;                                    move16 (); 
+        cod[i] = 0;
     }
     
     decompress_code (index, linear_signs, linear_codewords);
@@ -196,17 +196,17 @@ void dec_8i40_31bits (
        i = extract_l (L_shr (L_mult (i, 4), 1));
        pos1 = add (i, j);   /* position of pulse "j" */
        
-       test (); 
+
        if (linear_signs[j] == 0)
        {
-          sign = POS_CODE;                             move16 (); /* +1.0 */
+          sign = POS_CODE;                              /* +1.0 */
        }
        else
        {
-          sign = -NEG_CODE;                            move16 (); /* -1.0 */
+          sign = -NEG_CODE;                             /* -1.0 */
        }
        
-       cod[pos1] = sign;                               move16 (); 
+       cod[pos1] = sign;
        
        /* compute index i */
        
@@ -214,12 +214,12 @@ void dec_8i40_31bits (
        i = extract_l (L_shr (L_mult (i, 4), 1));
        pos2 = add (i, j);      /* position of pulse "j+4" */
        
-       test (); 
+
        if (sub (pos2, pos1) < 0)
        {
           sign = negate (sign);
        }
-       cod[pos2] = add (cod[pos2], sign);              move16 (); 
+       cod[pos2] = add (cod[pos2], sign);
     }
     
     return;

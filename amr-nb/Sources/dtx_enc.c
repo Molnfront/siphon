@@ -161,15 +161,15 @@ int dtx_enc(dtx_encState *st,        /* i/o : State struct                    */
    Word32 L_lsp[M];
 
    /* VOX mode computation of SID parameters */
-   test (); test ();
+
    if ((computeSidFlag != 0))
    {
       /* compute new SID frame if safe i.e don't
        * compute immediately after a talk spurt  */
-      log_en = 0;                                           move16 ();
+      log_en = 0;
       for (i = 0; i < M; i++)
       {
-         L_lsp[i] = 0;                                      move16 ();
+         L_lsp[i] = 0;
       }
       
       /* average energy and lsp */
@@ -196,15 +196,15 @@ int dtx_enc(dtx_encState *st,        /* i/o : State struct                    */
       st->log_en_index = add(st->log_en_index, 128); /* add 0.5/4 in Q10 */
       st->log_en_index = shr(st->log_en_index, 8);
 
-      test ();
+
       if (sub(st->log_en_index, 63) > 0)
       {
-         st->log_en_index = 63;                             move16 ();
+         st->log_en_index = 63;
       }
-      test ();
+
       if (st->log_en_index < 0)
       {
-         st->log_en_index = 0;                              move16 ();
+         st->log_en_index = 0;
       }
          
       /* update gain predictor memory */
@@ -212,31 +212,31 @@ int dtx_enc(dtx_encState *st,        /* i/o : State struct                    */
       log_en = sub(log_en, 2560);            /* add 2.5 in Q11      */
       
       log_en = sub(log_en, 9000);
-      test ();
+
       if (log_en > 0)
       {
-         log_en = 0;                                        move16 ();
+         log_en = 0;
       }
-      test ();
+
       if (sub(log_en, -14436) < 0)
       {
-         log_en = -14436;                                   move16 ();
+         log_en = -14436;
       }
       
       /* past_qua_en for other modes than MR122 */      
-      predState->past_qua_en[0] = log_en;                   move16 ();
-      predState->past_qua_en[1] = log_en;                   move16 ();
-      predState->past_qua_en[2] = log_en;                   move16 ();
-      predState->past_qua_en[3] = log_en;                   move16 ();
+      predState->past_qua_en[0] = log_en;
+      predState->past_qua_en[1] = log_en;
+      predState->past_qua_en[2] = log_en;
+      predState->past_qua_en[3] = log_en;
 
       /* scale down by factor 20*log10(2) in Q15 */
       log_en = mult(5443, log_en);
       
       /* past_qua_en for mode MR122 */      
-      predState->past_qua_en_MR122[0] = log_en;             move16 ();
-      predState->past_qua_en_MR122[1] = log_en;             move16 ();
-      predState->past_qua_en_MR122[2] = log_en;             move16 ();
-      predState->past_qua_en_MR122[3] = log_en;             move16 ();
+      predState->past_qua_en_MR122[0] = log_en;
+      predState->past_qua_en_MR122[1] = log_en;
+      predState->past_qua_en_MR122[2] = log_en;
+      predState->past_qua_en_MR122[3] = log_en;
  
       /* make sure that LSP's are ordered */
       Lsp_lsf(lsp, lsf, M);
@@ -248,14 +248,14 @@ int dtx_enc(dtx_encState *st,        /* i/o : State struct                    */
                &st->init_lsf_vq_index);
    }
    
-   *(*anap)++ = st->init_lsf_vq_index; /* 3 bits */         move16 ();
+   *(*anap)++ = st->init_lsf_vq_index; /* 3 bits */
    
-   *(*anap)++ = st->lsp_index[0];      /* 8 bits */         move16 ();
-   *(*anap)++ = st->lsp_index[1];      /* 9 bits */         move16 ();
-   *(*anap)++ = st->lsp_index[2];      /* 9 bits */         move16 ();
+   *(*anap)++ = st->lsp_index[0];      /* 8 bits */
+   *(*anap)++ = st->lsp_index[1];      /* 9 bits */
+   *(*anap)++ = st->lsp_index[2];      /* 9 bits */
    
    
-   *(*anap)++ = st->log_en_index;      /* 6 bits    */      move16 ();
+   *(*anap)++ = st->log_en_index;      /* 6 bits    */
                                        /* = 35 bits */
    
    return 0;
@@ -282,17 +282,17 @@ int dtx_buffer(dtx_encState *st,   /* i/o : State struct                    */
    
    /* update pointer to circular buffer      */
    st->hist_ptr = add(st->hist_ptr, 1);
-   test ();
+
    if (sub(st->hist_ptr, DTX_HIST_SIZE) == 0)
    {
-      st->hist_ptr = 0;                                     move16 ();
+      st->hist_ptr = 0;
    }
    
    /* copy lsp vector into buffer */
    Copy(lsp_new, &st->lsp_hist[st->hist_ptr * M], M);
    
    /* compute log energy based on frame energy */
-   L_frame_en = 0;     /* Q0 */                             move32 ();
+   L_frame_en = 0;     /* Q0 */
    for (i=0; i < L_FRAME; i++)
    {
       L_frame_en = L_mac(L_frame_en, speech[i], speech[i]); 
@@ -308,7 +308,7 @@ int dtx_buffer(dtx_encState *st,   /* i/o : State struct                    */
    
    /* insert into log energy buffer with division by 2 */
    log_en = shr(log_en, 1);
-   st->log_en_hist[st->hist_ptr] = log_en; /* Q10 */        move16 ();
+   st->log_en_hist[st->hist_ptr] = log_en; /* Q10 */
 
    return 0;
 }
@@ -331,32 +331,32 @@ Word16 tx_dtx_handler(dtx_encState *st,      /* i/o : State struct           */
    /* this state machine is in synch with the GSMEFR txDtx machine      */ 
    st->decAnaElapsedCount = add(st->decAnaElapsedCount, 1);  
    
-   compute_new_sid_possible = 0;                       move16(); 
+   compute_new_sid_possible = 0;
 
-   test();
+
    if (vad_flag != 0)
    {
-      st->dtxHangoverCount = DTX_HANG_CONST;           move16();
+      st->dtxHangoverCount = DTX_HANG_CONST;
    }
    else 
    {  /* non-speech */
-      test();
+
       if (st->dtxHangoverCount == 0)
       {  /* out of decoder analysis hangover  */
-         st->decAnaElapsedCount = 0;                   move16();        
-         *usedMode = MRDTX;                            move16(); 
-         compute_new_sid_possible = 1;                 move16(); 
+         st->decAnaElapsedCount = 0;
+         *usedMode = MRDTX;
+         compute_new_sid_possible = 1;
       }
       else
       { /* in possible analysis hangover */
          st->dtxHangoverCount = sub(st->dtxHangoverCount, 1);
          
          /* decAnaElapsedCount + dtxHangoverCount < DTX_ELAPSED_FRAMES_THRESH */
-         test ();
+
          if (sub(add(st->decAnaElapsedCount, st->dtxHangoverCount),
                  DTX_ELAPSED_FRAMES_THRESH) < 0)
          {
-            *usedMode = MRDTX;                         move16(); 
+            *usedMode = MRDTX;
             /* if short time since decoder update, do not add extra HO */            
          }
          /*

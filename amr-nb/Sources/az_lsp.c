@@ -67,8 +67,8 @@ static Word16 Chebps (Word16 x,
     Word16 b0_h, b0_l, b1_h, b1_l, b2_h, b2_l;
     Word32 t0;
 
-    b2_h = 256;                    move16 (); /* b2 = 1.0 */
-    b2_l = 0;                      move16 (); 
+    b2_h = 256;                     /* b2 = 1.0 */
+    b2_l = 0;
 
     t0 = L_mult (x, 512);          /* 2*x                 */
     t0 = L_mac (t0, f[1], 8192);   /* + f[1]              */
@@ -84,10 +84,10 @@ static Word16 Chebps (Word16 x,
 
         L_Extract (t0, &b0_h, &b0_l);           /* b0 = 2.0*x*b1 - b2 + f[i]*/
 
-        b2_l = b1_l;               move16 ();   /* b2 = b1; */
-        b2_h = b1_h;               move16 (); 
-        b1_l = b0_l;               move16 ();   /* b1 = b0; */
-        b1_h = b0_h;               move16 (); 
+        b2_l = b1_l;                  /* b2 = b1; */
+        b2_h = b1_h;
+        b1_l = b0_l;                  /* b1 = b0; */
+        b1_h = b0_h;
     }
 
     t0 = Mpy_32_16 (b1_h, b1_l, x);             /* t0 = x*b1; */
@@ -142,8 +142,8 @@ void Az_lsp (
      * }                                                           *
      *-------------------------------------------------------------*/
 
-    f1[0] = 1024;                  move16 (); /* f1[0] = 1.0 */
-    f2[0] = 1024;                  move16 (); /* f2[0] = 1.0 */
+    f1[0] = 1024;                   /* f1[0] = 1.0 */
+    f2[0] = 1024;                   /* f2[0] = 1.0 */
 
     for (i = 0; i < NC; i++)
     {
@@ -151,40 +151,40 @@ void Az_lsp (
         t0 = L_mac (t0, a[M - i], 8192);
         x = extract_h (t0);
         /* f1[i+1] = a[i+1] + a[M-i] - f1[i] */
-        f1[i + 1] = sub (x, f1[i]);move16 (); 
+        f1[i + 1] = sub (x, f1[i]);
 
         t0 = L_mult (a[i + 1], 8192);   /* x = (a[i+1] - a[M-i]) >> 2 */
         t0 = L_msu (t0, a[M - i], 8192);
         x = extract_h (t0);
         /* f2[i+1] = a[i+1] - a[M-i] + f2[i] */
-        f2[i + 1] = add (x, f2[i]);move16 (); 
+        f2[i + 1] = add (x, f2[i]);
     }
 
     /*-------------------------------------------------------------*
      * find the LSPs using the Chebychev pol. evaluation           *
      *-------------------------------------------------------------*/
 
-    nf = 0;                        move16 (); /* number of found frequencies */
-    ip = 0;                        move16 (); /* indicator for f1 or f2      */
+    nf = 0;                         /* number of found frequencies */
+    ip = 0;                         /* indicator for f1 or f2      */
 
-    coef = f1;                     move16 (); 
+    coef = f1;
 
-    xlow = grid[0];                move16 (); 
-    ylow = Chebps (xlow, coef, NC);move16 (); 
+    xlow = grid[0];
+    ylow = Chebps (xlow, coef, NC);
 
     j = 0;
-    test (); test (); 
+
     /* while ( (nf < M) && (j < grid_points) ) */
     while ((sub (nf, M) < 0) && (sub (j, grid_points) < 0))
     {
         j++;
-        xhigh = xlow;              move16 (); 
-        yhigh = ylow;              move16 (); 
-        xlow = grid[j];            move16 (); 
+        xhigh = xlow;
+        yhigh = ylow;
+        xlow = grid[j];
         ylow = Chebps (xlow, coef, NC);
-                                   move16 (); 
 
-        test (); 
+
+
         if (L_mult (ylow, yhigh) <= (Word32) 0L)
         {
 
@@ -195,18 +195,18 @@ void Az_lsp (
                 /* xmid = (xlow + xhigh)/2 */
                 xmid = add (shr (xlow, 1), shr (xhigh, 1));
                 ymid = Chebps (xmid, coef, NC);
-                                   move16 (); 
 
-                test (); 
+
+
                 if (L_mult (ylow, ymid) <= (Word32) 0L)
                 {
-                    yhigh = ymid;  move16 (); 
-                    xhigh = xmid;  move16 (); 
+                    yhigh = ymid;
+                    xhigh = xmid;
                 }
                 else
                 {
-                    ylow = ymid;   move16 (); 
-                    xlow = xmid;   move16 (); 
+                    ylow = ymid;
+                    xlow = xmid;
                 }
             }
 
@@ -218,14 +218,14 @@ void Az_lsp (
             x = sub (xhigh, xlow);
             y = sub (yhigh, ylow);
 
-            test (); 
+
             if (y == 0)
             {
-                xint = xlow;       move16 (); 
+                xint = xlow;
             }
             else
             {
-                sign = y;          move16 (); 
+                sign = y;
                 y = abs_s (y);
                 exp = norm_s (y);
                 y = shl (y, exp);
@@ -234,7 +234,7 @@ void Az_lsp (
                 t0 = L_shr (t0, sub (20, exp));
                 y = extract_l (t0);     /* y= (xhigh-xlow)/(yhigh-ylow) */
 
-                test (); 
+
                 if (sign < 0)
                     y = negate (y);
 
@@ -243,36 +243,36 @@ void Az_lsp (
                 xint = sub (xlow, extract_l (t0)); /* xint = xlow - ylow*y */
             }
 
-            lsp[nf] = xint;        move16 (); 
-            xlow = xint;           move16 (); 
+            lsp[nf] = xint;
+            xlow = xint;
             nf++;
 
-            test (); 
+
             if (ip == 0)
             {
-                ip = 1;            move16 (); 
-                coef = f2;         move16 (); 
+                ip = 1;
+                coef = f2;
             }
             else
             {
-                ip = 0;            move16 (); 
-                coef = f1;         move16 (); 
+                ip = 0;
+                coef = f1;
             }
             ylow = Chebps (xlow, coef, NC);
-                                   move16 (); 
+
 
         }
-        test (); test (); 
+
     }
 
     /* Check if M roots found */
 
-    test (); 
+
     if (sub (nf, M) < 0)
     {
         for (i = 0; i < M; i++)
         {
-            lsp[i] = old_lsp[i];   move16 (); 
+            lsp[i] = old_lsp[i];
         }
 
     }

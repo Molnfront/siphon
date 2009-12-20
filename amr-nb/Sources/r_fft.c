@@ -118,20 +118,20 @@ void c_fft(Word16 * farray_ptr)
 
 	/* Rearrange the input array in bit reversed order */
 	for (i = 0, j = 0; i < SIZE - 2; i = i + 2)
-	{										test();
+	{
 		if (sub(j, i) > 0)
 		{
-			ftmp = *(farray_ptr + i);					move16();
-			*(farray_ptr + i) = *(farray_ptr + j);				move16();
-			*(farray_ptr + j) = ftmp;					move16();
+			ftmp = *(farray_ptr + i);
+			*(farray_ptr + i) = *(farray_ptr + j);
+			*(farray_ptr + j) = ftmp;
 
-			ftmp = *(farray_ptr + i + 1);					move16();
-			*(farray_ptr + i + 1) = *(farray_ptr + j + 1);			move16();
-			*(farray_ptr + j + 1) = ftmp;					move16();
+			ftmp = *(farray_ptr + i + 1);
+			*(farray_ptr + i + 1) = *(farray_ptr + j + 1);
+			*(farray_ptr + j + 1) = ftmp;
 		}
 
-		k = SIZE_BY_TWO;							move16();
-											test();
+		k = SIZE_BY_TWO;
+
 		while (sub(j, k) >= 0)
 		{
 			j = sub(j, k);
@@ -145,9 +145,9 @@ void c_fft(Word16 * farray_ptr)
 	{				/* i is stage counter */
 		jj = shl(2, i);		/* FFT size */
 		kk = shl(jj, 1);	/* 2 * FFT size */
-		ii = ii_table[i];	/* 2 * number of FFT's */			move16();
+		ii = ii_table[i];	/* 2 * number of FFT's */
 		ii2 = shl(ii, 1);
-		ji = 0;			/* ji is phase table index */			move16();
+		ji = 0;			/* ji is phase table index */
 
 		for (j = 0; j < jj; j = j + 2)
 		{					/* j is sample counter */
@@ -167,16 +167,16 @@ void c_fft(Word16 * farray_ptr)
 				tmp2 = round(ftmp_imag);
 
 				tmp = sub(*(farray_ptr + k), tmp1);
-				*(farray_ptr + kj) = shr(tmp, 1);			move16();
+				*(farray_ptr + kj) = shr(tmp, 1);
 
 				tmp = sub(*(farray_ptr + k + 1), tmp2);
-				*(farray_ptr + kj + 1) = shr(tmp, 1);			move16();
+				*(farray_ptr + kj + 1) = shr(tmp, 1);
 
 				tmp = add(*(farray_ptr + k), tmp1);
-				*(farray_ptr + k) = shr(tmp, 1);			move16();
+				*(farray_ptr + k) = shr(tmp, 1);
 
 				tmp = add(*(farray_ptr + k + 1), tmp2);
-				*(farray_ptr + k + 1) = shr(tmp, 1);			move16();
+				*(farray_ptr + k + 1) = shr(tmp, 1);
 			}
 
 			ji =  add(ji, ii2);
@@ -198,10 +198,10 @@ void r_fft(Word16 * farray_ptr)
 	c_fft(farray_ptr);
 
 	/* First, handle the DC and foldover frequencies */
-	ftmp1_real = *farray_ptr;							move16();
-	ftmp2_real = *(farray_ptr + 1);							move16();
-	*farray_ptr = add(ftmp1_real, ftmp2_real);					move16();
-	*(farray_ptr + 1) = sub(ftmp1_real, ftmp2_real);				move16();
+	ftmp1_real = *farray_ptr;
+	ftmp2_real = *(farray_ptr + 1);
+	*farray_ptr = add(ftmp1_real, ftmp2_real);
+	*(farray_ptr + 1) = sub(ftmp1_real, ftmp2_real);
 
 	/* Now, handle the remaining positive frequencies */
 	for (i = 2, j = SIZE - i; i <= SIZE_BY_TWO; i = i + 2, j = SIZE - i)
@@ -216,20 +216,20 @@ void r_fft(Word16 * farray_ptr)
 
 		Ltmp1 = L_mac(Lftmp1_real, ftmp2_real, phs_tbl[i]);
 		Ltmp1 = L_msu(Ltmp1, ftmp2_imag, phs_tbl[i + 1]);
-		*(farray_ptr + i) = round(L_shr(Ltmp1, 1));				move16();
+		*(farray_ptr + i) = round(L_shr(Ltmp1, 1));
 
 		Ltmp1 = L_mac(Lftmp1_imag, ftmp2_imag, phs_tbl[i]);
 		Ltmp1 = L_mac(Ltmp1, ftmp2_real, phs_tbl[i + 1]);
-		*(farray_ptr + i + 1) = round(L_shr(Ltmp1, 1));				move16();
+		*(farray_ptr + i + 1) = round(L_shr(Ltmp1, 1));
 
 		Ltmp1 = L_mac(Lftmp1_real, ftmp2_real, phs_tbl[j]);
 		Ltmp1 = L_mac(Ltmp1, ftmp2_imag, phs_tbl[j + 1]);
-		*(farray_ptr + j) = round(L_shr(Ltmp1, 1));				move16();
+		*(farray_ptr + j) = round(L_shr(Ltmp1, 1));
 
 		Ltmp1 = L_negate(Lftmp1_imag);
 		Ltmp1 = L_msu(Ltmp1, ftmp2_imag, phs_tbl[j]);
 		Ltmp1 = L_mac(Ltmp1, ftmp2_real, phs_tbl[j + 1]);
-		*(farray_ptr + j + 1) = round(L_shr(Ltmp1, 1));				move16();
+		*(farray_ptr + j + 1) = round(L_shr(Ltmp1, 1));
 
 	}
 }								/* end r_fft () */

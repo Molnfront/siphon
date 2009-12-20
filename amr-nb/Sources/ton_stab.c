@@ -132,44 +132,46 @@ Word16 check_lsp(tonStabState *st, /* i/o : State struct            */
    /* Check for a resonance:                             */
    /* Find minimum distance between lsp[i] and lsp[i+1]  */
  
-   dist_min1 = MAX_16;                       move16 ();
+   dist_min1 = MAX_16;
    for (i = 3; i < M-2; i++)
    {
       dist = sub(lsp[i], lsp[i+1]);
 
-      test ();
+
       if (sub(dist, dist_min1) < 0)
       {
-         dist_min1 = dist;                   move16 ();
+         dist_min1 = dist;
       }
    }
 
-   dist_min2 = MAX_16;                       move16 ();
+   dist_min2 = MAX_16;
    for (i = 1; i < 3; i++)
    {
       dist = sub(lsp[i], lsp[i+1]);
 
-      test ();
+
       if (sub(dist, dist_min2) < 0)
       {
-         dist_min2 = dist;                   move16 ();
+         dist_min2 = dist;
       }
    }
 
-   if (test (), sub(lsp[1], 32000) > 0)
+   /*if (test (), sub(lsp[1], 32000) > 0)*/
+   if ( lsp[1] > 32000 )
    {
-      dist_th = 600;                         move16 ();
+      dist_th = 600;
    }
-   else if (test (), sub(lsp[1], 30500) > 0)
+   /*else if (test (), sub(lsp[1], 30500) > 0)*/
+   else if ( lsp[1] > 30500 )
    {
-      dist_th = 800;                         move16 ();
+      dist_th = 800;
    }
    else
    {
-      dist_th = 1100;                        move16 ();
+      dist_th = 1100;
    }
 
-   test (); test ();
+   /* */
    if (sub(dist_min1, 1500) < 0 ||
        sub(dist_min2, dist_th) < 0)
    {
@@ -177,14 +179,14 @@ Word16 check_lsp(tonStabState *st, /* i/o : State struct            */
    }
    else
    {
-      st->count = 0;                         move16 ();
+      st->count = 0;
    }
    
    /* Need 12 consecutive frames to set the flag */
-   test ();
+
    if (sub(st->count, 12) >= 0)
    {
-      st->count = 12;                        move16 ();
+      st->count = 12;
       return 1;
    }
    else
@@ -213,7 +215,7 @@ Word16 check_gp_clipping(tonStabState *st, /* i/o : State struct            */
       sum = add(sum, st->gp[i]);
    }
 
-   test ();
+
    if (sub(sum, GP_CLIP) > 0)
    {
       return 1;

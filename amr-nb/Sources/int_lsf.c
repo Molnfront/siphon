@@ -78,33 +78,33 @@ void Int_lsf(
 
     if ( i_subfr == 0 )
     {
-       test ();          
+
        for (i = 0; i < M; i++) {
           lsf_out[i] = add(sub(lsf_old[i], shr(lsf_old[i], 2)), shr(lsf_new[i], 2));
-          move16 ();
+
        }
     }
     else if ( sub(i_subfr, 40) == 0 )
     {
-       test (); test ();
+
        for (i = 0; i < M; i++) {
           lsf_out[i] = add(shr(lsf_old[i],1), shr(lsf_new[i], 1) );
-          move16 ();
+
        }
     }
     else if ( sub(i_subfr, 80) == 0 )
     {
-       test (); test (); test ();
+
        for (i = 0; i < M; i++) {
           lsf_out[i] = add(shr(lsf_old[i], 2), sub(lsf_new[i], shr(lsf_new[i], 2)));
-          move16 ();
+
        }
     }
     else if ( sub(i_subfr, 120) == 0 )
     {
-       test (); test (); test (); test ();                    
+
        for (i = 0; i < M; i++) {
-          lsf_out[i] = lsf_new[i];                        move16 ();
+          lsf_out[i] = lsf_new[i];
        }
     }
 

@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -30,12 +59,11 @@ const char qgain475_id[] = "@(#)$Id $" qgain475_h;
 #include <stdlib.h>
 #include "typedef.h"
 #include "basic_op.h"
-#include "mac_32.h"
 #include "mode.h"
-#include "count.h"
 #include "cnst.h"
 #include "pow2.h"
 #include "log2.h"
+#include "oper_32b.h"
 
 /*
 ********************************************************************************
@@ -77,8 +105,8 @@ static void MR475_quant_store_results(
     Word16 qua_ener;       /* o  : quantized energy error,               Q10 */
 
     /* Read the quantized gains */
-    *gain_pit = *p++;                move16 ();
-    g_code = *p++;                   move16 ();
+    *gain_pit = *p++;
+    g_code = *p++;
 
     /*------------------------------------------------------------------*
      *  calculate final fixed codebook gain:                            *
@@ -151,12 +179,13 @@ MR475_update_unq_pred(
      *
      */
 
-    if (test(), cod_gain_frac <= 0)
+    /*if (test(), cod_gain_frac <= 0)*/
+    if (cod_gain_frac <= 0)
     {
         /* if gcu <= 0 -> predErrFact = 0 < MIN_PRED_ERR_FACT */
         /* -> set qua_ener(_MR122) directly                   */
-        qua_ener = MIN_QUA_ENER;             move16 ();
-        qua_ener_MR122 = MIN_QUA_ENER_MR122; move16 ();
+        qua_ener = MIN_QUA_ENER;
+        qua_ener_MR122 = MIN_QUA_ENER_MR122;
     }
     else
     {
@@ -166,7 +195,8 @@ MR475_update_unq_pred(
         frac_gcode0 = extract_l (Pow2 (14, frac_gcode0));
 
         /* make sure cod_gain_frac < frac_gcode0  for div_s */
-        if (test (), sub(cod_gain_frac, frac_gcode0) >= 0)
+        /*if (test (), sub(cod_gain_frac, frac_gcode0) >= 0)*/
+        if ( cod_gain_frac >= frac_gcode0 )
         {
             cod_gain_frac = shr (cod_gain_frac, 1);
             cod_gain_exp = add (cod_gain_exp, 1);
@@ -189,15 +219,17 @@ MR475_update_unq_pred(
         qua_ener_MR122 = shr_r (frac, 5);
         qua_ener_MR122 = add (qua_ener_MR122, shl (exp, 10));
 
-        if (test (), sub(qua_ener_MR122, MIN_QUA_ENER_MR122) < 0)
+        /*if (test (), sub(qua_ener_MR122, MIN_QUA_ENER_MR122) < 0)*/
+        if ( qua_ener_MR122 < MIN_QUA_ENER_MR122 )
         {
-            qua_ener = MIN_QUA_ENER;             move16 ();
-            qua_ener_MR122 = MIN_QUA_ENER_MR122; move16 ();
+            qua_ener = MIN_QUA_ENER;
+            qua_ener_MR122 = MIN_QUA_ENER_MR122;
         }
-        else if (test (), sub(qua_ener_MR122, MAX_QUA_ENER_MR122) > 0)
+        /*else if (test (), sub(qua_ener_MR122, MAX_QUA_ENER_MR122) > 0)*/
+        else if ( qua_ener_MR122 > MAX_QUA_ENER_MR122 )
         {
-            qua_ener = MAX_QUA_ENER;             move16 ();
-            qua_ener_MR122 = MAX_QUA_ENER_MR122; move16 ();
+            qua_ener = MAX_QUA_ENER;
+            qua_ener_MR122 = MAX_QUA_ENER_MR122;
         }
         else
         {
@@ -294,22 +326,22 @@ MR475_gain_quant(              /* o  : index of quantization.                 */
     exp = sub(sf0_exp_gcode0, 11);
 
     /* calculate exp_max[i] = s[i]-1 */
-    exp_max[0] = sub(sf0_exp_coeff[0], 13);                        move16 ();
-    exp_max[1] = sub(sf0_exp_coeff[1], 14);                        move16 ();
-    exp_max[2] = add(sf0_exp_coeff[2], add(15, shl(exp, 1)));      move16 ();
-    exp_max[3] = add(sf0_exp_coeff[3], exp);                       move16 ();
-    exp_max[4] = add(sf0_exp_coeff[4], add(1, exp));               move16 ();
+    exp_max[0] = sub(sf0_exp_coeff[0], 13);
+    exp_max[1] = sub(sf0_exp_coeff[1], 14);
+    exp_max[2] = add(sf0_exp_coeff[2], add(15, shl(exp, 1)));
+    exp_max[3] = add(sf0_exp_coeff[3], exp);
+    exp_max[4] = add(sf0_exp_coeff[4], add(1, exp));
 
     /* sf 1 */
     /* determine the scaling exponent for g_code: ec = ec0 - 11 */
     exp = sub(sf1_exp_gcode0, 11);
 
     /* calculate exp_max[i] = s[i]-1 */
-    exp_max[5] = sub(sf1_exp_coeff[0], 13);                        move16 ();
-    exp_max[6] = sub(sf1_exp_coeff[1], 14);                        move16 ();
-    exp_max[7] = add(sf1_exp_coeff[2], add(15, shl(exp, 1)));      move16 ();
-    exp_max[8] = add(sf1_exp_coeff[3], exp);                       move16 ();
-    exp_max[9] = add(sf1_exp_coeff[4], add(1, exp));               move16 ();
+    exp_max[5] = sub(sf1_exp_coeff[0], 13);
+    exp_max[6] = sub(sf1_exp_coeff[1], 14);
+    exp_max[7] = add(sf1_exp_coeff[2], add(15, shl(exp, 1)));
+    exp_max[8] = add(sf1_exp_coeff[3], exp);
+    exp_max[9] = add(sf1_exp_coeff[4], add(1, exp));
 
 
 
@@ -325,7 +357,7 @@ MR475_gain_quant(              /* o  : index of quantization.                 */
        them
      */
     exp = sf0_exp_target_en - sf1_exp_target_en;
-    test ();
+
     if (exp > 0)
     {
         sf1_frac_target_en = shr (sf1_frac_target_en, exp);
@@ -336,25 +368,25 @@ MR475_gain_quant(              /* o  : index of quantization.                 */
     }
 
     /* assume no change of exponents */
-    exp = 0; move16 ();
+    exp = 0;
 
     /* test for target energy difference; set exp to +1 or -1 to scale
      * up/down coefficients for sf 1
      */
     tmp = shr_r (sf1_frac_target_en, 1);   /* tmp = ceil(0.5*en(sf1)) */
-    test ();
+
     if (sub (tmp, sf0_frac_target_en) > 0) /* tmp > en(sf0)? */
     {
         /*
          * target_energy(sf1) > 2*target_energy(sf0)
          *   -> scale up MSE(sf0) by 2 by adding 1 to exponents 0..4
          */
-        exp = 1; move16 ();
+        exp = 1;
     }
     else
     {
         tmp = shr (add (sf0_frac_target_en, 3), 2); /* tmp=ceil(0.25*en(sf0)) */
-        test();
+
         if (sub (tmp, sf1_frac_target_en) > 0)      /* tmp > en(sf1)? */
         {
             /*
@@ -362,13 +394,13 @@ MR475_gain_quant(              /* o  : index of quantization.                 */
              *   -> scale down MSE(sf0) by 0.5 by subtracting 1 from
              *      coefficients 0..4
              */
-            exp = -1; move16 ();
+            exp = -1;
         }
     }
     
     for (i = 0; i < 5; i++)
     {
-        exp_max[i] = add (exp_max[i], exp); move16 ();
+        exp_max[i] = add (exp_max[i], exp);
     }
                                                                        
     /*-------------------------------------------------------------------*
@@ -385,25 +417,25 @@ MR475_gain_quant(              /* o  : index of quantization.                 */
      *    c[i] = c[i]*2^e                                                *
      *-------------------------------------------------------------------*/
 
-    exp = exp_max[0];                                        move16 ();
+    exp = exp_max[0];
     for (i = 1; i < 10; i++)
     {
-        move16(); test();
+
         if (sub(exp_max[i], exp) > 0)
         {
-            exp = exp_max[i];                                move16 ();
+            exp = exp_max[i];
         }
     }
     exp = add(exp, 1);      /* To avoid overflow */
 
-    p = &sf0_frac_coeff[0]; move16 ();
+    p = &sf0_frac_coeff[0];
     for (i = 0; i < 5; i++) {
         tmp = sub(exp, exp_max[i]);
         L_tmp = L_deposit_h(*p++);
         L_tmp = L_shr(L_tmp, tmp);
         L_Extract(L_tmp, &coeff[i], &coeff_lo[i]);
     }
-    p = &sf1_frac_coeff[0]; move16 ();
+    p = &sf1_frac_coeff[0];
     for (; i < 10; i++) {
         tmp = sub(exp, exp_max[i]);
         L_tmp = L_deposit_h(*p++);
@@ -424,15 +456,15 @@ MR475_gain_quant(              /* o  : index of quantization.                 */
      *-------------------------------------------------------------------*/
 
     /* start with "infinite" MSE */
-    dist_min = MAX_32;        move32();
+    dist_min = MAX_32;
 
-    p = &table_gain_MR475[0]; move16 ();
+    p = &table_gain_MR475[0];
 
     for (i = 0; i < MR475_VQ_SIZE; i++)
     {
         /* subframe 0 (and 2) calculations */
-        g_pitch = *p++;       move16 ();
-        g_code = *p++;        move16 ();
+        g_pitch = *p++;
+        g_code = *p++;
 
         g_code = mult(g_code, sf0_gcode0);
         g2_pitch = mult(g_pitch, g_pitch);
@@ -440,38 +472,39 @@ MR475_gain_quant(              /* o  : index of quantization.                 */
         g_pit_cod = mult(g_code, g_pitch);
         
         L_tmp = Mpy_32_16(       coeff[0], coeff_lo[0], g2_pitch);
-        L_tmp = Mac_32_16(L_tmp, coeff[1], coeff_lo[1], g_pitch);
-        L_tmp = Mac_32_16(L_tmp, coeff[2], coeff_lo[2], g2_code);
-        L_tmp = Mac_32_16(L_tmp, coeff[3], coeff_lo[3], g_code);
-        L_tmp = Mac_32_16(L_tmp, coeff[4], coeff_lo[4], g_pit_cod);
+        L_tmp += Mpy_32_16(coeff[1], coeff_lo[1], g_pitch);
+        L_tmp += Mpy_32_16(coeff[2], coeff_lo[2], g2_code);
+        L_tmp += Mpy_32_16(coeff[3], coeff_lo[3], g_code);
+        L_tmp += Mpy_32_16(coeff[4], coeff_lo[4], g_pit_cod);
+
 
         tmp = sub (g_pitch, gp_limit);
 
         /* subframe 1 (and 3) calculations */
-        g_pitch = *p++;      move16 ();
-        g_code = *p++;       move16 ();
+        g_pitch = *p++;
+        g_code = *p++;
 
-        test (); test (); test ();
+        /*  */
         if (tmp <= 0 && sub(g_pitch, gp_limit) <= 0)
         {
             g_code = mult(g_code, sf1_gcode0);
             g2_pitch = mult(g_pitch, g_pitch);
             g2_code = mult(g_code, g_code);
             g_pit_cod = mult(g_code, g_pitch);
-            
-            L_tmp = Mac_32_16(L_tmp, coeff[5], coeff_lo[5], g2_pitch);
-            L_tmp = Mac_32_16(L_tmp, coeff[6], coeff_lo[6], g_pitch);
-            L_tmp = Mac_32_16(L_tmp, coeff[7], coeff_lo[7], g2_code);
-            L_tmp = Mac_32_16(L_tmp, coeff[8], coeff_lo[8], g_code);
-            L_tmp = Mac_32_16(L_tmp, coeff[9], coeff_lo[9], g_pit_cod);
+
+            L_tmp += Mpy_32_16( coeff[5], coeff_lo[5], g2_pitch);
+            L_tmp += Mpy_32_16( coeff[6], coeff_lo[6], g_pitch);
+            L_tmp += Mpy_32_16( coeff[7], coeff_lo[7], g2_code);
+            L_tmp += Mpy_32_16( coeff[8], coeff_lo[8], g_code);
+            L_tmp += Mpy_32_16( coeff[9], coeff_lo[9], g_pit_cod);
             
             /* store table index if MSE for this index is lower
                than the minimum MSE seen so far */
-            test ();
+
             if (L_sub(L_tmp, dist_min) < (Word32) 0)
             {
-                dist_min = L_tmp; move32 ();
-                index = i;        move16 ();
+                dist_min = L_tmp;
+                index = i;
             }
         }
     }

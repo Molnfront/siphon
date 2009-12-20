@@ -84,25 +84,25 @@ static void Get_lsp_pol (Word16 *lsp, Word32 *f)
     Word32 t0;
     
     /* f[0] = 1.0;             */
-    *f = L_mult (4096, 2048);              move32 (); 
-    f++;                                   move32 (); 
+    *f = L_mult (4096, 2048);
+    f++;
     *f = L_msu ((Word32) 0, *lsp, 512);    /* f[1] =  -2.0 * lsp[0];  */
-    f++;                                   move32 (); 
+    f++;
     lsp += 2;                              /* Advance lsp pointer     */
 
     for (i = 2; i <= 5; i++)
     {
-        *f = f[-2];                        move32 (); 
+        *f = f[-2];
 
         for (j = 1; j < i; j++, f--)
         {
             L_Extract (f[-1], &hi, &lo);
             t0 = Mpy_32_16 (hi, lo, *lsp); /* t0 = f[-1] * lsp    */
             t0 = L_shl (t0, 1);
-            *f = L_add (*f, f[-2]);        move32 (); /* *f += f[-2]      */
-            *f = L_sub (*f, t0);move32 (); /* *f -= t0            */
+            *f = L_add (*f, f[-2]);         /* *f += f[-2]      */
+            *f = L_sub (*f, t0); /* *f -= t0            */
         }
-        *f = L_msu (*f, *lsp, 512);        move32 (); /* *f -= lsp<<9     */
+        *f = L_msu (*f, *lsp, 512);         /* *f -= lsp<<9     */
         f += i;                            /* Advance f pointer   */
         lsp += 2;                          /* Advance lsp pointer */
     }
@@ -142,17 +142,17 @@ void Lsp_Az (
 
     for (i = 5; i > 0; i--)
     {
-        f1[i] = L_add (f1[i], f1[i - 1]);    move32 (); /* f1[i] += f1[i-1]; */
-        f2[i] = L_sub (f2[i], f2[i - 1]);    move32 (); /* f2[i] -= f2[i-1]; */
+        f1[i] = L_add (f1[i], f1[i - 1]);     /* f1[i] += f1[i-1]; */
+        f2[i] = L_sub (f2[i], f2[i - 1]);     /* f2[i] -= f2[i-1]; */
     }
 
-    a[0] = 4096;                             move16 (); 
+    a[0] = 4096;
     for (i = 1, j = 10; i <= 5; i++, j--)
     {
         t0 = L_add (f1[i], f2[i]);           /* f1[i] + f2[i] */
-        a[i] = extract_l (L_shr_r (t0, 13)); move16 (); 
+        a[i] = extract_l (L_shr_r (t0, 13));
         t0 = L_sub (f1[i], f2[i]);           /* f1[i] - f2[i] */
-        a[j] = extract_l (L_shr_r (t0, 13)); move16 (); 
+        a[j] = extract_l (L_shr_r (t0, 13));
     }
 
     return;

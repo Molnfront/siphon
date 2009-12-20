@@ -56,25 +56,25 @@ Word16 q_gain_pitch (   /* Return index of quantization                      */
     Word16 i, index, err, err_min;
 
     err_min = abs_s (sub (*gain, qua_gain_pitch[0]));
-    index = 0;                                              move16 (); 
+    index = 0;
 
     for (i = 1; i < NB_QUA_PITCH; i++)
     {
-        test ();
+
         if (sub (qua_gain_pitch[i], gp_limit) <= 0)
         {
             err = abs_s (sub (*gain, qua_gain_pitch[i]));
             
-            test (); 
+
             if (sub (err, err_min) < 0)
             {
-                err_min = err;                                  move16 (); 
-                index = i;                                      move16 (); 
+                err_min = err;
+                index = i;
             }
         }
     }
 
-    test ();
+
     if (sub (mode, MR795) == 0)
     {
         /* in MR795 mode, compute three gain_pit candidates around the index
@@ -84,14 +84,14 @@ Word16 q_gain_pitch (   /* Return index of quantization                      */
          */
         Word16 ii;
 
-        test ();
+
         if (index == 0)
         {
-            ii = index;                                     move16 ();
+            ii = index;
         }
         else
         {
-            test (); test ();
+
             if (   sub (index, NB_QUA_PITCH-1) == 0
                 || sub (qua_gain_pitch[index+1], gp_limit) > 0)
             {
@@ -106,12 +106,12 @@ Word16 q_gain_pitch (   /* Return index of quantization                      */
         /* store candidate indices and values */
         for (i = 0; i < 3; i++)
         {
-            gain_cind[i] = ii;                              move16 ();
-            gain_cand[i] = qua_gain_pitch[ii];              move16 ();
+            gain_cind[i] = ii;
+            gain_cand[i] = qua_gain_pitch[ii];
             ii = add (ii, 1);
         }
         
-        *gain = qua_gain_pitch[index];                      move16 (); 
+        *gain = qua_gain_pitch[index];
     }
     else
     {
@@ -119,15 +119,15 @@ Word16 q_gain_pitch (   /* Return index of quantization                      */
          * If bitexactness is required, mask away the two LSBs (because
          * in the original EFR, gain_pit was scaled Q12)
          */
-       test ();
+
        if (sub(mode, MR122) == 0)
        {
           /* clear 2 LSBits */
-          *gain = qua_gain_pitch[index] & 0xFFFC; logic16 (); move16 ();
+          *gain = qua_gain_pitch[index] & 0xFFFC;
        }
        else
        {
-          *gain = qua_gain_pitch[index];                      move16 (); 
+          *gain = qua_gain_pitch[index];
        }
     }
     return index;

@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -31,7 +60,6 @@ const char g_pitch_id[] = "@(#)$Id $" g_pitch_h;
 #include "mode.h"
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
 #include "cnst.h"
  
 /*
@@ -66,105 +94,100 @@ Word16 G_pitch     (    /* o : Gain of pitch lag saturated to 1.2       */
 {
     Word16 i;
     Word16 xy, yy, exp_xy, exp_yy, gain;
-    Word32 s;
+    Word32 s, s1, L_temp;
 
-    Word16 scaled_y1[L_SUBFR];   /* Usually dynamic allocation of (L_subfr) */
-
-    /* divide "y1[]" by 4 to avoid overflow */
-
-    for (i = 0; i < L_subfr; i++)
-    {
-        scaled_y1[i] = shr (y1[i], 2); move16 (); 
-    }
+    Word16 scaled_y1;
 
     /* Compute scalar product <y1[],y1[]> */
 
     /* Q12 scaling / MR122 */
-    Overflow = 0;                   move16 ();
-    s = 1L;                         move32 (); /* Avoid case of all zeros */
+    s = 1L;                          /* Avoid case of all zeros */
     for (i = 0; i < L_subfr; i++)
     {
-        s = L_mac (s, y1[i], y1[i]);
+        s += y1[i] * y1[i] << 1;
+        if (s < 0)
+          break;
     }
-    test (); 
-    if (Overflow == 0)       /* Test for overflow */
+
+    if (i == L_subfr) /* Test for overflow */
     {
         exp_yy = norm_l (s);
         yy = round (L_shl (s, exp_yy));
     }
     else
     {
-        s = 1L;                     move32 (); /* Avoid case of all zeros */
-        for (i = 0; i < L_subfr; i++)
-        {
-            s = L_mac (s, scaled_y1[i], scaled_y1[i]);
-        }
-        exp_yy = norm_l (s);
-        yy = round (L_shl (s, exp_yy));
-        exp_yy = sub (exp_yy, 4);
+      s = 0;
+      for(i=0; i<L_subfr; i++)
+      {
+        /* divide "y1[]" by 4 to avoid overflow */
+        scaled_y1 = y1[i] >> 2;
+        s += scaled_y1 * scaled_y1;
+      }
+      s <<= 1;
+      s++; /* Avoid case of all zeros */
+
+      exp_yy = norm_l (s);
+      yy = round (L_shl (s, exp_yy));
+      exp_yy -= 4;
     }
         
     /* Compute scalar product <xn[],y1[]> */
-        
-    Overflow = 0;                   move16 (); 
-    s = 1L;                         move32 (); /* Avoid case of all zeros */
-        
+    s = 1L;                          /* Avoid case of all zeros */
     for (i = 0; i < L_subfr; i++)
     {
-        s = L_mac(s, xn[i], y1[i]);
+      L_temp = xn[i] * y1[i];
+      if (L_temp == 0x40000000)
+        break;
+      s1 = s;
+      s = (L_temp << 1) + s1;
+
+      if (((s1 ^ L_temp) > 0) && ((s ^ s1) < 0))
+        break;
     }
-    test (); 
-    if (Overflow == 0)
+
+    if (i == L_subfr) /* Test for overflow */
     {
         exp_xy = norm_l (s);
         xy = round (L_shl (s, exp_xy));
     }
     else
     {
-        s = 1L;                     move32 (); /* Avoid case of all zeros */
-        for (i = 0; i < L_subfr; i++)
-        {
-            s = L_mac (s, xn[i], scaled_y1[i]);
-        }
-        exp_xy = norm_l (s);
-        xy = round (L_shl (s, exp_xy));
-        exp_xy = sub (exp_xy, 2);
+      s = 0L;
+      for (i = 0; i < L_subfr; i++)
+        s += xn[i] * (y1[i] >> 2);
+
+      s <<=1;
+      s += 1;  /* Avoid case of all zeros */
+
+      exp_xy = norm_l (s);
+      xy = round (L_shl (s, exp_xy));
+      exp_xy -= 2;
     }
 
-    g_coeff[0] = yy;                 move16 ();
-    g_coeff[1] = sub (15, exp_yy);   move16 ();
-    g_coeff[2] = xy;                 move16 ();
-    g_coeff[3] = sub (15, exp_xy);   move16 ();
+    g_coeff[0] = yy;
+    g_coeff[1] = 15 - exp_yy; /*sub (15, exp_yy);*/
+    g_coeff[2] = xy;
+    g_coeff[3] = 15 - exp_xy; /*sub (15, exp_xy);*/
     
     /* If (xy < 4) gain = 0 */
-
-    i = sub (xy, 4);
-
-    test (); 
-    if (i < 0)
+    if (xy < 4)
         return ((Word16) 0);
 
     /* compute gain = xy/yy */
-
-    xy = shr (xy, 1);                  /* Be sure xy < yy */
+    xy >>= 1;                 /* Be sure xy < yy */
     gain = div_s (xy, yy);
 
-    i = sub (exp_xy, exp_yy);      /* Denormalization of division */        
+    i = exp_xy - exp_yy;      /* Denormalization of division */
     gain = shr (gain, i);
     
     /* if(gain >1.2) gain = 1.2 */
-    
-    test (); 
-    if (sub (gain, 19661) > 0)
-    {
-        gain = 19661;                   move16 (); 
-    }
+    if (gain > 19661)
+      gain = 19661;
 
-    test ();
-    if (sub(mode, MR122) == 0)
+    if (mode == MR122)
     {
        /* clear 2 LSBits */
-       gain = gain & 0xfffC;            logic16 ();
+       gain = gain & 0xfffC;
     }
     
     return (gain);

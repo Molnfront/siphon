@@ -72,17 +72,17 @@ int subframePostProc(
    Word16 kShift;
    Word16 pitch_fac;
 
-   test ();
+
    if (sub(mode, MR122) != 0)
    {
-      tempShift = 1;                     move16 ();
-      kShift = 2;                        move16 ();
-      pitch_fac = gain_pit;              move16 ();
+      tempShift = 1;
+      kShift = 2;
+      pitch_fac = gain_pit;
    }
    else
    {
-      tempShift = 2;                     move16 ();
-      kShift = 4;                        move16 ();
+      tempShift = 2;
+      kShift = 4;
       pitch_fac = shr (gain_pit, 1);
    }
    
@@ -90,11 +90,11 @@ int subframePostProc(
     * - Update pitch sharpening "sharp" with quantized gain_pit  *
     *------------------------------------------------------------*/
    
-   *sharp = gain_pit;                    move16 ();
-   test ();
+   *sharp = gain_pit;
+
    if (sub(*sharp, SHARPMAX) > 0)
    {
-      *sharp = SHARPMAX;                 move16 ();
+      *sharp = SHARPMAX;
    }
    /*------------------------------------------------------*
     * - Find the total excitation                          *
@@ -127,7 +127,7 @@ int subframePostProc(
       L_temp = L_mult (exc[i + i_subfr], pitch_fac);
       L_temp = L_mac (L_temp, code[i], gain_code);
       L_temp = L_shl (L_temp, tempShift);
-      exc[i + i_subfr] = round (L_temp);              move16 ();
+      exc[i + i_subfr] = round (L_temp);
    }
 
    Syn_filt(Aq, &exc[i_subfr], &synth[i_subfr], L_SUBFR,
@@ -135,7 +135,7 @@ int subframePostProc(
 
    for (i = L_SUBFR - M, j = 0; i < L_SUBFR; i++, j++) {
        mem_err[j] = sub(speech[i_subfr + i],
-                        synth[i_subfr + i]);          move16 ();
+                        synth[i_subfr + i]);
       /*
        *                      12k2  others
        * ---------------------------------
@@ -155,7 +155,7 @@ int subframePostProc(
        */
       temp = extract_h(L_shl(L_mult(y1[i], gain_pit), 1));
       k = extract_h(L_shl(L_mult(y2[i], gain_code), kShift));
-      mem_w0[j] = sub(xn[i], add(temp, k));          move16 ();
+      mem_w0[j] = sub(xn[i], add(temp, k));
    }
 
    return 0;

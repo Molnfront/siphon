@@ -31,6 +31,7 @@ const char d1035pf_id[] = "@(#)$Id $" d1035pf_h;
 #include "basic_op.h"
 #include "count.h"
 #include "cnst.h"
+#include "set_zero.h"
 
 /*
 ********************************************************************************
@@ -63,10 +64,11 @@ void dec_10i40_35bits (
 {
     Word16 i, j, pos1, pos2, sign, tmp;
 
-    for (i = 0; i < L_CODE; i++)
+    /*for (i = 0; i < L_CODE; i++)
     {
-        cod[i] = 0;                                     move16 (); 
-    }
+        cod[i] = 0;
+    }*/
+    Set_zero(cod, L_CODE);
 
     /* decode the positions and signs of pulses and build the codeword */
 
@@ -74,40 +76,40 @@ void dec_10i40_35bits (
     {
         /* compute index i */
 
-        tmp = index[j];                                 move16 ();
-        i = tmp & 7;                                    logic16 (); 
-        i = dgray[i];                                   move16 (); 
+        tmp = index[j];
+        i = tmp & 7;
+        i = dgray[i];
 
         i = extract_l (L_shr (L_mult (i, 5), 1));
         pos1 = add (i, j); /* position of pulse "j" */
 
-        i = shr (tmp, 3) & 1;                           logic16 (); 
-        test (); 
+        i = shr (tmp, 3) & 1;
+
         if (i == 0)
         {
-            sign = 4096;                                move16 (); /* +1.0 */
+            sign = 4096;                                 /* +1.0 */
         }
         else
         {
-            sign = -4096;                               move16 (); /* -1.0 */
+            sign = -4096;                                /* -1.0 */
         }
 
-        cod[pos1] = sign;                               move16 (); 
+        cod[pos1] = sign;
 
         /* compute index i */
 
-        i = index[add (j, 5)] & 7;                      logic16 (); 
-        i = dgray[i];                                   move16 (); 
+        i = index[add (j, 5)] & 7;
+        i = dgray[i];
         i = extract_l (L_shr (L_mult (i, 5), 1));
 
         pos2 = add (i, j);      /* position of pulse "j+5" */
 
-        test (); 
+
         if (sub (pos2, pos1) < 0)
         {
             sign = negate (sign);
         }
-        cod[pos2] = add (cod[pos2], sign);              move16 (); 
+        cod[pos2] = add (cod[pos2], sign);
     }
 
     return;

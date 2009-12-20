@@ -71,33 +71,33 @@ Word16 Ex_ctrl (Word16 excitation[],   /*i/o: Current subframe excitation   */
    Word32 t0;
 
    /* get target level */
-   avgEnergy = gmed_n(exEnergyHist, 9);                    move16();
+   avgEnergy = gmed_n(exEnergyHist, 9);
 
    prevEnergy = shr( add (exEnergyHist[7], exEnergyHist[8]) ,1);
 
-   test ();
+
    if ( sub (exEnergyHist[8], prevEnergy) < 0)
    {
-      prevEnergy = exEnergyHist[8];         move16 ();
+      prevEnergy = exEnergyHist[8];
    }
 
    /* upscaling to avoid too rapid energy rises  for some cases */
-   test (); test ();
+
    if ( sub (excEnergy, avgEnergy) < 0 && sub (excEnergy, 5) > 0)
    {
       testEnergy = shl(prevEnergy, 2);  /* testEnergy = 4*prevEnergy; */
 
-      test (); test ();
+
       if ( sub (voicedHangover, 7) < 0 || prevBFI != 0 )
       {
          /* testEnergy = 3*prevEnergy */
          testEnergy = sub (testEnergy, prevEnergy);  
       }
 
-      test ();
+
       if ( sub (avgEnergy, testEnergy) > 0)
       {
-         avgEnergy = testEnergy;         move16 ();
+         avgEnergy = testEnergy;
       }
 
       /* scaleFactor=avgEnergy/excEnergy in Q0 (const 29 below)*/
@@ -108,15 +108,15 @@ Word16 Ex_ctrl (Word16 excitation[],   /*i/o: Current subframe excitation   */
       t0 = L_shr (t0, sub (20, exp));  /* const=30 for t0 in Q0, 20 for Q10 */
       if ( L_sub(t0, 32767) > 0 )
       {
-         t0 = 32767; move32 ();   /* saturate  */
+         t0 = 32767;    /* saturate  */
       }
       scaleFactor = extract_l (t0); 
 
       /* test if scaleFactor > 3.0 */
-      test (); test ();
+
       if ( carefulFlag != 0 && sub(scaleFactor, 3072) > 0 ) 
       {
-         scaleFactor = 3072;              move16 ();
+         scaleFactor = 3072;
       }
 
       /* scale the excitation by scaleFactor */

@@ -69,13 +69,13 @@ void Lsf_lsp (
     for (i = 0; i < m; i++)
     {
         ind = shr (lsf[i], 8);      /* ind    = b8-b15 of lsf[i] */
-        offset = lsf[i] & 0x00ff;   logic16 (); /* offset = b0-b7  of lsf[i] */
+        offset = lsf[i] & 0x00ff;    /* offset = b0-b7  of lsf[i] */
 
         /* lsp[i] = table[ind]+ ((table[ind+1]-table[ind])*offset) / 256 */
 
         L_tmp = L_mult (sub (table[ind + 1], table[ind]), offset);
         lsp[i] = add (table[ind], extract_l (L_shr (L_tmp, 9)));
-                                    move16 (); 
+
     }
     return;
 }
@@ -89,16 +89,16 @@ void Lsp_lsf (
     Word16 i, ind;
     Word32 L_tmp;
 
-    ind = 63;  move16 ();                      /* begin at end of table -1 */
+    ind = 63;                        /* begin at end of table -1 */
 
     for (i = m - 1; i >= 0; i--)
     {
         /* find value in table that is just greater than lsp[i] */
-        test (); 
+
         while (sub (table[ind], lsp[i]) < 0)
         {
             ind--;
-            test (); 
+
         }
 
         /* acos(lsp[i])= ind*256 + ( ( lsp[i]-table[ind] ) *
@@ -106,8 +106,8 @@ void Lsp_lsf (
 
         L_tmp = L_mult (sub (lsp[i], table[ind]), slope[ind]);
         /*(lsp[i]-table[ind])*slope[ind])>>12*/
-        lsf[i] = round (L_shl (L_tmp, 3));      move16 (); 
-        lsf[i] = add (lsf[i], shl (ind, 8));    move16 (); 
+        lsf[i] = round (L_shl (L_tmp, 3));
+        lsf[i] = add (lsf[i], shl (ind, 8));
     }
     return;
 }

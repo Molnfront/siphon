@@ -1,0 +1,7 @@
+    encoder    |    decoder
+---------------+---------------
+spch_dos.inp   | spch_dos.cod   - 20091216
+real  0m4.097s | real  0m0.828s
+user  0m3.940s | user  0m0.750s
+sys   0m0.090s | sys   0m0.070s
+

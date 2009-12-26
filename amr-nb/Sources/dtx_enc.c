@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -38,7 +67,6 @@ const char dtx_enc_id[] = "@(#)$Id $" dtx_enc_h;
 #include "log2.h"
 #include "lsp_lsf.h"
 #include "reorder.h"
-#include "count.h"
 
 /*
 ********************************************************************************
@@ -58,27 +86,16 @@ const char dtx_enc_id[] = "@(#)$Id $" dtx_enc_h;
 *  Function    : dtx_enc_init
 *
 **************************************************************************
-*/ 
-int dtx_enc_init (dtx_encState **st)
+*/
+int dtx_enc_init (dtx_encState *st)
 {
-  dtx_encState* s;
- 
-  if (st == (dtx_encState **) NULL){
+  if (st == (dtx_encState *) NULL){
     fprintf(stderr, "dtx_enc_init: invalid parameter\n");
     return -1;
   }
-  
-  *st = NULL;
- 
-  /* allocate memory */
-  if ((s= (dtx_encState *) malloc(sizeof(dtx_encState))) == NULL){
-    fprintf(stderr, "dtx_enc_init: can not malloc state structure\n");
-    return -1;
-  }
-  
-  dtx_enc_reset(s);
-  *st = s;
-  
+
+  dtx_enc_reset(st);
+
   return 0;
 }
  
@@ -119,26 +136,7 @@ int dtx_enc_reset (dtx_encState *st)
 
   return 1;
 }
- 
-/*
-**************************************************************************
-*
-*  Function    : dtx_enc_exit
-*
-**************************************************************************
-*/
-void dtx_enc_exit (dtx_encState **st)
-{
-   if (st == NULL || *st == NULL)
-      return;
-   
-   /* deallocate memory */
-   free(*st);
-   *st = NULL;
-   
-   return;
-}
- 
+
 /*
 **************************************************************************
 *

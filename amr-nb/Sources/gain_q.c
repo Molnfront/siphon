@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -61,38 +90,24 @@ const char gain_q_id[] = "@(#)$Id $" gain_q_h;
 *
 **************************************************************************
 */
-int gainQuant_init (gainQuantState **state)
+int gainQuant_init (gainQuantState *state)
 {
-  gainQuantState* s;
- 
-  if (state == (gainQuantState **) NULL){
+  if (state == (gainQuantState *) NULL){
       fprintf(stderr, "gainQuant_init: invalid parameter\n");
       return -1;
   }
-  *state = NULL;
- 
-  /* allocate memory */
-  if ((s= (gainQuantState *) malloc(sizeof(gainQuantState))) == NULL){
-      fprintf(stderr, "gainQuant_init: can not malloc state structure\n");
-      return -1;
-  }
   
-  s->gain_idx_ptr = NULL;
-  
-  s->gc_predSt = NULL;
-  s->gc_predUnqSt = NULL;
-  s->adaptSt = NULL;
+  state->gain_idx_ptr = NULL;
 
   /* Init sub states */
-  if (   gc_pred_init(&s->gc_predSt)
-      || gc_pred_init(&s->gc_predUnqSt)
-      || gain_adapt_init(&s->adaptSt)) {
-     gainQuant_exit(&s);
+  if (   gc_pred_init(&state->gc_predSt)
+      || gc_pred_init(&state->gc_predUnqSt)
+      || gain_adapt_init(&state->adaptSt)) {
+     gainQuant_reset(state);
      return -1;
   }
  
-  gainQuant_reset(s);
-  *state = s;
+  gainQuant_reset(state);
   
   return 0;
 }
@@ -121,36 +136,13 @@ int gainQuant_reset (gainQuantState *state)
   Set_zero (state->sf0_frac_coeff, 5);
   state->gain_idx_ptr = NULL;
   
-  gc_pred_reset(state->gc_predSt);
-  gc_pred_reset(state->gc_predUnqSt);
-  gain_adapt_reset(state->adaptSt);
+  gc_pred_reset(&state->gc_predSt);
+  gc_pred_reset(&state->gc_predUnqSt);
+  gain_adapt_reset(&state->adaptSt);
   
   return 0;
 }
- 
-/*************************************************************************
-*
-*  Function:   gainQuant_exit
-*  Purpose:    The memory used for state memory is freed
-*
-**************************************************************************
-*/
-void gainQuant_exit (gainQuantState **state)
-{
-  if (state == NULL || *state == NULL)
-      return;
- 
-  gc_pred_exit(&(*state)->gc_predSt);
-  gc_pred_exit(&(*state)->gc_predUnqSt);
-  gain_adapt_exit(&(*state)->adaptSt);
 
-  /* deallocate memory */
-  free(*state);
-  *state = NULL;
-  
-  return;
-}
- 
 int gainQuant(
     gainQuantState *st,   /* i/o : State struct                      */
     enum Mode mode,       /* i   : coder mode                        */
@@ -193,11 +185,11 @@ int gainQuant(
             /* save position in output parameter stream and current
                state of codebook gain predictor */
             st->gain_idx_ptr = (*anap)++;
-            gc_pred_copy(st->gc_predSt, st->gc_predUnqSt);
+            gc_pred_copy(&st->gc_predSt, &st->gc_predUnqSt);
             
             /* predict codebook gain (using "unquantized" predictor)*/
             /* (note that code[] is unsharpened in MR475)           */
-            gc_pred(st->gc_predUnqSt, mode, code,
+            gc_pred(&st->gc_predUnqSt, mode, code,
                     &st->sf0_exp_gcode0, &st->sf0_frac_gcode0,
                     &exp_en, &frac_en);
             
@@ -217,7 +209,7 @@ int gainQuant(
 
             /* calculate optimum codebook gain and update
                "unquantized" predictor                    */
-            MR475_update_unq_pred(st->gc_predUnqSt,
+            MR475_update_unq_pred(&st->gc_predUnqSt,
                                   st->sf0_exp_gcode0, st->sf0_frac_gcode0,
                                   cod_gain_exp, cod_gain_frac);
             
@@ -227,7 +219,7 @@ int gainQuant(
         {
             /* predict codebook gain (using "unquantized" predictor) */
             /* (note that code[] is unsharpened in MR475)            */
-            gc_pred(st->gc_predUnqSt, mode, code,
+            gc_pred(&st->gc_predUnqSt, mode, code,
                     &exp_gcode0, &frac_gcode0,
                     &exp_en, &frac_en);
             
@@ -240,7 +232,7 @@ int gainQuant(
 
             /* run real (4-dim) quantizer and update real gain predictor */
             *st->gain_idx_ptr = MR475_gain_quant(
-                st->gc_predSt,
+                &st->gc_predSt,
                 st->sf0_exp_gcode0, st->sf0_frac_gcode0, 
                 st->sf0_exp_coeff,  st->sf0_frac_coeff,
                 st->sf0_exp_target_en, st->sf0_frac_target_en,
@@ -259,7 +251,7 @@ int gainQuant(
          *  predict codebook gain and quantize                               *
          *  (also compute normalized CB innovation energy for MR795)         *
          *-------------------------------------------------------------------*/
-        gc_pred(st->gc_predSt, mode, code, &exp_gcode0, &frac_gcode0,
+        gc_pred(&st->gc_predSt, mode, code, &exp_gcode0, &frac_gcode0,
                 &exp_en, &frac_en);
         
 
@@ -280,7 +272,7 @@ int gainQuant(
 
             if (sub (mode, MR795) == 0)
             {
-                MR795_gain_quant(st->adaptSt, res, exc, code,
+                MR795_gain_quant(&st->adaptSt, res, exc, code,
                                  frac_coeff, exp_coeff,
                                  exp_en, frac_en,
                                  exp_gcode0, frac_gcode0, L_SUBFR,
@@ -308,7 +300,7 @@ int gainQuant(
          *                       = qua_ener                                 *
          *                                           constant = 20*Log10(2) *
          *------------------------------------------------------------------*/
-        gc_pred_update(st->gc_predSt, qua_ener_MR122, qua_ener);
+        gc_pred_update(&st->gc_predSt, qua_ener_MR122, qua_ener);
     }
         
     return 0;

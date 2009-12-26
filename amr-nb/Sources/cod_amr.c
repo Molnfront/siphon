@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 *****************************************************************************
 *
@@ -25,7 +54,6 @@ const char cod_amr_id[] = "@(#)$Id $" cod_amr_h;
 #include <stdlib.h>
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
 #include "cnst.h"
 #include "copy.h"
 #include "set_zero.h"
@@ -93,52 +121,41 @@ static const Word16 gamma2[M] =
 *
 **************************************************************************
 */
-int cod_amr_init (cod_amrState **state, Flag dtx)
+int cod_amr_init (cod_amrState *state, Flag dtx)
 {
-  cod_amrState* s;
-
-  if (state == (cod_amrState **) NULL){
+  if (state == (cod_amrState *) NULL){
       fprintf(stderr, "cod_amr_init: invalid parameter\n");
       return -1;
   }
-  *state = NULL;
- 
-  /* allocate memory */
-  if ((s= (cod_amrState *) malloc(sizeof(cod_amrState))) == NULL){
-      fprintf(stderr, "cod_amr_init: can not malloc state structure\n");
-      return -1;
-  }
 
-  s->lpcSt = NULL;
+  /*s->lpcSt = NULL;
   s->lspSt = NULL;
   s->clLtpSt = NULL;
   s->gainQuantSt = NULL;
   s->pitchOLWghtSt = NULL;
   s->tonStabSt = NULL;    
   s->vadSt = NULL;
-  s->dtx_encSt = NULL;
-  s->dtx = dtx;
+  s->dtx_encSt = NULL;*/
+  state->dtx = dtx;
   
   /* Init sub states */
-  if (cl_ltp_init(&s->clLtpSt) ||
-      lsp_init(&s->lspSt) ||
-      gainQuant_init(&s->gainQuantSt) ||
-      p_ol_wgh_init(&s->pitchOLWghtSt) ||
-      ton_stab_init(&s->tonStabSt) ||      
+  if (cl_ltp_init(&state->clLtpSt) ||
+      lsp_init(&state->lspSt) ||
+      gainQuant_init(&state->gainQuantSt) ||
+      p_ol_wgh_init(&state->pitchOLWghtSt) ||
+      ton_stab_init(&state->tonStabSt) ||
 #ifndef VAD2
-      vad1_init(&s->vadSt) ||
+      vad1_init(&state->vadSt) ||
 #else
-      vad2_init(&s->vadSt) ||
+      vad2_init(&state->vadSt) ||
 #endif
-      dtx_enc_init(&s->dtx_encSt) ||
-      lpc_init(&s->lpcSt)) {
-     cod_amr_exit(&s);
+      dtx_enc_init(&state->dtx_encSt) ||
+      lpc_init(&state->lpcSt)) {
+     cod_amr_reset(state);
      return -1;
   }
   
-  cod_amr_reset(s);
-  
-  *state = s;
+  cod_amr_reset(state);
   
   return 0;
 }
@@ -196,67 +213,33 @@ int cod_amr_reset (cod_amrState *st)
    {
       st->old_lags[i] = 40; 
    }
-   
+
    /* Reset lpc states */
-   lpc_reset(st->lpcSt);
+   lpc_reset(&st->lpcSt);
    
    /* Reset lsp states */
-   lsp_reset(st->lspSt);
+   lsp_reset(&st->lspSt);
     
    /* Reset clLtp states */
-   cl_ltp_reset(st->clLtpSt);
+   cl_ltp_reset(&st->clLtpSt);
    
-   gainQuant_reset(st->gainQuantSt);
+   gainQuant_reset(&st->gainQuantSt);
 
-   p_ol_wgh_reset(st->pitchOLWghtSt);
+   p_ol_wgh_reset(&st->pitchOLWghtSt);
 
-   ton_stab_reset(st->tonStabSt);   
+   ton_stab_reset(&st->tonStabSt);
 
 #ifndef VAD2
-   vad1_reset(st->vadSt);
+   vad1_reset(&st->vadSt);
 #else
-   vad2_reset(st->vadSt);
+   vad2_reset(&st->vadSt);
 #endif 
    
-   dtx_enc_reset(st->dtx_encSt);
+   dtx_enc_reset(&st->dtx_encSt);
 
    st->sharp = SHARPMIN;
    
    return 0;
-}
- 
-/*
-**************************************************************************
-*
-*  Function    : cod_amr_exit
-*  Purpose     : The memory used for state memory is freed
-*
-**************************************************************************
-*/
-void cod_amr_exit (cod_amrState **state)
-{
-   if (state == NULL || *state == NULL)
-      return;
-   
-   /* dealloc members */
-   lpc_exit(&(*state)->lpcSt);
-   lsp_exit(&(*state)->lspSt);
-   gainQuant_exit(&(*state)->gainQuantSt);
-   cl_ltp_exit(&(*state)->clLtpSt);
-   p_ol_wgh_exit(&(*state)->pitchOLWghtSt);
-   ton_stab_exit(&(*state)->tonStabSt);
-#ifndef VAD2
-   vad1_exit(&(*state)->vadSt);
-#else
-   vad2_exit(&(*state)->vadSt);
-#endif 
-   dtx_enc_exit(&(*state)->dtx_encSt);
-
-   /* deallocate memory */
-   free(*state);
-   *state = NULL;
-   
-   return;
 }
 
 /***************************************************************************
@@ -368,14 +351,14 @@ int cod_amr(
       /* Find VAD decision */
 
 #ifdef  VAD2
-      vad_flag = vad2 (st->new_speech,    st->vadSt);
-      vad_flag = vad2 (st->new_speech+80, st->vadSt) || vad_flag;
+      vad_flag = vad2 (st->new_speech,    &st->vadSt);
+      vad_flag = vad2 (st->new_speech+80, &st->vadSt) || vad_flag;
 #else
-      vad_flag = vad1(st->vadSt, st->new_speech);     
+      vad_flag = vad1(&st->vadSt, st->new_speech);
 #endif
 
       /* NB! usedMode may change here */
-      compute_sid_flag = tx_dtx_handler(st->dtx_encSt,
+      compute_sid_flag = tx_dtx_handler(&st->dtx_encSt,
                                         vad_flag, 
                                         usedMode);
    }
@@ -395,13 +378,13 @@ int cod_amr(
     *------------------------------------------------------------------------*/
    
    /* LP analysis */
-   lpc(st->lpcSt, mode, st->p_window, st->p_window_12k2, A_t);
+   lpc(&st->lpcSt, mode, st->p_window, st->p_window_12k2, A_t);
 
    /* From A(z) to lsp. LSP quantization and interpolation */
-   lsp(st->lspSt, mode, *usedMode, A_t, Aq_t, lsp_new, &ana);
+   lsp(&st->lspSt, mode, *usedMode, A_t, Aq_t, lsp_new, &ana);
 
    /* Buffer lsp's and energy */
-   dtx_buffer(st->dtx_encSt,
+   dtx_buffer(&st->dtx_encSt,
 	      lsp_new,
 	      st->new_speech);
 
@@ -409,10 +392,10 @@ int cod_amr(
 
    if (sub(*usedMode, MRDTX) == 0)
    {
-      dtx_enc(st->dtx_encSt,
+      dtx_enc(&st->dtx_encSt,
               compute_sid_flag,
-              st->lspSt->qSt, 
-              st->gainQuantSt->gc_predSt,
+              &st->lspSt.qSt,
+              &st->gainQuantSt.gc_predSt,
               &ana);
       
       Set_zero(st->old_exc,    PIT_MAX + L_INTERPOL);
@@ -421,18 +404,18 @@ int cod_amr(
       Set_zero(st->zero,       L_SUBFR);
       Set_zero(st->hvec,       L_SUBFR);    /* set to zero "h1[-L_SUBFR..-1]" */
       /* Reset lsp states */
-      lsp_reset(st->lspSt);
-      Copy(lsp_new, st->lspSt->lsp_old, M);
-      Copy(lsp_new, st->lspSt->lsp_old_q, M);
+      lsp_reset(&st->lspSt);
+      Copy(lsp_new, st->lspSt.lsp_old, M);
+      Copy(lsp_new, st->lspSt.lsp_old_q, M);
       
       /* Reset clLtp states */
-      cl_ltp_reset(st->clLtpSt);
+      cl_ltp_reset(&st->clLtpSt);
       st->sharp = SHARPMIN;
    }
    else
    {
        /* check resonance in the filter */
-      lsp_flag = check_lsp(st->tonStabSt, st->lspSt->lsp_old);
+      lsp_flag = check_lsp(&st->tonStabSt, st->lspSt.lsp_old);
    }
    
    /*----------------------------------------------------------------------*
@@ -461,7 +444,7 @@ int cod_amr(
       if ((sub(mode, MR475) != 0) && (sub(mode, MR515) != 0))
       {
          /* Find open loop pitch lag for two subframes */
-         ol_ltp(st->pitchOLWghtSt, st->vadSt, mode, &st->wsp[i_subfr],
+         ol_ltp(&st->pitchOLWghtSt, &st->vadSt, mode, &st->wsp[i_subfr],
                 &T_op[subfrNr], st->old_lags, st->ol_gain_flg, subfrNr,
                 st->dtx);
       }
@@ -472,7 +455,7 @@ int cod_amr(
       /* Find open loop pitch lag for ONE FRAME ONLY */
       /* search on 160 samples */
       
-      ol_ltp(st->pitchOLWghtSt, st->vadSt, mode, &st->wsp[0], &T_op[0],
+      ol_ltp(&st->pitchOLWghtSt, &st->vadSt, mode, &st->wsp[0], &T_op[0],
              st->old_lags, st->ol_gain_flg, 1, st->dtx);
       T_op[1] = T_op[0];
    }         
@@ -480,7 +463,7 @@ int cod_amr(
 #ifdef VAD2
    if (st->dtx)
    {  /* no test() call since this if is only in simulation env */
-      LTP_flag_update(st->vadSt, mode);
+      LTP_flag_update(&st->vadSt, mode);
    }
 #endif
 
@@ -488,7 +471,7 @@ int cod_amr(
    /* run VAD pitch detection */
    if (st->dtx)
    {  /* no test() call since this if is only in simulation env */
-      vad_pitch_detection(st->vadSt, T_op);
+      vad_pitch_detection(&st->vadSt, T_op);
    } 
 #endif
 
@@ -571,7 +554,7 @@ int cod_amr(
       /*-----------------------------------------------------------------*
        * - Closed-loop LTP search                                        *
        *-----------------------------------------------------------------*/
-      cl_ltp(st->clLtpSt, st->tonStabSt, *usedMode, i_subfr, T_op, st->h1, 
+      cl_ltp(&st->clLtpSt, &st->tonStabSt, *usedMode, i_subfr, T_op, st->h1,
              &st->exc[i_subfr], res2, xn, lsp_flag, xn2, y1, 
              &T0, &T0_frac, &gain_pit, gCoeff, &ana,
              &gp_limit);
@@ -598,13 +581,13 @@ int cod_amr(
       /*------------------------------------------------------*
        * - Quantization of gains.                             *
        *------------------------------------------------------*/
-      gainQuant(st->gainQuantSt, *usedMode, res, &st->exc[i_subfr], code,
+      gainQuant(&st->gainQuantSt, *usedMode, res, &st->exc[i_subfr], code,
                 xn, xn2,  y1, y2, gCoeff, evenSubfr, gp_limit,
                 &gain_pit_sf0, &gain_code_sf0,
                 &gain_pit, &gain_code, &ana);
 
       /* update gain history */
-      update_gp_clipping(st->tonStabSt, gain_pit);
+      update_gp_clipping(&st->tonStabSt, gain_pit);
       
 
       if (sub(*usedMode, MR475) != 0)
@@ -689,4 +672,3 @@ the_end:
 
    return 0;
 }
-

@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 *****************************************************************************
 *
@@ -63,7 +92,11 @@ const char sp_enc_id[] = "@(#)$Id $" sp_enc_h;
 *                         PUBLIC PROGRAM CODE
 *****************************************************************************
 */
- 
+int Speech_Encode_Frame_memSize()
+{
+  return sizeof(Speech_Encode_FrameState);
+}
+
 /*************************************************************************
 *
 *  Function:   Speech_Encode_Frame_init
@@ -72,37 +105,25 @@ const char sp_enc_id[] = "@(#)$Id $" sp_enc_h;
 *
 **************************************************************************
 */
-int Speech_Encode_Frame_init (Speech_Encode_FrameState **state,
-                              Flag dtx,
-                              char *id)
+int Speech_Encode_Frame_init (Speech_Encode_FrameState *state,
+                              Flag dtx)
 {
-  Speech_Encode_FrameState* s;
- 
-  if (state == (Speech_Encode_FrameState **) NULL){
+  if (state == (Speech_Encode_FrameState *) NULL){
       fprintf(stderr, "Speech_Encode_Frame_init: invalid parameter\n");
       return -1;
   }
-  *state = NULL;
- 
-  /* allocate memory */
-  if ((s= (Speech_Encode_FrameState *) malloc(sizeof(Speech_Encode_FrameState))) == NULL){
-      fprintf(stderr, "Speech_Encode_Frame_init: can not malloc state "
-                      "structure\n");
+
+  /*s->pre_state = NULL;
+  s->cod_amr_state = NULL;*/
+  state->dtx = dtx;
+
+  if (Pre_Process_init(&state->pre_state) ||
+      cod_amr_init(&state->cod_amr_state, state->dtx)) {
+      Speech_Encode_Frame_reset(state);
       return -1;
   }
 
-  s->pre_state = NULL;
-  s->cod_amr_state = NULL;
-  s->dtx = dtx;
-
-  if (Pre_Process_init(&s->pre_state) ||
-      cod_amr_init(&s->cod_amr_state, s->dtx)) {
-      Speech_Encode_Frame_exit(&s);
-      return -1;
-  }
-
-  Speech_Encode_Frame_reset(s);
-  *state = s;
+  Speech_Encode_Frame_reset(state);
   
   return 0;
 }
@@ -121,35 +142,12 @@ int Speech_Encode_Frame_reset (Speech_Encode_FrameState *state)
       return -1;
   }
   
-  Pre_Process_reset(state->pre_state);
-  cod_amr_reset(state->cod_amr_state);
+  Pre_Process_reset(&state->pre_state);
+  cod_amr_reset(&state->cod_amr_state);
 
   return 0;
 }
- 
-/*************************************************************************
-*
-*  Function:   Speech_Encode_Frame_exit
-*  Purpose:    The memory used for state memory is freed
-*
-**************************************************************************
-*/
-void Speech_Encode_Frame_exit (Speech_Encode_FrameState **state)
-{
-  if (state == NULL || *state == NULL)
-      return;
- 
-  Pre_Process_exit(&(*state)->pre_state);
-  cod_amr_exit(&(*state)->cod_amr_state);
- 
-  /* deallocate memory */
-  free(*state);
-  *state = NULL;
-  
-  return;
-}
- 
- 
+
 int Speech_Encode_Frame_First (
     Speech_Encode_FrameState *st,  /* i/o : post filter states       */
     Word16 *new_speech)            /* i   : speech input             */
@@ -167,9 +165,9 @@ int Speech_Encode_Frame_First (
 #endif
 
   /* filter + downscaling */
-  Pre_Process (st->pre_state, new_speech, L_NEXT);
+  Pre_Process (&st->pre_state, new_speech, L_NEXT);
 
-  cod_amr_first(st->cod_amr_state, new_speech);
+  cod_amr_first(&st->cod_amr_state, new_speech);
 
   return 0;
 }
@@ -187,10 +185,11 @@ int Speech_Encode_Frame (
   Word16 i;
 
   /* initialize the serial output frame to zero */
-  for (i = 0; i < MAX_SERIAL_SIZE; i++)   
+  Set_zero(serial, MAX_SERIAL_SIZE);
+  /*for (i = 0; i < MAX_SERIAL_SIZE; i++)
   {
     serial[i] = 0;
-  }
+  }*/
 
 #if !defined(NO13BIT)
   /* Delete the 3 LSBs (13-bit input) */
@@ -201,11 +200,11 @@ int Speech_Encode_Frame (
 #endif
 
   /* filter + downscaling */
-  Pre_Process (st->pre_state, new_speech, L_FRAME);           
+  Pre_Process (&st->pre_state, new_speech, L_FRAME);
   
   /* Call the speech encoder */
-  cod_amr(st->cod_amr_state, mode, new_speech, prm, usedMode, syn);
-  
+  cod_amr(&st->cod_amr_state, mode, new_speech, prm, usedMode, syn);
+
   /* Parameters to serial bits */
   Prm2bits (*usedMode, prm, &serial[0]); 
 
@@ -309,4 +308,4 @@ Word16 PackBits(
 }
 
 #endif
-  
+

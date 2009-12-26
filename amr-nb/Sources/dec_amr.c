@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*************************************************************************
 *
 *      GSM AMR-NB speech codec   R98   Version 7.6.0   December 12, 2001
@@ -24,7 +53,6 @@ const char dec_amr_id[] = "@(#)$Id $" dec_amr_h;
 #include <stdio.h>
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
 #include "cnst.h"
 #include "copy.h"
 #include "set_zero.h"
@@ -93,52 +121,35 @@ const char dec_amr_id[] = "@(#)$Id $" dec_amr_h;
 *
 **************************************************************************
 */
-int Decoder_amr_init (Decoder_amrState **state)
+int Decoder_amr_init (Decoder_amrState *state)
 {
-  Decoder_amrState* s;
-  Word16 i;
- 
-  if (state == (Decoder_amrState **) NULL){
+  if (state == (Decoder_amrState *) NULL){
       fprintf(stderr, "Decoder_amr_init: invalid parameter\n");
       return -1;
   }
-  *state = NULL;
- 
-  /* allocate memory */
-  if ((s= (Decoder_amrState *) malloc(sizeof(Decoder_amrState))) == NULL){
-      fprintf(stderr, "Decoder_amr_init: can not malloc state structure\n");
-      return -1;
-  }
-  
-  s->T0_lagBuff = 40;
-  s->inBackgroundNoise = 0;
-  s->voicedHangover = 0;
-  for (i = 0; i < 9; i++)
-     s->ltpGainHistory[i] = 0;
 
-  s->lsfState = NULL;
-  s->ec_gain_p_st = NULL;
-  s->ec_gain_c_st = NULL;  
-  s->pred_state = NULL;
-  s->ph_disp_st = NULL;
-  s->dtxDecoderState = NULL;
-  
-  if (D_plsf_init(&s->lsfState) ||
-      ec_gain_pitch_init(&s->ec_gain_p_st) ||
-      ec_gain_code_init(&s->ec_gain_c_st) ||
-      gc_pred_init(&s->pred_state) ||
-      Cb_gain_average_init(&s->Cb_gain_averState) ||
-      lsp_avg_init(&s->lsp_avg_st) ||      
-      Bgn_scd_init(&s->background_state) ||      
-      ph_disp_init(&s->ph_disp_st) || 
-      dtx_dec_init(&s->dtxDecoderState)) {
-      Decoder_amr_exit(&s);
+  state->T0_lagBuff = 40;
+  state->inBackgroundNoise = 0;
+  state->voicedHangover = 0;
+  /*for (i = 0; i < 9; i++)
+     s->ltpGainHistory[i] = 0;*/
+  Set_zero(state->ltpGainHistory, 9);
+
+  if (D_plsf_init(&state->lsfState) ||
+      ec_gain_pitch_init(&state->ec_gain_p_st) ||
+      ec_gain_code_init(&state->ec_gain_c_st) ||
+      gc_pred_init(&state->pred_state) ||
+      Cb_gain_average_init(&state->Cb_gain_averState) ||
+      lsp_avg_init(&state->lsp_avg_st) ||
+      Bgn_scd_init(&state->background_state) ||
+      ph_disp_init(&state->ph_disp_st) ||
+      dtx_dec_init(&state->dtxDecoderState)) {
+      Decoder_amr_reset(state, (enum Mode)0);
       return -1;
   }
-      
-  Decoder_amr_reset(s, (enum Mode)0);
-  *state = s;
-  
+
+  Decoder_amr_reset(state, (enum Mode)0);
+
   return 0;
 }
 
@@ -152,8 +163,6 @@ int Decoder_amr_init (Decoder_amrState **state)
 */
 int Decoder_amr_reset (Decoder_amrState *state, enum Mode mode)
 {
-  Word16 i;
-
   if (state == (Decoder_amrState *) NULL){
       fprintf(stderr, "Decoder_amr_reset: invalid parameter\n");
       return -1;
@@ -187,60 +196,32 @@ int Decoder_amr_reset (Decoder_amrState *state, enum Mode mode)
   state->inBackgroundNoise = 0;
   state->voicedHangover = 0;
   if (mode != MRDTX) {
-      for (i=0;i<9;i++)
-          state->excEnergyHist[i] = 0;
+      /*for (i=0;i<9;i++)
+          state->excEnergyHist[i] = 0;*/
+      Set_zero(state->excEnergyHist, 9);
   }
   
-  for (i = 0; i < 9; i++)
-     state->ltpGainHistory[i] = 0;
+  /*for (i = 0; i < 9; i++)
+     state->ltpGainHistory[i] = 0;*/
+  Set_zero(state->ltpGainHistory, 9);
 
-  Cb_gain_average_reset(state->Cb_gain_averState);
+  Cb_gain_average_reset(&state->Cb_gain_averState);
   if (mode != MRDTX)
-     lsp_avg_reset(state->lsp_avg_st);
-  D_plsf_reset(state->lsfState);
-  ec_gain_pitch_reset(state->ec_gain_p_st);
-  ec_gain_code_reset(state->ec_gain_c_st);
+     lsp_avg_reset(&state->lsp_avg_st);
+  D_plsf_reset(&state->lsfState);
+  ec_gain_pitch_reset(&state->ec_gain_p_st);
+  ec_gain_code_reset(&state->ec_gain_c_st);
 
   if (mode != MRDTX)
-     gc_pred_reset(state->pred_state);
+     gc_pred_reset(&state->pred_state);
 
-  Bgn_scd_reset(state->background_state);
+  Bgn_scd_reset(&state->background_state);
   state->nodataSeed = 21845;
-  ph_disp_reset(state->ph_disp_st);
+  ph_disp_reset(&state->ph_disp_st);
   if (mode != MRDTX)
-     dtx_dec_reset(state->dtxDecoderState);
+     dtx_dec_reset(&state->dtxDecoderState);
   
   return 0;
-}
-
-/*
-**************************************************************************
-*
-*  Function    : Decoder_amr_exit
-*  Purpose     : The memory used for state memory is freed
-*
-**************************************************************************
-*/
-void Decoder_amr_exit (Decoder_amrState **state)
-{
-  if (state == NULL || *state == NULL)
-      return;
- 
-  D_plsf_exit(&(*state)->lsfState);
-  ec_gain_pitch_exit(&(*state)->ec_gain_p_st);
-  ec_gain_code_exit(&(*state)->ec_gain_c_st);
-  gc_pred_exit(&(*state)->pred_state);
-  Bgn_scd_exit(&(*state)->background_state);
-  ph_disp_exit(&(*state)->ph_disp_st);
-  Cb_gain_average_exit(&(*state)->Cb_gain_averState);
-  lsp_avg_exit(&(*state)->lsp_avg_st);
-  dtx_dec_exit(&(*state)->dtxDecoderState);
-  
-  /* deallocate memory */
-  free(*state);
-  *state = NULL;
-  
-  return;
 }
 
 /*
@@ -263,18 +244,18 @@ int Decoder_amr (
 )
 {
     /* LPC coefficients */
-   
+
     Word16 *Az;                /* Pointer on A_t */
-    
+
     /* LSPs */
 
     Word16 lsp_new[M];
     Word16 lsp_mid[M];
 
     /* LSFs */
-    
+
     Word16 prev_lsf[M];
-    Word16 lsf_i[M];    
+    Word16 lsf_i[M];
 
     /* Algebraic codevector */
 
@@ -298,7 +279,7 @@ int Decoder_amr (
     Word16 flag4;
     Word16 carefulFlag;
     Word16 excEnergy;
-    Word16 subfrNr; 
+    Word16 subfrNr;
     Word16 evenSubfr = 0;
 
     Word16 bfi = 0;   /* bad frame indication flag                          */
@@ -309,53 +290,53 @@ int Decoder_amr (
     enum DTXStateType newDTXState;  /* SPEECH , DTX, DTX_MUTE */
 
     /* find the new  DTX state  SPEECH OR DTX */
-    newDTXState = rx_dtx_handler(st->dtxDecoderState, frame_type);
+    newDTXState = rx_dtx_handler(&st->dtxDecoderState, frame_type);
        /* function result */
-    
+
     /* DTX actions */
 
     if (sub(newDTXState, SPEECH) != 0 )
     {
        Decoder_amr_reset (st, MRDTX);
 
-       dtx_dec(st->dtxDecoderState, 
-               st->mem_syn, 
-               st->lsfState, 
-               st->pred_state,
-               st->Cb_gain_averState,
+       dtx_dec(&st->dtxDecoderState,
+               st->mem_syn,
+               &st->lsfState,
+               &st->pred_state,
+               &st->Cb_gain_averState,
                newDTXState,
-               mode, 
+               mode,
                parm, synth, A_t);
        /* update average lsp */
-       
-       Lsf_lsp(st->lsfState->past_lsf_q, st->lsp_old, M);
-       lsp_avg(st->lsp_avg_st, st->lsfState->past_lsf_q);
+
+       Lsf_lsp(st->lsfState.past_lsf_q, st->lsp_old, M);
+       lsp_avg(&st->lsp_avg_st, st->lsfState.past_lsf_q);
        goto the_end;
     }
 
     /* SPEECH action state machine  */
 
-    if ((sub(frame_type, RX_SPEECH_BAD) == 0) || 
+    if ((sub(frame_type, RX_SPEECH_BAD) == 0) ||
         (sub(frame_type, RX_NO_DATA) == 0) ||
-        (sub(frame_type, RX_ONSET) == 0)) 
+        (sub(frame_type, RX_ONSET) == 0))
     {
        bfi = 1;
 
        if ((sub(frame_type, RX_NO_DATA) == 0) ||
            (sub(frame_type, RX_ONSET) == 0))
        {
-	  build_CN_param(&st->nodataSeed,
-			 prmno[mode],
-			 bitno[mode],
-			 parm);
-       }       
+    build_CN_param(&st->nodataSeed,
+       prmno[mode],
+       bitno[mode],
+       parm);
+       }
     }
     else if (sub(frame_type, RX_SPEECH_DEGRADED) == 0)
     {
        pdfi = 1;
     }
-   
-    
+
+
 
     if (bfi != 0)
     {
@@ -370,7 +351,7 @@ int Decoder_amr (
     {
         st->state = 0;
     }
-    
+
 
     if (sub (st->state, 6) > 0)
     {
@@ -389,45 +370,45 @@ int Decoder_amr (
 
 
     /*if (sub(st->dtxDecoderState->dtxGlobalState, DTX) == 0)*/
-    if ( st->dtxDecoderState->dtxGlobalState == DTX )
+    if ( st->dtxDecoderState.dtxGlobalState == DTX )
     {
        st->state = 5;
        st->prev_bf = 0;
     }
     /*else if (test (), sub(st->dtxDecoderState->dtxGlobalState, DTX_MUTE) == 0)*/
-    else if ( st->dtxDecoderState->dtxGlobalState == DTX_MUTE )
+    else if ( st->dtxDecoderState.dtxGlobalState == DTX_MUTE )
     {
        st->state = 5;
        st->prev_bf = 1;
     }
-    
+
     /* save old LSFs for CB gain smoothing */
-    Copy (st->lsfState->past_lsf_q, prev_lsf, M);
-    
+    Copy (st->lsfState.past_lsf_q, prev_lsf, M);
+
     /* decode LSF parameters and generate interpolated lpc coefficients
        for the 4 subframes */
 
     if (sub (mode, MR122) != 0)
     {
-       D_plsf_3(st->lsfState, mode, bfi, parm, lsp_new);
+       D_plsf_3(&st->lsfState, mode, bfi, parm, lsp_new);
 
        /* Advance synthesis parameters pointer */
        parm += 3;
-       
+
        Int_lpc_1to3(st->lsp_old, lsp_new, A_t);
     }
     else
     {
-       D_plsf_5 (st->lsfState, bfi, parm, lsp_mid, lsp_new);
+       D_plsf_5 (&st->lsfState, bfi, parm, lsp_mid, lsp_new);
 
 
 
        /* Advance synthesis parameters pointer */
        parm += 5;
-       
+
        Int_lpc_1and3 (st->lsp_old, lsp_mid, lsp_new, A_t);
     }
-       
+
     /* update the LSPs for the next frame */
     for (i = 0; i < M; i++)
     {
@@ -446,10 +427,10 @@ int Decoder_amr (
     *     - decode pitch and codebook gains                                  *
     *     - find the excitation and compute synthesis speech                 *
     *------------------------------------------------------------------------*/
-    
+
     /* pointer to interpolated LPC parameters */
     Az = A_t;
-    
+
     evenSubfr = 0;
     subfrNr = -1;
     for (i_subfr = 0; i_subfr < L_FRAME; i_subfr += L_SUBFR)
@@ -464,25 +445,25 @@ int Decoder_amr (
        if (sub (i_subfr, L_FRAME_BY2) == 0)
        {
 
-          if (sub(mode, MR475) != 0 && sub(mode, MR515) != 0) 
+          if (sub(mode, MR475) != 0 && sub(mode, MR515) != 0)
           {
              pit_flag = 0;
           }
        }
-       
+
        /* pitch index */
        index = *parm++;
 
        /*-------------------------------------------------------*
         * - decode pitch lag and find adaptive codebook vector. *
         *-------------------------------------------------------*/
-       
+
 
        if (sub(mode, MR122) != 0)
        {
           /* flag4 indicates encoding with 4 bit resolution;     */
           /* this is needed for mode MR475, MR515, MR59 and MR67 */
-          
+
           flag4 = 0;
 
           if ((sub (mode, MR475) == 0) ||
@@ -491,7 +472,7 @@ int Decoder_amr (
               (sub (mode, MR67) == 0) ) {
              flag4 = 1;
           }
-          
+
           /*-------------------------------------------------------*
            * - get ranges for the t0_min and t0_max                *
            * - only needed in delta decoding                       *
@@ -506,7 +487,7 @@ int Decoder_amr (
              delta_frc_low = 10;
              delta_frc_range = 19;
           }
-             
+
           t0_min = sub(st->old_T0, delta_frc_low);
 
           if (sub(t0_min, PIT_MIN) < 0)
@@ -520,7 +501,7 @@ int Decoder_amr (
              t0_max = PIT_MAX;
              t0_min = sub(t0_max, delta_frc_range);
           }
-             
+
           Dec_lag3 (index, t0_min, t0_max, pit_flag, st->old_T0,
                     &T0, &T0_frac, flag4);
 
@@ -530,7 +511,7 @@ int Decoder_amr (
           if (bfi != 0)
           {
 
-             if (sub (st->old_T0, PIT_MAX) < 0)     
+             if (sub (st->old_T0, PIT_MAX) < 0)
              {                                      /* Graceful pitch */
                 st->old_T0 = add(st->old_T0, 1);    /* degradation    */
              }
@@ -538,7 +519,7 @@ int Decoder_amr (
              T0_frac = 0;
 
 
-             if ( st->inBackgroundNoise != 0 && 
+             if ( st->inBackgroundNoise != 0 &&
                   sub(st->voicedHangover, 4) > 0 &&
                   ((sub(mode, MR475) == 0 ) ||
                    (sub(mode, MR515) == 0 ) ||
@@ -559,7 +540,7 @@ int Decoder_amr (
 
           if ( bfi == 0 && (pit_flag == 0 || sub (index, 61) < 0))
           {
-          }                
+          }
           else
           {
              st->T0_lagBuff = T0;
@@ -583,7 +564,7 @@ int Decoder_amr (
            i = *parm++;            /* signs             */
 
            decode_2i40_9bits (subfrNr, i, index, code);
-           
+
            pit_sharp = shl (st->sharp, 1);
         }
         else if (sub (mode, MR59) == 0)
@@ -611,7 +592,7 @@ int Decoder_amr (
 
            index = *parm++;        /* index of position */
            i = *parm++;            /* signs             */
-           
+
            decode_4i40_17bits (i, index, code);
 
            pit_sharp = shl (st->sharp, 1);
@@ -630,13 +611,13 @@ int Decoder_amr (
 
            if (bfi != 0)
            {
-              ec_gain_pitch (st->ec_gain_p_st, st->state, &gain_pit);
+              ec_gain_pitch (&st->ec_gain_p_st, st->state, &gain_pit);
            }
            else
            {
               gain_pit = d_gain_pitch (mode, index);
            }
-           ec_gain_pitch_update (st->ec_gain_p_st, bfi, st->prev_bf,
+           ec_gain_pitch_update (&st->ec_gain_p_st, bfi, st->prev_bf,
                                  &gain_pit);
 
            dec_10i40_35bits (parm, code);
@@ -644,10 +625,10 @@ int Decoder_amr (
 
            /* pit_sharp = gain_pit;                   */
            /* if (pit_sharp > 1.0) pit_sharp = 1.0;   */
-           
+
            pit_sharp = shl (gain_pit, 1);
         }
-        
+
         /*-------------------------------------------------------*
          * - Add the pitch contribution to code[].               *
          *-------------------------------------------------------*/
@@ -657,7 +638,7 @@ int Decoder_amr (
            code[i] = add (code[i], temp);
 
         }
-        
+
         /*------------------------------------------------------------*
          * - Decode codebook gain (MR122) or both pitch               *
          *   gain and codebook gain (all others)                      *
@@ -669,7 +650,7 @@ int Decoder_amr (
         {
            /* read and decode pitch and code gain */
 
-           if (evenSubfr != 0) 
+           if (evenSubfr != 0)
            {
               index_mr475 = *parm++;         /* index of gain(s) */
            }
@@ -677,23 +658,23 @@ int Decoder_amr (
 
            if (bfi == 0)
            {
-              Dec_gain(st->pred_state, mode, index_mr475, code,
-                       evenSubfr, &gain_pit, &gain_code); 
+              Dec_gain(&st->pred_state, mode, index_mr475, code,
+                       evenSubfr, &gain_pit, &gain_code);
            }
            else
            {
-              ec_gain_pitch (st->ec_gain_p_st, st->state, &gain_pit);
-              ec_gain_code (st->ec_gain_c_st, st->pred_state, st->state,
+              ec_gain_pitch (&st->ec_gain_p_st, st->state, &gain_pit);
+              ec_gain_code (&st->ec_gain_c_st, &st->pred_state, st->state,
                             &gain_code);
            }
-           ec_gain_pitch_update (st->ec_gain_p_st, bfi, st->prev_bf,
+           ec_gain_pitch_update (&st->ec_gain_p_st, bfi, st->prev_bf,
                                  &gain_pit);
-           ec_gain_code_update (st->ec_gain_c_st, bfi, st->prev_bf,
+           ec_gain_code_update (&st->ec_gain_c_st, bfi, st->prev_bf,
                                 &gain_code);
-           
+
            pit_sharp = gain_pit;
 
-           if (sub (pit_sharp, SHARPMAX) > 0) 
+           if (sub (pit_sharp, SHARPMAX) > 0)
            {
                pit_sharp = SHARPMAX;
            }
@@ -705,27 +686,27 @@ int Decoder_amr (
         {
             /* read and decode pitch and code gain */
             index = *parm++;                 /* index of gain(s) */
-           
+
 
             if (bfi == 0)
             {
-               Dec_gain(st->pred_state, mode, index, code,
+               Dec_gain(&st->pred_state, mode, index, code,
                         evenSubfr, &gain_pit, &gain_code);
             }
             else
             {
-               ec_gain_pitch (st->ec_gain_p_st, st->state, &gain_pit);
-               ec_gain_code (st->ec_gain_c_st, st->pred_state, st->state,
+               ec_gain_pitch (&st->ec_gain_p_st, st->state, &gain_pit);
+               ec_gain_code (&st->ec_gain_c_st, &st->pred_state, st->state,
                              &gain_code);
             }
-            ec_gain_pitch_update (st->ec_gain_p_st, bfi, st->prev_bf,
+            ec_gain_pitch_update (&st->ec_gain_p_st, bfi, st->prev_bf,
                                   &gain_pit);
-            ec_gain_code_update (st->ec_gain_c_st, bfi, st->prev_bf,
+            ec_gain_code_update (&st->ec_gain_c_st, bfi, st->prev_bf,
                                  &gain_code);
-            
+
             pit_sharp = gain_pit;
 
-            if (sub (pit_sharp, SHARPMAX) > 0) 
+            if (sub (pit_sharp, SHARPMAX) > 0)
             {
                pit_sharp = SHARPMAX;
             }
@@ -742,7 +723,7 @@ int Decoder_amr (
         {
            /* read and decode pitch gain */
            index = *parm++;                 /* index of gain(s) */
-           
+
 
            if (sub (mode, MR795) == 0)
            {
@@ -750,30 +731,30 @@ int Decoder_amr (
 
               if (bfi != 0)
               {
-                 ec_gain_pitch (st->ec_gain_p_st, st->state, &gain_pit);
+                 ec_gain_pitch (&st->ec_gain_p_st, st->state, &gain_pit);
               }
               else
               {
                  gain_pit = d_gain_pitch (mode, index);
               }
-              ec_gain_pitch_update (st->ec_gain_p_st, bfi, st->prev_bf,
+              ec_gain_pitch_update (&st->ec_gain_p_st, bfi, st->prev_bf,
                                     &gain_pit);
-              
+
               /* read and decode code gain */
               index = *parm++;
 
               if (bfi == 0)
               {
-                 d_gain_code (st->pred_state, mode, index, code, &gain_code);
+                 d_gain_code (&st->pred_state, mode, index, code, &gain_code);
               }
               else
               {
-                 ec_gain_code (st->ec_gain_c_st, st->pred_state, st->state,
+                 ec_gain_code (&st->ec_gain_c_st, &st->pred_state, st->state,
                                &gain_code);
               }
-              ec_gain_code_update (st->ec_gain_c_st, bfi, st->prev_bf,
+              ec_gain_code_update (&st->ec_gain_c_st, bfi, st->prev_bf,
                                    &gain_code);
-              
+
               pit_sharp = gain_pit;
 
               if (sub (pit_sharp, SHARPMAX) > 0)
@@ -781,27 +762,27 @@ int Decoder_amr (
                  pit_sharp = SHARPMAX;
               }
            }
-           else 
+           else
            { /* MR122 */
 
               if (bfi == 0)
               {
-                 d_gain_code (st->pred_state, mode, index, code, &gain_code);
+                 d_gain_code (&st->pred_state, mode, index, code, &gain_code);
               }
               else
               {
-                 ec_gain_code (st->ec_gain_c_st, st->pred_state, st->state,
+                 ec_gain_code (&st->ec_gain_c_st, &st->pred_state, st->state,
                                &gain_code);
               }
-              ec_gain_code_update (st->ec_gain_c_st, bfi, st->prev_bf,
+              ec_gain_code_update (&st->ec_gain_c_st, bfi, st->prev_bf,
                                    &gain_code);
-                
+
               pit_sharp = gain_pit;
            }
         }
-        
+
         /* store pitch sharpening for next subframe          */
-        /* (for modes which use the previous pitch gain for 
+        /* (for modes which use the previous pitch gain for
            pitch sharpening in the search phase)             */
         /* do not update sharpening in even subframes for MR475 */
         /* */
@@ -831,7 +812,7 @@ int Decoder_amr (
                excp[i] = round (L_temp);
             }
         }
-        
+
         /*-------------------------------------------------------*
          * - Store list of LTP gains needed in the source        *
          *   characteristic detector (SCD)                       *
@@ -873,21 +854,21 @@ int Decoder_amr (
         /*-------------------------------------------------------*
          *  Calculate CB mixed gain                              *
          *-------------------------------------------------------*/
-        Int_lsf(prev_lsf, st->lsfState->past_lsf_q, i_subfr, lsf_i); 
+        Int_lsf(prev_lsf, st->lsfState.past_lsf_q, i_subfr, lsf_i);
         gain_code_mix = Cb_gain_average(
-            st->Cb_gain_averState, mode, gain_code, 
-            lsf_i, st->lsp_avg_st->lsp_meanSave, bfi, 
-            st->prev_bf, pdfi, st->prev_pdf,  
+            &st->Cb_gain_averState, mode, gain_code,
+            lsf_i, st->lsp_avg_st.lsp_meanSave, bfi,
+            st->prev_bf, pdfi, st->prev_pdf,
             st->inBackgroundNoise, st->voicedHangover);
-        
+
         /* make sure that MR74, MR795, MR122 have original code_gain*/
 
-        if ((sub(mode, MR67) > 0) && (sub(mode, MR102) != 0) ) 
+        if ((sub(mode, MR67) > 0) && (sub(mode, MR102) != 0) )
            /* MR74, MR795, MR122 */
         {
            gain_code_mix = gain_code;
         }
-        
+
         /*-------------------------------------------------------*
          * - Find the total excitation.                          *
          * - Find synthesis speech corresponding to st->exc[].   *
@@ -921,11 +902,11 @@ int Decoder_amr (
            L_temp = L_shl (L_temp, tmp_shift);                   /* Q16 */
            st->exc[i] = round (L_temp);
         }
-        
+
         /*-------------------------------------------------------*
          * - Adaptive phase dispersion                           *
          *-------------------------------------------------------*/
-        ph_disp_release(st->ph_disp_st); /* free phase dispersion adaption */
+        ph_disp_release(&st->ph_disp_st); /* free phase dispersion adaption */
 
 
         if ( ((sub(mode, MR475) == 0) ||
@@ -935,15 +916,15 @@ int Decoder_amr (
              st->inBackgroundNoise != 0 &&
              bfi != 0 )
         {
-           ph_disp_lock(st->ph_disp_st); /* Always Use full Phase Disp. */
+           ph_disp_lock(&st->ph_disp_st); /* Always Use full Phase Disp. */
         }                                /* if error in bg noise       */
 
         /* apply phase dispersion to innovation (if enabled) and
            compute total excitation for synthesis part           */
-        ph_disp(st->ph_disp_st, mode,
+        ph_disp(&st->ph_disp_st, mode,
                 exc_enhanced, gain_code_mix, gain_pit, code,
-                pitch_fac, tmp_shift);       
-        
+                pitch_fac, tmp_shift);
+
         /*-------------------------------------------------------*
          * - The Excitation control module are active during BFI.*
          * - Conceal drops in signal energy if in bg noise.      *
@@ -975,12 +956,12 @@ int Decoder_amr (
         {
            carefulFlag = 0;
 
-           if ( pdfi != 0 && bfi == 0 )       
+           if ( pdfi != 0 && bfi == 0 )
            {
               carefulFlag = 1;
            }
 
-           Ex_ctrl(exc_enhanced,     
+           Ex_ctrl(exc_enhanced,
                    excEnergy,
                    st->excEnergyHist,
                    st->voicedHangover,
@@ -992,7 +973,7 @@ int Decoder_amr (
         if ( st->inBackgroundNoise != 0 &&
              ( bfi != 0 || st->prev_bf != 0 ) &&
              sub(st->state, 4) < 0 )
-        { 
+        {
            ; /* do nothing! */
         }
         else
@@ -1011,7 +992,7 @@ int Decoder_amr (
         {
            for (i = 0; i < L_SUBFR; i++)
            {
-              excp[i] = add (excp[i], exc_enhanced[i]);              
+              excp[i] = add (excp[i], exc_enhanced[i]);
 
            }
            agc2 (exc_enhanced, excp, L_SUBFR);
@@ -1040,51 +1021,49 @@ int Decoder_amr (
         {
            Copy(&synth[i_subfr+L_SUBFR-M], st->mem_syn, M);
         }
-        
+
         /*--------------------------------------------------*
          * Update signal for next frame.                    *
          * -> shift to the left by L_SUBFR  st->exc[]       *
          *--------------------------------------------------*/
-        
+
         Copy (&st->old_exc[L_SUBFR], &st->old_exc[0], PIT_MAX + L_INTERPOL);
 
         /* interpolated LPC parameters for next subframe */
         Az += MP1;
-        
-        /* store T0 for next subframe */ 
+
+        /* store T0 for next subframe */
         st->old_T0 = T0;
     }
-    
+
     /*-------------------------------------------------------*
      * Call the Source Characteristic Detector which updates *
      * st->inBackgroundNoise and st->voicedHangover.         *
      *-------------------------------------------------------*/
 
                              /* function result */
-    st->inBackgroundNoise = Bgn_scd(st->background_state,
-                                    &(st->ltpGainHistory[0]),
-                                    &(synth[0]),
-                                    &(st->voicedHangover) );
+    st->inBackgroundNoise = Bgn_scd(&st->background_state,
+                                     &(st->ltpGainHistory[0]),
+                                     &(synth[0]),
+                                     &(st->voicedHangover) );
 
-    dtx_dec_activity_update(st->dtxDecoderState, 
-                            st->lsfState->past_lsf_q, 
-                            synth);
-    
+     dtx_dec_activity_update(&st->dtxDecoderState,
+                             st->lsfState.past_lsf_q,
+                             synth);
 
 
     /* store bfi for next subframe */
     st->prev_bf = bfi;
     st->prev_pdf = pdfi;
-    
+
     /*--------------------------------------------------*
      * Calculate the LSF averages on the eight          *
      * previous frames                                  *
      *--------------------------------------------------*/
-    
-    lsp_avg(st->lsp_avg_st, st->lsfState->past_lsf_q);
+    lsp_avg(&st->lsp_avg_st, st->lsfState.past_lsf_q);
 
 the_end:
-    st->dtxDecoderState->dtxGlobalState = newDTXState;
-    
+    st->dtxDecoderState.dtxGlobalState = newDTXState;
+
     return 0;
 }

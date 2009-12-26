@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -59,25 +88,16 @@ static const Word16 a[3] = {8192, 15836, -7667};
 *
 **************************************************************************
 */
-int Post_Process_init (Post_ProcessState **state)
+int Post_Process_init (Post_ProcessState *state)
 {
-  Post_ProcessState* s;
- 
-  if (state == (Post_ProcessState **) NULL){
+  if (state == (Post_ProcessState *) NULL)
+  {
       fprintf(stderr, "Post_Process_init: invalid parameter\n");
       return -1;
   }
-  *state = NULL;
- 
-  /* allocate memory */
-  if ((s= (Post_ProcessState *) malloc(sizeof(Post_ProcessState))) == NULL){
-      fprintf(stderr, "Post_Process_init: can not malloc state structure\n");
-      return -1;
-  }
-  
-  Post_Process_reset(s);
-  *state = s;
-  
+
+  Post_Process_reset(state);
+
   return 0;
 }
  
@@ -103,25 +123,6 @@ int Post_Process_reset (Post_ProcessState *state)
   state->x1 = 0;
 
   return 0;
-}
- 
-/*************************************************************************
-*
-*  Function:   Post_Process_exit
-*  Purpose:    The memory used for state memory is freed
-*
-**************************************************************************
-*/
-void Post_Process_exit (Post_ProcessState **state)
-{
-  if (state == NULL || *state == NULL)
-      return;
- 
-  /* deallocate memory */
-  free(*state);
-  *state = NULL;
-  
-  return;
 }
  
 /*************************************************************************

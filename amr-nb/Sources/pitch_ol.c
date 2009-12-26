@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -29,7 +58,6 @@ const char pitch_ol_id[] = "@(#)$Id $" pitch_ol_h;
 #include "typedef.h"
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
 #include "cnst.h"
 #include "inv_sqrt.h"
 #include "vad.h"
@@ -91,7 +119,7 @@ static Word16 Lag_max ( /* o   : lag found                               */
     )
 #endif
 {
-    Word16 i, j;
+    Word16 i;
     Word16 *p;
     Word32 max, t0;
     Word16 max_h, max_l, ener_h, ener_l;
@@ -100,10 +128,9 @@ static Word16 Lag_max ( /* o   : lag found                               */
     max = MIN_32;
     p_max = lag_max;
    
-    for (i = lag_max, j = (PIT_MAX-lag_max-1); i >= lag_min; i--, j--)  
+    for (i = lag_max; i >= lag_min; i--)
     {
-
-       if (L_sub (corr[-i], max) >= 0) 
+       if (corr[-i] >= max)
        { 
           max = corr[-i];
           p_max = i;
@@ -115,9 +142,9 @@ static Word16 Lag_max ( /* o   : lag found                               */
     t0 = 0;
     p = &scal_sig[-p_max];
     for (i = 0; i < L_frame; i++, p++)
-    {
-        t0 = L_mac (t0, *p, *p);
-    }
+      t0 += *p * *p;
+
+    t0 <<= 1;
     /* 1/sqrt(energy) */
 
     if (dtx)

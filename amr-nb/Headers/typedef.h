@@ -46,6 +46,7 @@ typedef int Flag;
 typedef signed char Word8;
 typedef short Word16;
 typedef int Word32;
+typedef unsigned int UWord32;
 typedef int Flag;
 
 #endif

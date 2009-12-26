@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 *****************************************************************************
 *
@@ -60,25 +89,15 @@ const char levinson_id[] = "@(#)$Id $" levinson_h;
 *
 **************************************************************************
 */
-int Levinson_init (LevinsonState **state)
+int Levinson_init (LevinsonState *state)
 {
-  LevinsonState* s;
- 
-  if (state == (LevinsonState **) NULL){
+  if (state == (LevinsonState *) NULL){
       fprintf(stderr, "Levinson_init: invalid parameter\n");
       return -1;
   }
-  *state = NULL;
- 
-  /* allocate memory */
-  if ((s= (LevinsonState *) malloc(sizeof(LevinsonState))) == NULL){
-      fprintf(stderr, "Levinson_init: can not malloc state structure\n");
-      return -1;
-  }
-  
-  Levinson_reset(s);
-  *state = s;
-  
+
+  Levinson_reset(state);
+
   return 0;
 }
  
@@ -103,25 +122,6 @@ int Levinson_reset (LevinsonState *state)
       state->old_A[i] = 0;
  
   return 0;
-}
- 
-/*************************************************************************
-*
-*  Function:   Levinson_exit
-*  Purpose:    The memory used for state memory is freed
-*
-**************************************************************************
-*/
-void Levinson_exit (LevinsonState **state)
-{
-  if (state == NULL || *state == NULL)
-      return;
- 
-  /* deallocate memory */
-  free(*state);
-  *state = NULL;
-  
-  return;
 }
  
 /*************************************************************************

@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 *****************************************************************************
 *
@@ -29,7 +58,6 @@ const char p_ol_wgh_id[] = "@(#)$Id $" p_ol_wgh_h;
 #include "typedef.h"
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
 #include "cnst.h"
 #include "corrwght.tab"
 #include "gmed_n.h"
@@ -153,26 +181,15 @@ static Word16 Lag_max ( /* o : lag found                               */
 *
 **************************************************************************
 */
-int p_ol_wgh_init (pitchOLWghtState **state)
+int p_ol_wgh_init (pitchOLWghtState *state)
 {
-    pitchOLWghtState* s;
-    
-    if (state == (pitchOLWghtState **) NULL){
+    if (state == (pitchOLWghtState *) NULL){
         fprintf(stderr, "p_ol_wgh_init: invalid parameter\n");
         return -1;
     }
-    *state = NULL;
-    
-    /* allocate memory */
-    if ((s= (pitchOLWghtState *) malloc(sizeof(pitchOLWghtState))) == NULL){
-        fprintf(stderr, "p_ol_wgh_init: can not malloc state structure\n");
-        return -1;
-    }
 
-    p_ol_wgh_reset(s);
-    
-    *state = s;
-    
+    p_ol_wgh_reset(state);
+
     return 0;
 }
  
@@ -196,25 +213,6 @@ int p_ol_wgh_reset (pitchOLWghtState *st)
    st->wght_flg = 0; 
    
    return 0;
-}
- 
-/*************************************************************************
-*
-*  Function:   p_ol_wgh_exit
-*  Purpose:    The memory used for state memory is freed
-*
-**************************************************************************
-*/
-void p_ol_wgh_exit (pitchOLWghtState **state)
-{
-    if (state == NULL || *state == NULL)
-        return;
-     
-    /* deallocate memory */
-    free(*state);
-    *state = NULL;
-    
-    return;
 }
  
 /*************************************************************************
@@ -257,7 +255,9 @@ Word16 Pitch_ol_wgh (     /* o   : open loop pitch lag                          
     for (i = -pit_max; i < L_frame; i++)
     {
         t0 = L_mac (t0, signal[i], signal[i]);
+      /*t0 += signal[i] * signal[i];*/
     }
+    /*t0 <<= 1;*/
     /*--------------------------------------------------------*
      * Scaling of input signal.                               *
      *                                                        *
@@ -275,14 +275,16 @@ Word16 Pitch_ol_wgh (     /* o   : open loop pitch lag                          
     {
         for (i = -pit_max; i < L_frame; i++)
         {
-            scal_sig[i] = shr (signal[i], 3);
+            /*scal_sig[i] = shr (signal[i], 3);*/
+          scal_sig[i]  = signal[i] >> 3;
         }
     }
     else if (L_sub (t0, (Word32) 1048576L) < (Word32) 0)
     {
         for (i = -pit_max; i < L_frame; i++)
         {
-            scal_sig[i] = shl (signal[i], 3);
+            /*scal_sig[i] = shl (signal[i], 3);*/
+            scal_sig[i] = signal[i] << 3;
         }
     }
     else

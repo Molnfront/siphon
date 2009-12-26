@@ -192,7 +192,14 @@ int main (int argc, char *argv[])
   /*-----------------------------------------------------------------------*
    * Initialization of decoder                                             *
    *-----------------------------------------------------------------------*/
-  if (Speech_Decode_Frame_init(&speech_decoder_state, "Decoder"))
+  /* allocate memory */
+  speech_decoder_state = (Speech_Decode_FrameState *) malloc(Speech_Decode_Frame_memSize());
+  if (speech_decoder_state == NULL){
+      fprintf(stderr, "Can not malloc state structure\n");
+      exit(-1);
+  }
+
+  if (Speech_Decode_Frame_init(speech_decoder_state, "Decoder"))
       exit(-1);
     
   /*-----------------------------------------------------------------------*
@@ -285,7 +292,8 @@ int main (int argc, char *argv[])
   /*-----------------------------------------------------------------------*
    * Close down speech decoder                                             *
    *-----------------------------------------------------------------------*/
-  Speech_Decode_Frame_exit(&speech_decoder_state);
+  Speech_Decode_Frame_reset(speech_decoder_state);
+  free(speech_decoder_state);
   
   return 0;
 }

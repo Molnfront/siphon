@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -60,7 +89,7 @@ typedef struct {
 **************************************************************************
 */
 int ec_gain_code_init (
-    ec_gain_codeState **state
+    ec_gain_codeState *state
 );
  
 /*
@@ -73,18 +102,6 @@ int ec_gain_code_init (
 */
 int ec_gain_code_reset (
     ec_gain_codeState *state
-);
- 
-/*
-**************************************************************************
-*
-*  Function    : ec_gain_code_exit
-*  Purpose     : The memory used for state memory is freed
-*
-**************************************************************************
-*/
-void ec_gain_code_exit (
-    ec_gain_codeState **state
 );
 
 /*
@@ -132,9 +149,9 @@ void ec_gain_code_update (
 **************************************************************************
 */
 int ec_gain_pitch_init (
-    ec_gain_pitchState **state
+    ec_gain_pitchState *state
 );
- 
+
 /*
 **************************************************************************
 *
@@ -145,17 +162,6 @@ int ec_gain_pitch_init (
 */
 int ec_gain_pitch_reset (
     ec_gain_pitchState *state
-);
- 
-/*************************************************************************
-*
-*  Function    : ec_gain_pitch_exit
-*  Purpose     : The memory used for state memory is freed
-*
-**************************************************************************
-*/
-void ec_gain_pitch_exit (
-    ec_gain_pitchState **state
 );
 
 /*

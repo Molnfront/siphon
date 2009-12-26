@@ -231,8 +231,21 @@ int main (int argc, char *argv[])
   /*-----------------------------------------------------------------------*
    * Initialisation of the coder.                                          *
    *-----------------------------------------------------------------------*/
-  if (   Speech_Encode_Frame_init(&speech_encoder_state, dtx, "encoder")
-      || sid_sync_init (&sid_state))
+  /* allocate memory */
+  speech_encoder_state = (Speech_Encode_FrameState *) malloc(Speech_Encode_Frame_memSize());
+  if (speech_encoder_state == NULL){
+      fprintf(stderr, "Can not malloc state structure\n");
+      exit(-1);
+  }
+
+  sid_state = (sid_syncState *) malloc(sid_sync_memSize());
+  if (sid_state == NULL){
+      fprintf(stderr, "Can not malloc state structure\n");
+      exit(-1);
+  }
+
+  if (   Speech_Encode_Frame_init(speech_encoder_state, dtx)
+      || sid_sync_init (sid_state))
       exit(-1);
 
 #ifdef MMS_IO
@@ -323,8 +336,10 @@ int main (int argc, char *argv[])
   /*-----------------------------------------------------------------------*
    * Close down speech coder                                               *
    *-----------------------------------------------------------------------*/
-  Speech_Encode_Frame_exit(&speech_encoder_state);
-  sid_sync_exit (&sid_state);
-  
+  Speech_Encode_Frame_reset(speech_encoder_state);
+  sid_sync_reset (sid_state);
+  free(sid_state);
+  free(speech_encoder_state);
+
   return (0);
 }

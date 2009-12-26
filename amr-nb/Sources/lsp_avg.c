@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 *****************************************************************************
 *
@@ -31,7 +60,6 @@ const char lsp_avg_id[] = "@(#)$Id $" lsp_avg_h;
 #include <stdio.h>
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
 #include "q_plsf_5.tab"
 #include "copy.h"
 
@@ -53,25 +81,15 @@ const char lsp_avg_id[] = "@(#)$Id $" lsp_avg_h;
 *
 **************************************************************************
 */
-int lsp_avg_init (lsp_avgState **state)
+int lsp_avg_init (lsp_avgState *state)
 {
-  lsp_avgState* s;
- 
-  if (state == (lsp_avgState **) NULL){
+  if (state == (lsp_avgState *) NULL){
       fprintf(stderr, "lsp_avg_init: invalid parameter\n");
       return -1;
   }
-  *state = NULL;
- 
-  /* allocate memory */
-  if ((s = (lsp_avgState *) malloc(sizeof(lsp_avgState))) == NULL){
-      fprintf(stderr, "lsp_avg_init: can not malloc state structure\n");
-      return -1;
-  }
 
-  lsp_avg_reset(s);
-  *state = s;
-  
+  lsp_avg_reset(state);
+
   return 0;
 }
  
@@ -93,26 +111,6 @@ int lsp_avg_reset (lsp_avgState *st)
   Copy(mean_lsf, &st->lsp_meanSave[0], M);
   
   return 0;
-}
- 
-/*
-**************************************************************************
-*
-*  Function    : lsp_avg_exit
-*  Purpose     : The memory used for state memory is freed
-*
-**************************************************************************
-*/
-void lsp_avg_exit (lsp_avgState **state)
-{
-  if (state == NULL || *state == NULL)
-      return;
-
-  /* deallocate memory */
-  free(*state);
-  *state = NULL;
-  
-  return;
 }
 
 /*

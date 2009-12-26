@@ -64,8 +64,8 @@ VAD=VAD1
 #
 # compiler flags (for normal, DEBUG compilation)
 #
-CFLAGS_NORM  = -arch armv6 -mno-thumb -Os
-CFLAGS_DEBUG = -arch armv6 -mno-thumb -O0 -gdwarf-2 -DDEBUG
+CFLAGS_NORM  = -arch armv6 -mno-thumb -Os 
+CFLAGS_DEBUG = -arch armv6 -mno-thumb -O0 -gdwarf-2 -DDEBUG 
 
 CFLAGS = -Wall -pedantic-errors -I. -I../Headers $(CFLAGS_$(MODE)) -D$(VAD)
 CFLAGSDEPEND = -MM $(CFLAGS)                    # for make depend

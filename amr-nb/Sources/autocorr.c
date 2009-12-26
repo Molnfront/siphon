@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -59,70 +88,64 @@ Word16 Autocorr (
     Word16 i, j, norm;
     Word16 y[L_WINDOW];
     Word32 sum;
-    Word16 overfl, overfl_shft;
+    Word16 overfl_shft = 0;
 
     /* Windowing of signal */
-
-    for (i = 0; i < L_WINDOW; i++)
+    sum = 0;
+    for(i=0; i<L_WINDOW; i++)
     {
-        y[i] = mult_r (x[i], wind[i]);
+      y[i] = (Word16)(((Word32)x[i] * (Word32)wind[i] + 0x4000) >> 15);
+      sum += ((Word32)y[i] * (Word32)y[i]) << 1;
+      if (sum < 0) /* overflow */
+        break;
     }
 
-    /* Compute r[0] and test for overflow */
-
-    overfl_shft = 0;
-
-    do
+    if (i != L_WINDOW) /* overflow */
     {
-        overfl = 0;
-        sum = 0L;
+      for (; i<L_WINDOW; i++)
+        y[i] = (Word16)(((Word32)x[i] * (Word32)wind[i] + 0x4000) >> 15);
 
-        for (i = 0; i < L_WINDOW; i++)
-        {
-            sum = L_mac (sum, y[i], y[i]);
-        }
+      /* Compute r[0] and test for overflow */
+      while (1)
+      {
+        overfl_shft += 4;
 
         /* If overflow divide y[] by 4 */
-
-
-        if (L_sub (sum, MAX_32) == 0L)
+        sum = 0;
+        for(i=0; i<L_WINDOW; i++)
         {
-            overfl_shft = add (overfl_shft, 4);
-            overfl = 1;                 /* Set the overflow flag */
-
-            for (i = 0; i < L_WINDOW; i++)
-            {
-                y[i] = shr (y[i], 2);
-            }
+          y[i] >>= 2;
+          sum += ((Word32)y[i] * (Word32)y[i]);
         }
-
+        sum <<= 1;
+        sum += 1; /* Avoid case of all zeros */
+        if (sum > 0)
+          break;
+      }
     }
-    while (overfl != 0);
-
-    sum = L_add (sum, 1L);             /* Avoid the case of all zeros */
+    else
+      sum += 1; /* Avoid case of all zeros */
 
     /* Normalization of r[0] */
-
     norm = norm_l (sum);
-    sum = L_shl (sum, norm);
-    L_Extract (sum, &r_h[0], &r_l[0]); /* Put in DPF format (see oper_32b) */
+    sum <<= norm;
+    /* Put in DPF format (see oper_32b) */
+    r_h[0] = (Word16)(sum >> 16);
+    r_l[0] = (Word16)((sum >> 1) - ((Word32)r_h[0] << 15));
 
     /* r[1] to r[m] */
-
     for (i = 1; i <= m; i++)
     {
-        sum = 0;
+      sum = 0;
+      for(j=0; j<L_WINDOW-i; j++)
+        sum += (Word32)y[j] * (Word32)y[j+i];
 
-        for (j = 0; j < L_WINDOW - i; j++)
-        {
-            sum = L_mac (sum, y[j], y[j + i]);
-        }
-
-        sum = L_shl (sum, norm);
-        L_Extract (sum, &r_h[i], &r_l[i]);
+      sum <<= norm + 1;
+      r_h[i] = (Word16)(sum >> 16);
+      r_l[i] = (Word16)((sum >> 1) - ((Word32)r_h[i] << 15));
     }
 
-    norm = sub (norm, overfl_shft);
+    norm -= overfl_shft;
 
     return norm;
 }

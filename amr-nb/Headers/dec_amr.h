@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 *****************************************************************************
 *
@@ -56,7 +85,7 @@ typedef struct{
   /* Excitation vector */
   Word16 old_exc[L_SUBFR + PIT_MAX + L_INTERPOL];
   Word16 *exc;
-    
+
   /* Lsp (Line spectral pairs) */
    /* Word16 lsp[M]; */      /* Used by CN codec */
   Word16 lsp_old[M];
@@ -70,7 +99,7 @@ typedef struct{
 
   /* Memories for bad frame handling */
   Word16 prev_bf;
-  Word16 prev_pdf;   
+  Word16 prev_pdf;
   Word16 state;
   Word16 excEnergyHist[9];
 
@@ -82,20 +111,19 @@ typedef struct{
   Word16 voicedHangover;
   Word16 ltpGainHistory[9];
 
-  Bgn_scdState* background_state;
+  Bgn_scdState         background_state;
   Word16 nodataSeed;
-  
-  Cb_gain_averageState *Cb_gain_averState;
-  lsp_avgState *lsp_avg_st;
-   
-   D_plsfState* lsfState;
-   ec_gain_pitchState* ec_gain_p_st;
-   ec_gain_codeState* ec_gain_c_st;  
-   gc_predState* pred_state;
-   ph_dispState* ph_disp_st;
-   dtx_decState* dtxDecoderState;
+
+  Cb_gain_averageState Cb_gain_averState;
+  lsp_avgState         lsp_avg_st;
+
+   D_plsfState         lsfState;
+   ec_gain_pitchState  ec_gain_p_st;
+   ec_gain_codeState   ec_gain_c_st;
+   gc_predState        pred_state;
+   ph_dispState        ph_disp_st;
+   dtx_decState        dtxDecoderState;
 } Decoder_amrState;
- 
 
 /*
 *****************************************************************************
@@ -113,8 +141,8 @@ typedef struct{
 *
 **************************************************************************
 */
-int Decoder_amr_init (Decoder_amrState **st);
- 
+int Decoder_amr_init (Decoder_amrState *st);
+
 /*
 **************************************************************************
 *
@@ -125,19 +153,7 @@ int Decoder_amr_init (Decoder_amrState **st);
 **************************************************************************
 */
 int Decoder_amr_reset (Decoder_amrState *st,enum Mode mode);
- 
-/*
-**************************************************************************
-*
-*  Function    : Decoder_amr_exit
-*  Purpose     : The memory used for state memory is freed
-*  Description : Stores NULL in *s
-*  Returns     : void
-*
-**************************************************************************
-*/
-void Decoder_amr_exit (Decoder_amrState **st);
- 
+
 /*
 **************************************************************************
 *

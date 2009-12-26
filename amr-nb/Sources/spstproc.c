@@ -31,7 +31,6 @@ const char spstproc_id[] = "@(#)$Id $" spstproc_h;
 #include "typedef.h"
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
 #include "syn_filt.h"
 #include "cnst.h"
 

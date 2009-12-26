@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -46,6 +75,21 @@ lsp_az_h;
 *                         LOCAL PROGRAM CODE
 ********************************************************************************
 */
+static inline Word32 mull(Word32 a, Word16 b)
+{
+  register Word32 ra = a;
+  register Word32 rb = b;
+  Word32 lo, hi;
+
+  __asm__("smull %0, %1, %2, %3     \n\t"
+          "mov   %0, %0,     LSR #16 \n\t"
+          "add   %1, %0, %1, LSL #16  \n\t"
+          : "=&r"(lo), "=&r"(hi)
+          : "r"(rb), "r"(ra));
+
+  return hi;
+}
+
 /*************************************************************************
  *
  *  FUNCTION:  Get_lsp_pol
@@ -80,6 +124,7 @@ lsp_az_h;
 
 static void Get_lsp_pol (Word16 *lsp, Word32 *f)
 {
+#if 0
     Word16 i, j, hi, lo;
     Word32 t0;
     
@@ -106,8 +151,29 @@ static void Get_lsp_pol (Word16 *lsp, Word32 *f)
         f += i;                            /* Advance f pointer   */
         lsp += 2;                          /* Advance lsp pointer */
     }
+#else
+    Word16 i,j;
 
-    return;
+     /* All computation in Q24 */
+     *f = 0x01000000;           /* f[0] = 1.0;             in Q24  */
+     f++;
+     *f = -*lsp << 10;         /* f[1] =  -2.0 * lsp[0];  in Q24  */
+
+     f++;
+     lsp += 2;                            /* Advance lsp pointer             */
+
+     for(i=2; i<=5; i++)
+     {
+       *f = f[-2];
+
+       for(j=1; j<i; j++, f--)
+         *f += f[-2] - (mull(f[-1], *lsp) << 2);
+
+       *f -= *lsp << 10;                       /* *f -= lsp<<9        */
+       f   += i;                               /* Advance f pointer   */
+       lsp += 2;                               /* Advance lsp pointer */
+     }
+#endif
 }
 
 /*
@@ -133,6 +199,7 @@ void Lsp_Az (
     Word16 a[]           /* (o)  : predictor coefficients (order = 10)  */
 )
 {
+#if 0
     Word16 i, j;
     Word32 f1[6], f2[6];
     Word32 t0;
@@ -154,7 +221,26 @@ void Lsp_Az (
         t0 = L_sub (f1[i], f2[i]);           /* f1[i] - f2[i] */
         a[j] = extract_l (L_shr_r (t0, 13));
     }
+#else
+    Word16 i;
+    Word32 f1[6], f2[6];
+    Word32 ff1, ff2, fff1, fff2;
 
-    return;
+    Get_lsp_pol(&lsp[0],f1);
+    Get_lsp_pol(&lsp[1],f2);
+
+    a[0] = 4096;
+    for (i = 1; i <= 5; i++)
+    {
+      ff1 = f1[i] + f1[i-1];
+      ff2 = f2[i] - f2[i-1];
+
+      fff1 = ff1 + ff2 + ((Word32) 1 << 12);
+      fff2 = ff1 - ff2 + ((Word32) 1 << 12);
+
+      a[i]    = (Word16)(fff1 >> 13);
+      a[11-i] = (Word16)(fff2 >> 13);
+    }
+#endif
 }
 

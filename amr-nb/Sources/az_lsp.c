@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -27,7 +56,7 @@ const char az_lsp_id[] = "@(#)$Id $" az_lsp_h;
 #include "typedef.h"
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
+#include "copy.h"
 #include "cnst.h"
  
 /*
@@ -64,42 +93,55 @@ static Word16 Chebps (Word16 x,
                       Word16 n)
 {
     Word16 i, cheb;
-    Word16 b0_h, b0_l, b1_h, b1_l, b2_h, b2_l;
+    Word16 b1_h, b1_l;
     Word32 t0;
+    Word32 L_temp;
 
-    b2_h = 256;                     /* b2 = 1.0 */
-    b2_l = 0;
+   /* Note: All computation are done in Q24. */
 
-    t0 = L_mult (x, 512);          /* 2*x                 */
-    t0 = L_mac (t0, f[1], 8192);   /* + f[1]              */
-    L_Extract (t0, &b1_h, &b1_l);  /* b1 = 2*x + f[1]     */
+    L_temp = 0x01000000;
 
-    for (i = 2; i < n; i++)
+    /* 2*x in Q24 + f[1] in Q24 */
+    t0 = ((Word32)x << 10) + ((Word32)f[1] << 14);
+
+    /* b1 = 2*x + f[1]     */
+    b1_h = (Word16)(t0 >> 16);
+    b1_l = (Word16)((t0 >> 1) - (b1_h << 15));
+
+    for (i = 2; i<n; i++)
     {
-        t0 = Mpy_32_16 (b1_h, b1_l, x);         /* t0 = 2.0*x*b1        */
-        t0 = L_shl (t0, 1);
-        t0 = L_mac (t0, b2_h, (Word16) 0x8000); /* t0 = 2.0*x*b1 - b2   */
-        t0 = L_msu (t0, b2_l, 1);
-        t0 = L_mac (t0, f[i], 8192);            /* t0 = 2.0*x*b1 - b2 + f[i] */
+      /* t0 = 2.0*x*b1              */
+      t0  = ((Word32) b1_h * x) + (((Word32) b1_l * x) >> 15);
+      t0 <<= 2;
+      /* t0 = 2.0*x*b1 - b2         */
+      t0 -= L_temp;
+      /* t0 = 2.0*x*b1 - b2 + f[i]; */
+      t0 += ((Word32)f[i] << 14);
 
-        L_Extract (t0, &b0_h, &b0_l);           /* b0 = 2.0*x*b1 - b2 + f[i]*/
+      /* b2 = b1; */
+      L_temp = ((Word32) b1_h << 16) + ((Word32) b1_l << 1);
 
-        b2_l = b1_l;                  /* b2 = b1; */
-        b2_h = b1_h;
-        b1_l = b0_l;                  /* b1 = b0; */
-        b1_h = b0_h;
+      /* b0 = 2.0*x*b1 - b2 + f[i]; */
+      b1_h = (Word16)(t0 >> 16);
+      b1_l = (Word16)((t0 >> 1) - (b1_h << 15));
     }
 
-    t0 = Mpy_32_16 (b1_h, b1_l, x);             /* t0 = x*b1; */
-    t0 = L_mac (t0, b2_h, (Word16) 0x8000);     /* t0 = x*b1 - b2   */
-    t0 = L_msu (t0, b2_l, 1);
-    t0 = L_mac (t0, f[i], 4096);                /* t0 = x*b1 - b2 + f[i]/2 */
+    /* t0 = x*b1;              */
+    t0  = ((Word32) b1_h * x) + (((Word32) b1_l * x) >> 15);
+    t0 <<= 1;
+    /* t0 = x*b1 - b2          */
+    t0 -= L_temp;
+    /* t0 = x*b1 - b2 + f[i]/2 */
+    t0 += ((Word32)f[i] << 13);
 
-    t0 = L_shl (t0, 6);
+    /* Q24 to Q30 with saturation */
+    /* Result in Q14              */
+    if ((UWord32)(t0 - 0xfe000000L) < 0x01ffffffL -  0xfe000000L)
+      cheb = (Word16)(t0 >> 10);
+    else
+      cheb = t0 > (Word32) 0x01ffffffL ? MAX_16 : MIN_16;
 
-    cheb = extract_h (t0);
-
-    return (cheb);
+    return(cheb);
 }
 
 /*
@@ -126,7 +168,7 @@ void Az_lsp (
     Word16 x, y, sign, exp;
     Word16 *coef;
     Word16 f1[M / 2 + 1], f2[M / 2 + 1];
-    Word32 t0;
+    Word32 L_temp1, L_temp2;
 
     /*-------------------------------------------------------------*
      *  find the sum and diff. pol. F1(z) and F2(z)                *
@@ -147,17 +189,18 @@ void Az_lsp (
 
     for (i = 0; i < NC; i++)
     {
-        t0 = L_mult (a[i + 1], 8192);   /* x = (a[i+1] + a[M-i]) >> 2  */
-        t0 = L_mac (t0, a[M - i], 8192);
-        x = extract_h (t0);
-        /* f1[i+1] = a[i+1] + a[M-i] - f1[i] */
-        f1[i + 1] = sub (x, f1[i]);
+        L_temp1 = (Word32)a[i+1];
+        L_temp2 = (Word32)a[M-i];
 
-        t0 = L_mult (a[i + 1], 8192);   /* x = (a[i+1] - a[M-i]) >> 2 */
-        t0 = L_msu (t0, a[M - i], 8192);
-        x = extract_h (t0);
+        /* x = (a[i+1] + a[M-i]) >> 2        */
+        x = ((L_temp1 + L_temp2) >> 2);
+        /* x = (a[i+1] - a[M-i]) >> 2        */
+        y = ((L_temp1 - L_temp2) >> 2);
+
+        /* f1[i+1] = a[i+1] + a[M-i] - f1[i] */
+        f1[i+1] = (Word32)x - (Word32)f1[i];
         /* f2[i+1] = a[i+1] - a[M-i] + f2[i] */
-        f2[i + 1] = add (x, f2[i]);
+        f2[i+1] = (Word32)y + (Word32)f2[i];
     }
 
     /*-------------------------------------------------------------*
@@ -174,8 +217,7 @@ void Az_lsp (
 
     j = 0;
 
-    /* while ( (nf < M) && (j < grid_points) ) */
-    while ((sub (nf, M) < 0) && (sub (j, grid_points) < 0))
+    while ( (nf < M) && (j < grid_points) )
     {
         j++;
         xhigh = xlow;
@@ -183,22 +225,16 @@ void Az_lsp (
         xlow = grid[j];
         ylow = Chebps (xlow, coef, NC);
 
-
-
-        if (L_mult (ylow, yhigh) <= (Word32) 0L)
+        if (((Word32)ylow*yhigh) <= (Word32) 0L)
         {
-
             /* divide 4 times the interval */
-
             for (i = 0; i < 4; i++)
             {
                 /* xmid = (xlow + xhigh)/2 */
-                xmid = add (shr (xlow, 1), shr (xhigh, 1));
+                xmid = (xlow >> 1) + (xhigh >> 1);
                 ymid = Chebps (xmid, coef, NC);
 
-
-
-                if (L_mult (ylow, ymid) <= (Word32) 0L)
+                if ( ((Word32)ylow*ymid) <= (Word32)0L)
                 {
                     yhigh = ymid;
                     xhigh = xmid;
@@ -214,10 +250,8 @@ void Az_lsp (
              * Linear interpolation                                        *
              *    xint = xlow - ylow*(xhigh-xlow)/(yhigh-ylow);            *
              *-------------------------------------------------------------*/
-
-            x = sub (xhigh, xlow);
-            y = sub (yhigh, ylow);
-
+            x   = xhigh - xlow;
+            y   = yhigh - ylow;
 
             if (y == 0)
             {
@@ -225,28 +259,23 @@ void Az_lsp (
             }
             else
             {
-                sign = y;
-                y = abs_s (y);
-                exp = norm_s (y);
-                y = shl (y, exp);
-                y = div_s ((Word16) 16383, y);
-                t0 = L_mult (x, y);
-                t0 = L_shr (t0, sub (20, exp));
-                y = extract_l (t0);     /* y= (xhigh-xlow)/(yhigh-ylow) */
+                sign= y;
+                y   = abs_s(y);
+                exp = norm_s(y);
+                y <<= exp;
+                y   = div_s( (Word16)16383, y);
+                /* y= (xhigh-xlow)/(yhigh-ylow) in Q11 */
+                y = ((Word32)x * (Word32)y) >> (19 - exp);
 
+                if(sign < 0) y = -y;
 
-                if (sign < 0)
-                    y = negate (y);
-
-                t0 = L_mult (ylow, y);
-                t0 = L_shr (t0, 11);
-                xint = sub (xlow, extract_l (t0)); /* xint = xlow - ylow*y */
+                /* xint = xlow - ylow*y */
+                xint = xlow - (Word16)(((Word32) ylow * y) >> 10);
             }
 
             lsp[nf] = xint;
             xlow = xint;
             nf++;
-
 
             if (ip == 0)
             {
@@ -259,23 +288,11 @@ void Az_lsp (
                 coef = f1;
             }
             ylow = Chebps (xlow, coef, NC);
-
-
         }
-
     }
 
     /* Check if M roots found */
-
-
-    if (sub (nf, M) < 0)
-    {
-        for (i = 0; i < M; i++)
-        {
-            lsp[i] = old_lsp[i];
-        }
-
-    }
-    return;
+    if (nf < M)
+      Copy(old_lsp, lsp, M);
 }
 

@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -35,7 +64,6 @@ const char lsp_id[] = "@(#)$Id $" lsp_h;
 #include "copy.h"
 #include "az_lsp.h"
 #include "int_lpc.h"
-#include "count.h"
 
 #include "lsp.tab"
 
@@ -51,29 +79,18 @@ const char lsp_id[] = "@(#)$Id $" lsp_h;
 *
 **************************************************************************
 */
-int lsp_init (lspState **st)
+int lsp_init (lspState *state)
 {
-  lspState* s;
-
-  if (st == (lspState **) NULL){
+  if (state == (lspState *) NULL){
       fprintf(stderr, "lsp_init: invalid parameter\n");
-      return -1;
-  }
-  
-  *st = NULL;
- 
-  /* allocate memory */
-  if ((s= (lspState *) malloc(sizeof(lspState))) == NULL){
-      fprintf(stderr, "lsp_init: can not malloc state structure\n");
       return -1;
   }
 
   /* Initialize quantization state */
-   Q_plsf_init(&s->qSt);
+   Q_plsf_init(&state->qSt);
 
-  lsp_reset(s);
-  *st = s;
-  
+  lsp_reset(state);
+
   return 0;
 }
  
@@ -99,31 +116,9 @@ int lsp_reset (lspState *st)
   Copy(st->lsp_old, st->lsp_old_q, M);
   
   /* Reset quantization state */
-   Q_plsf_reset(st->qSt);
+   Q_plsf_reset(&st->qSt);
 
   return 0;
-}
- 
-/*
-**************************************************************************
-*
-*  Function    : lsp_exit
-*
-**************************************************************************
-*/
-void lsp_exit (lspState **st)
-{
-  if (st == NULL || *st == NULL)
-      return;
-
-  /* Deallocate members */
-  Q_plsf_exit(&(*st)->qSt);
-
-  /* deallocate memory */
-  free(*st);
-  *st = NULL;
-  
-  return;
 }
 
 /*************************************************************************
@@ -162,7 +157,7 @@ int lsp(lspState *st,        /* i/o : State struct                            */
        if ( sub (used_mode, MRDTX) != 0)
        {
           /* LSP quantization (lsp_mid[] and lsp_new[] jointly quantized) */
-          Q_plsf_5 (st->qSt, lsp_mid, lsp_new, lsp_mid_q, lsp_new_q, *anap);
+          Q_plsf_5 (&st->qSt, lsp_mid, lsp_new, lsp_mid_q, lsp_new_q, *anap);
        
           Int_lpc_1and3 (st->lsp_old_q, lsp_mid_q, lsp_new_q, azQ);
           
@@ -187,7 +182,7 @@ int lsp(lspState *st,        /* i/o : State struct                            */
        if ( sub (used_mode, MRDTX) != 0)
        {
           /* LSP quantization */
-          Q_plsf_3(st->qSt, req_mode, lsp_new, lsp_new_q, *anap, &pred_init_i);
+          Q_plsf_3(&st->qSt, req_mode, lsp_new, lsp_new_q, *anap, &pred_init_i);
           
           Int_lpc_1to3(st->lsp_old_q, lsp_new_q, azQ);
           

@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 *****************************************************************************
 *
@@ -29,7 +58,6 @@ const char cl_ltp_id[] = "@(#)$Id $" cl_ltp_h;
 #include <stdio.h>
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
 #include "oper_32b.h"
 #include "cnst.h"
 #include "convolve.h"
@@ -59,32 +87,21 @@ const char cl_ltp_id[] = "@(#)$Id $" cl_ltp_h;
 *
 **************************************************************************
 */
-int cl_ltp_init (clLtpState **state)
+int cl_ltp_init (clLtpState *state)
 {
-    clLtpState* s;
-    
-    if (state == (clLtpState **) NULL){
+    if (state == (clLtpState *) NULL){
         fprintf(stderr, "cl_ltp_init: invalid parameter\n");
         return -1;
     }
-    *state = NULL;
-    
-    /* allocate memory */
-    if ((s= (clLtpState *) malloc(sizeof(clLtpState))) == NULL){
-        fprintf(stderr, "cl_ltp_init: can not malloc state structure\n");
-        return -1;
-  }
-    
+
     /* init the sub state */
-    if (Pitch_fr_init(&s->pitchSt)) {
-        cl_ltp_exit(&s);
+    if (Pitch_fr_init(&state->pitchSt)) {
+        cl_ltp_reset(state);
         return -1;
     }
-    
-    cl_ltp_reset(s);
-    
-    *state = s;
-    
+
+    cl_ltp_reset(state);
+
     return 0;
 }
  
@@ -103,31 +120,9 @@ int cl_ltp_reset (clLtpState *state)
     }
     
     /* Reset pitch search states */
-    Pitch_fr_reset (state->pitchSt);
+    Pitch_fr_reset (&state->pitchSt);
     
     return 0;
-}
-
-/*************************************************************************
-*
-*  Function:   cl_ltp_exit
-*  Purpose:    The memory used for state memory is freed
-*
-**************************************************************************
-*/
-void cl_ltp_exit (clLtpState **state)
-{
-    if (state == NULL || *state == NULL)
-        return;
-
-    /* dealloc members */
-    Pitch_fr_exit(&(*state)->pitchSt);
-    
-    /* deallocate memory */
-    free(*state);
-    *state = NULL;
-    
-    return;
 }
 
 /*************************************************************************
@@ -167,8 +162,8 @@ int cl_ltp (
    /*----------------------------------------------------------------------*
     *                 Closed-loop fractional pitch search                  *
     *----------------------------------------------------------------------*/
-   *T0 = Pitch_fr(clSt->pitchSt,
-                  mode, T_op, exc, xn, h1, 
+   *T0 = Pitch_fr(&clSt->pitchSt,
+                  mode, T_op, exc, xn, h1,
                   L_SUBFR, frameOffset,
                   T0_frac, &resu3, &index);
    

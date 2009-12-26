@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 *****************************************************************************
 *
@@ -33,21 +62,21 @@
 *****************************************************************************
 */
 typedef struct{
-  Decoder_amrState* decoder_amrState;
-  Post_FilterState*  post_state;
-  Post_ProcessState* postHP_state;
+  Decoder_amrState decoder_amrState;
+  Post_FilterState  post_state;
+  Post_ProcessState postHP_state;
   enum Mode prev_mode;
 
   int complexityCounter;   /* Only for complexity computation            */
 } Speech_Decode_FrameState;
- 
+
 /*
 *****************************************************************************
 *                         DECLARATION OF PROTOTYPES
 *****************************************************************************
 */
- 
-int Speech_Decode_Frame_init (Speech_Decode_FrameState **st,
+int Speech_Decode_Frame_memSize();
+int Speech_Decode_Frame_init (Speech_Decode_FrameState *st,
                               char *id);
 /* initialize one instance of the speech decoder
    Stores pointer to filter status struct in *st. This pointer has to
@@ -58,11 +87,6 @@ int Speech_Decode_Frame_init (Speech_Decode_FrameState **st,
 int Speech_Decode_Frame_reset (Speech_Decode_FrameState *st);
 /* reset speech decoder (i.e. set state memory to zero)
    returns 0 on success
- */
- 
-void Speech_Decode_Frame_exit (Speech_Decode_FrameState **st);
-/* de-initialize speech decoder (i.e. free status struct)
-   stores NULL in *s
  */
  
 int Speech_Decode_Frame (

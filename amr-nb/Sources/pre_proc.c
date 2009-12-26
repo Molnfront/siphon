@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -32,7 +61,6 @@ const char pre_proc_id[] = "@(#)$Id $" pre_proc_h;
 #include "typedef.h"
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
  
 /*
 ********************************************************************************
@@ -51,32 +79,22 @@ static const Word16 a[3] = {4096, 7807, -3733};
 /*************************************************************************
 *
 *  Function:   Pre_Process_init
-*  Purpose:    Allocates state memory and initializes state memory
+*  Purpose:    Initializes state memory
 *
 **************************************************************************
 */
-int Pre_Process_init (Pre_ProcessState **state)
+int Pre_Process_init (Pre_ProcessState *state)
 {
-  Pre_ProcessState* s;
- 
-  if (state == (Pre_ProcessState **) NULL){
+  if (state == (Pre_ProcessState *) NULL){
       fprintf(stderr, "Pre_Process_init: invalid parameter\n");
       return -1;
   }
-  *state = NULL;
- 
-  /* allocate memory */
-  if ((s= (Pre_ProcessState *) malloc(sizeof(Pre_ProcessState))) == NULL){
-      fprintf(stderr, "Pre_Process_init: can not malloc state structure\n");
-      return -1;
-  }
   
-  Pre_Process_reset(s);
-  *state = s;
+  Pre_Process_reset(state);
   
   return 0;
 }
- 
+
 /*************************************************************************
 *
 *  Function:   Pre_Process_reset
@@ -99,25 +117,6 @@ int Pre_Process_reset (Pre_ProcessState *state)
   state->x1 = 0;
  
   return 0;
-}
- 
-/*************************************************************************
-*
-*  Function:   Pre_Process_exit
-*  Purpose:    The memory used for state memory is freed
-*
-**************************************************************************
-*/
-void Pre_Process_exit (Pre_ProcessState **state)
-{
-  if (state == NULL || *state == NULL)
-      return;
- 
-  /* deallocate memory */
-  free(*state);
-  *state = NULL;
-  
-  return;
 }
  
 /*************************************************************************

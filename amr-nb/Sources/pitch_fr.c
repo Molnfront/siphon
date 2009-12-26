@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -30,7 +59,6 @@ const char pitch_fr_id[] = "@(#)$Id $" pitch_fr_h;
 #include "typedef.h"
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
 #include "cnst.h"
 #include "enc_lag3.h"
 #include "enc_lag6.h"
@@ -292,24 +320,14 @@ static void getRange (
 *
 **************************************************************************
 */
-int Pitch_fr_init (Pitch_frState **state)
+int Pitch_fr_init (Pitch_frState *state)
 {
-    Pitch_frState* s;
-
-    if (state == (Pitch_frState **) NULL){
+    if (state == (Pitch_frState *) NULL){
         fprintf(stderr, "Pitch_fr_init: invalid parameter\n");
         return -1;
     }
-    *state = NULL;
 
-    /* allocate memory */
-    if ((s= (Pitch_frState *) malloc(sizeof(Pitch_frState))) == NULL){
-        fprintf(stderr, "Pitch_fr_init: can not malloc state structure\n");
-        return -1;
-    }
-
-    Pitch_fr_reset(s);
-    *state = s;
+    Pitch_fr_reset(state);
 
     return 0;
 }
@@ -332,25 +350,6 @@ int Pitch_fr_reset (Pitch_frState *state)
     state->T0_prev_subframe = 0;
 
     return 0;
-}
-
-/*************************************************************************
-*
-*  Function:   Pitch_fr_exit
-*  Purpose:    The memory used for state memory is freed
-*
-**************************************************************************
-*/
-void Pitch_fr_exit (Pitch_frState **state)
-{
-    if (state == NULL || *state == NULL)
-        return;
-
-    /* deallocate memory */
-    free(*state);
-    *state = NULL;
-
-    return;
 }
 
 /*************************************************************************

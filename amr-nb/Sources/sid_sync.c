@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 *****************************************************************************
 *
@@ -28,7 +57,6 @@ const char sid_sync_id[] = "@(#)$Id $" sid_sync_h;
 #include <stdlib.h>
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
 #include "mode.h"
 
 /*
@@ -42,27 +70,21 @@ const char sid_sync_id[] = "@(#)$Id $" sid_sync_h;
 *                         PUBLIC PROGRAM CODE
 *****************************************************************************
 */
-int sid_sync_init (sid_syncState **state)
+int sid_sync_memSize()
 {
-    sid_syncState* s;
-    if (state == (sid_syncState **) NULL){
+  return sizeof(sid_syncState);
+}
+
+int sid_sync_init (sid_syncState *state)
+{
+    if (state == (sid_syncState *) NULL){
         fprintf(stderr, "sid_sync_init:invalid state parameter\n");
         return -1;
     }
 
-    *state = NULL;
+    state->sid_update_rate = 8;
 
-    /* allocate memory */
-    if ((s= (sid_syncState *)
-         malloc(sizeof(sid_syncState))) == NULL){
-        fprintf(stderr,
-                "sid_sync_init: "
-                "can not malloc state structure\n");
-        return -1;
-    }
-    s->sid_update_rate = 8;
-    *state = s;
-    return sid_sync_reset(s);
+    return sid_sync_reset(state);
 }
 
 int sid_sync_reset (sid_syncState *st)
@@ -71,20 +93,6 @@ int sid_sync_reset (sid_syncState *st)
     st->sid_handover_debt = 0;
     st->prev_ft = TX_SPEECH_GOOD;
     return 0;
-}
-
-
-void sid_sync_exit (sid_syncState **state)
-{
-  if (state == NULL || *state == NULL)
-      return;
- 
-  /* deallocate memory */
-  free(*state);
-  *state = NULL;
-  
-  return;
-
 }
 
 int sid_sync_set_handover_debt (sid_syncState *st,

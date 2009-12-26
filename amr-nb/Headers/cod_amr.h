@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 *****************************************************************************
 *
@@ -57,7 +86,7 @@ typedef struct {
    Word16 old_speech[L_TOTAL];
    Word16 *speech, *p_window, *p_window_12k2;
    Word16 *new_speech;             /* Global variable */
-   
+
    /* Weight speech vector */
    Word16 old_wsp[L_FRAME + PIT_MAX];
    Word16 *wsp;
@@ -79,15 +108,15 @@ typedef struct {
    Word16 hvec[L_SUBFR * 2];
 
    /* Substates */
-   lpcState   *lpcSt;
-   lspState   *lspSt;
-   clLtpState *clLtpSt;
-   gainQuantState  *gainQuantSt;
-   pitchOLWghtState *pitchOLWghtSt;
-   tonStabState *tonStabSt;
-   vadState *vadSt;
+   lpcState         lpcSt;
+   lspState         lspSt;
+   clLtpState       clLtpSt;
+   gainQuantState   gainQuantSt;
+   pitchOLWghtState pitchOLWghtSt;
+   tonStabState     tonStabSt;
+   vadState         vadSt;
    Flag dtx;
-   dtx_encState *dtx_encSt;
+   dtx_encState     dtx_encSt;
 
    /* Filter's memory */
    Word16 mem_syn[M], mem_w0[M], mem_w[M];
@@ -114,9 +143,9 @@ typedef struct {
 *  Returns     : 0 on success
 *
 **************************************************************************
-*/ 
-int cod_amr_init (cod_amrState **st, Flag dtx);
- 
+*/
+int cod_amr_init (cod_amrState *st, Flag dtx);
+
 /*
 **************************************************************************
 *
@@ -128,17 +157,6 @@ int cod_amr_init (cod_amrState **st, Flag dtx);
 */
 int cod_amr_reset (cod_amrState *st);
 
-/*
-**************************************************************************
-*
-*  Function    : cod_amr_exit
-*  Purpose     : The memory used for state memory is freed
-*  Description : Stores NULL in *st
-*
-**************************************************************************
-*/
-void cod_amr_exit (cod_amrState **st);
- 
 /***************************************************************************
  *   FUNCTION:   cod_amr_first
  *

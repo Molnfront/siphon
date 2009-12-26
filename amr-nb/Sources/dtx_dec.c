@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 *****************************************************************************
 *
@@ -41,7 +70,6 @@ const char dtx_dec_id[] = "@(#)$Id $" dtx_dec_h;
 #include "syn_filt.h"
 #include "lsp_lsf.h"
 #include "reorder.h"
-#include "count.h"
 #include "q_plsf_5.tab"
 #include "lsp.tab"
 
@@ -95,27 +123,16 @@ static const Word16 dtx_log_en_adjust[9] =
 *  Function    : dtx_dec_init
 *
 **************************************************************************
-*/ 
-int dtx_dec_init (dtx_decState **st)
+*/
+int dtx_dec_init (dtx_decState *st)
 {
-   dtx_decState* s;
-   
-   if (st == (dtx_decState **) NULL){
+   if (st == (dtx_decState *) NULL){
       fprintf(stderr, "dtx_dec_init: invalid parameter\n");
-      return -1; 
-   }
-   
-   *st = NULL;
-   
-   /* allocate memory */
-   if ((s= (dtx_decState *) malloc(sizeof(dtx_decState))) == NULL){
-      fprintf(stderr, "dtx_dec_init: can not malloc state structure\n");
       return -1;
    }
-   
-   dtx_dec_reset(s);
-   *st = s;
-   
+
+   dtx_dec_reset(st);
+
    return 0;
 }
  
@@ -179,25 +196,6 @@ int dtx_dec_reset (dtx_decState *st)
    st->dtxGlobalState = DTX;    
    st->data_updated = 0; 
    return 0;
-}
- 
-/*
-**************************************************************************
-*
-*  Function    : dtx_dec_exit
-*
-**************************************************************************
-*/
-void dtx_dec_exit (dtx_decState **st)
-{
-   if (st == NULL || *st == NULL)
-      return;
-   
-   /* deallocate memory */
-   free(*st);
-   *st = NULL;
-   
-   return;
 }
 
 /*

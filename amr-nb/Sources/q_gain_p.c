@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -30,7 +59,6 @@ const char q_gain_p_id[] = "@(#)$Id $" q_gain_p_h;
 #include "typedef.h"
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
 #include "cnst.h"
  
 /*
@@ -60,13 +88,11 @@ Word16 q_gain_pitch (   /* Return index of quantization                      */
 
     for (i = 1; i < NB_QUA_PITCH; i++)
     {
-
-        if (sub (qua_gain_pitch[i], gp_limit) <= 0)
+      if (qua_gain_pitch[i] <= gp_limit)
         {
             err = abs_s (sub (*gain, qua_gain_pitch[i]));
-            
 
-            if (sub (err, err_min) < 0)
+            if (err < err_min)
             {
                 err_min = err;
                 index = i;
@@ -74,8 +100,7 @@ Word16 q_gain_pitch (   /* Return index of quantization                      */
         }
     }
 
-
-    if (sub (mode, MR795) == 0)
+    if (mode == MR795)
     {
         /* in MR795 mode, compute three gain_pit candidates around the index
          * found in the quantization loop: the index found and the two direct
@@ -91,16 +116,14 @@ Word16 q_gain_pitch (   /* Return index of quantization                      */
         }
         else
         {
-
-            if (   sub (index, NB_QUA_PITCH-1) == 0
-                || sub (qua_gain_pitch[index+1], gp_limit) > 0)
-            {
-                ii = sub (index, 2);
-            }
-            else
-            {
-                ii = sub (index, 1);
-            }
+          if (index == NB_QUA_PITCH-1 || qua_gain_pitch[index+1] > gp_limit)
+          {
+            ii = index - 2;
+          }
+          else
+          {
+            ii = index - 1;
+          }
         }
 
         /* store candidate indices and values */
@@ -108,7 +131,7 @@ Word16 q_gain_pitch (   /* Return index of quantization                      */
         {
             gain_cind[i] = ii;
             gain_cand[i] = qua_gain_pitch[ii];
-            ii = add (ii, 1);
+            ++ii;
         }
         
         *gain = qua_gain_pitch[index];
@@ -119,8 +142,7 @@ Word16 q_gain_pitch (   /* Return index of quantization                      */
          * If bitexactness is required, mask away the two LSBs (because
          * in the original EFR, gain_pit was scaled Q12)
          */
-
-       if (sub(mode, MR122) == 0)
+      if (mode == MR122)
        {
           /* clear 2 LSBits */
           *gain = qua_gain_pitch[index] & 0xFFFC;

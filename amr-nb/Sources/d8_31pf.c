@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -28,7 +57,7 @@ const char d8_31pf_id[] = "@(#)$Id $" d8_31pf_h;
 */
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
+#include "set_zero.h"
 #include "cnst.h"
 
 /*
@@ -59,7 +88,7 @@ static void decompress10 (
      */
 
 
-   if (sub(MSBs, 124) > 0)
+   if (MSBs > 124)
    {
       MSBs = 124;
    }
@@ -76,8 +105,6 @@ static void decompress10 (
    pos_indx[index2] = add(ib, shr(ic, 1));
    
    pos_indx[index3] = add(shl(mult(MSBs, 1311), 1), shr(LSBs, 2));    
-
-   return;
 }    
 
 /*************************************************************************
@@ -111,7 +138,8 @@ static void decompress_code (
       MSBs = indx[NB_TRACK]/8;
       LSBs = indx[NB_TRACK]%8;
       */
-    MSBs = shr(indx[NB_TRACK_MR102], 3);
+    /*MSBs = shr(indx[NB_TRACK_MR102], 3);*/
+    MSBs = indx[NB_TRACK_MR102] >> 3;
     LSBs = indx[NB_TRACK_MR102] & 7;
     decompress10 (MSBs, LSBs, 0, 4, 1, pos_indx);               
     
@@ -120,7 +148,8 @@ static void decompress_code (
       MSBs = indx[NB_TRACK+1]/8;
       LSBs = indx[NB_TRACK+1]%8;
       */
-    MSBs = shr(indx[NB_TRACK_MR102+1], 3);
+    /*MSBs = shr(indx[NB_TRACK_MR102+1], 3);*/
+    MSBs = indx[NB_TRACK_MR102+1] >> 3;
     LSBs = indx[NB_TRACK_MR102+1] & 7;
     decompress10 (MSBs, LSBs, 2, 6, 5, pos_indx);               
     
@@ -135,7 +164,8 @@ static void decompress_code (
          pos_indx[3] = (MSBs0_24%5)*2 + LSBs%2;
       pos_indx[7] = (MSBs0_24/5)*2 + LSBs/2;
       */
-    MSBs = shr(indx[NB_TRACK_MR102+2], 2);
+    /*MSBs = shr(indx[NB_TRACK_MR102+2], 2);*/
+    MSBs = indx[NB_TRACK_MR102+2] >> 2;
     LSBs = indx[NB_TRACK_MR102+2] & 3;
 
     MSBs0_24 = shr(add(extract_l(L_shr(L_mult(MSBs, 25), 1)), 12), 5);
@@ -144,9 +174,9 @@ static void decompress_code (
     ib = sub(MSBs0_24, extract_l(L_shr(L_mult(mult(MSBs0_24, 6554), 5), 1)));
 
 
-    if (sub(ia, 1) == 0)
+    if (ia == 1)
     {
-       ib = sub(4, ib);
+       ib = 4 - ib;
     }
     pos_indx[3] = add(shl(ib, 1), (LSBs & 1));
     
@@ -179,10 +209,7 @@ void dec_8i40_31bits (
     Word16 linear_signs[NB_TRACK_MR102];
     Word16 linear_codewords[NB_PULSE];
     
-    for (i = 0; i < L_CODE; i++)
-    {
-        cod[i] = 0;
-    }
+    Set_zero(cod, L_CODE);
     
     decompress_code (index, linear_signs, linear_codewords);
     
@@ -191,11 +218,7 @@ void dec_8i40_31bits (
     for (j = 0; j < NB_TRACK_MR102; j++)
     {
        /* compute index i */
-       
-       i = linear_codewords[j];
-       i = extract_l (L_shr (L_mult (i, 4), 1));
-       pos1 = add (i, j);   /* position of pulse "j" */
-       
+       pos1 = linear_codewords[j] * 4 + j;
 
        if (linear_signs[j] == 0)
        {
@@ -209,18 +232,12 @@ void dec_8i40_31bits (
        cod[pos1] = sign;
        
        /* compute index i */
-       
-       i = linear_codewords[add (j, 4)];        
-       i = extract_l (L_shr (L_mult (i, 4), 1));
-       pos2 = add (i, j);      /* position of pulse "j+4" */
-       
+       pos2 = linear_codewords[j + 4] * 4 + j;
 
-       if (sub (pos2, pos1) < 0)
+       if (pos2 < pos1)
        {
-          sign = negate (sign);
+          sign = -sign;
        }
-       cod[pos2] = add (cod[pos2], sign);
+       cod[pos2] += sign;
     }
-    
-    return;
 }

@@ -91,7 +91,7 @@ void d_gain_code (
 
     /* Different scalings between MR122 and the other modes */
 
-    if (sub(mode, MR122) == 0)
+    if (mode == MR122)
     {
         gcode0 = extract_l (Pow2 (exp, frac));  /* predicted gain */
         gcode0 = shl (gcode0, 4);                                   
@@ -112,6 +112,4 @@ void d_gain_code (
     qua_ener_MR122 = *p++;
     qua_ener = *p++;
     gc_pred_update(pred_state, qua_ener_MR122, qua_ener);
-
-    return;
 }

@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -76,82 +105,65 @@ Word16 q_gain_code (        /* o  : quantization index,            Q0  */
 
     g_q0 = 0;
 
-    if (sub(mode, MR122) == 0)
+    if (mode == MR122)
     {
-       g_q0 = shr (*gain, 1); /* Q1 -> Q0 */
-    }
+      g_q0 = shr (*gain, 1); /* Q1 -> Q0 */
+      gcode0 = extract_l (Pow2 (exp_gcode0, frac_gcode0));  /* predicted gain */
+      gcode0 = shl (gcode0, 4);
+      p = &qua_gain_code[0];
+      err_min = abs_s (sub (g_q0, mult (gcode0, *p++)));
+      p += 2;                                  /* skip quantized energy errors */
+      index = 0;
+      for (i = 1; i < NB_QUA_CODE; i++)
+      {
+        err = abs_s (sub (g_q0,  mult (gcode0, *p++)));
 
-    /*-------------------------------------------------------------------*
-     *  predicted codebook gain                                          *
-     *  ~~~~~~~~~~~~~~~~~~~~~~~                                          *
-     *  gc0     = Pow2(int(d)+frac(d))                                   *
-     *          = 2^exp + 2^frac                                         *
-     *                                                                   *
-     *-------------------------------------------------------------------*/
+        p += 2;                              /* skip quantized energy error */
 
-    gcode0 = extract_l (Pow2 (exp_gcode0, frac_gcode0));  /* predicted gain */
-
-
-    if (sub(mode, MR122) == 0)
-    {
-       gcode0 = shl (gcode0, 4);
-    }
-    else
-    {
-       gcode0 = shl (gcode0, 5);
-    }
-    
-    /*-------------------------------------------------------------------*
-     *                   Search for best quantizer                        *
-     *-------------------------------------------------------------------*/
-
-    p = &qua_gain_code[0];
-
-    if (sub(mode, MR122) == 0)
-    {
-       err_min = abs_s (sub (g_q0, mult (gcode0, *p++)));
+         if (err < err_min)
+         {
+            err_min = err;
+            index = i;
+         }
+      }
+      p = &qua_gain_code[add (add (index,index), index)];
+      *gain = shl (mult (gcode0, *p++), 1);
     }
     else
     {
-       err_min = abs_s (sub (*gain, mult (gcode0, *p++)));
-    }
-    p += 2;                                  /* skip quantized energy errors */
-    index = 0;
+      /*-------------------------------------------------------------------*
+       *  predicted codebook gain                                          *
+       *  ~~~~~~~~~~~~~~~~~~~~~~~                                          *
+       *  gc0     = Pow2(int(d)+frac(d))                                   *
+       *          = 2^exp + 2^frac                                         *
+       *                                                                   *
+       *-------------------------------------------------------------------*/
+      gcode0 = extract_l (Pow2 (exp_gcode0, frac_gcode0));  /* predicted gain */
+      gcode0 = shl (gcode0, 5);
+      /*-------------------------------------------------------------------*
+       *                   Search for best quantizer                        *
+       *-------------------------------------------------------------------*/
 
-    for (i = 1; i < NB_QUA_CODE; i++)
-    {
+      p = &qua_gain_code[0];
+      err_min = abs_s (sub (*gain, mult (gcode0, *p++)));
+      p += 2;                                  /* skip quantized energy errors */
+      index = 0;
+      for (i = 1; i < NB_QUA_CODE; i++)
+      {
+         err = abs_s (sub (*gain, mult (gcode0, *p++)));
 
-       if (sub(mode, MR122) == 0)
-       {
-          err = abs_s (sub (g_q0,  mult (gcode0, *p++)));
-       }
-       else
-       {
-          err = abs_s (sub (*gain, mult (gcode0, *p++)));
-       }
-       
-       p += 2;                              /* skip quantized energy error */
+         p += 2;                              /* skip quantized energy error */
 
-
-       if (sub (err, err_min) < 0)
-       {
-          err_min = err;
-          index = i;
-       }
-    }
-
-    p = &qua_gain_code[add (add (index,index), index)];
-
-    if (sub(mode, MR122) == 0)
-    {
-       *gain = shl (mult (gcode0, *p++), 1); 
-    }
-    else
-    {
-       *gain = mult (gcode0, *p++);
+         if (err < err_min)
+         {
+            err_min = err;
+            index = i;
+         }
+      }
+      p = &qua_gain_code[add (add (index,index), index)];
+      *gain = mult (gcode0, *p++);
     }
 
-    
     /* quantized error energies (for MA predictor update) */
     *qua_ener_MR122 = *p++;
     *qua_ener = *p;

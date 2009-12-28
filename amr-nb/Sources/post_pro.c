@@ -119,8 +119,8 @@ int Post_Process_reset (Post_ProcessState *state)
   state->y2_lo = 0;
   state->y1_hi = 0;
   state->y1_lo = 0;
-  state->x0 = 0;
   state->x1 = 0;
+  state->x2 = 0;
 
   return 0;
 }
@@ -142,39 +142,35 @@ int Post_Process_reset (Post_ProcessState *state)
  *                                                                        
  *                                                                        
  *************************************************************************/
-int Post_Process (
+void Post_Process (
     Post_ProcessState *st,  /* i/o : post process state                   */
     Word16 signal[],        /* i/o : signal                               */
     Word16 lg               /* i   : length of signal                     */
     )
 {
-    Word16 i, x2;
+    Word16 i;
     Word32 L_tmp;
 
-
-    for (i = 0; i < lg; i++)
+    for (i = 0; i < lg; ++i)
     {
-        x2 = st->x1;
-        st->x1 = st->x0;
-        st->x0 = signal[i];
-        
-        /*  y[i] = b[0]*x[i]*2 + b[1]*x[i-1]*2 + b140[2]*x[i-2]/2  */
-        /*                     + a[1]*y[i-1] + a[2] * y[i-2];      */
-        
-        L_tmp = Mpy_32_16 (st->y1_hi, st->y1_lo, a[1]);
-        L_tmp = L_add (L_tmp, Mpy_32_16 (st->y2_hi, st->y2_lo, a[2]));
-        L_tmp = L_mac (L_tmp, st->x0, b[0]);
-        L_tmp = L_mac (L_tmp, st->x1, b[1]);
-        L_tmp = L_mac (L_tmp, x2, b[2]);
-        L_tmp = L_shl (L_tmp, 2);
-        
-        /* Multiplication by two of output speech with saturation. */
-        signal[i] = round(L_shl(L_tmp, 1));
-        
-        st->y2_hi = st->y1_hi;
-        st->y2_lo = st->y1_lo;
-        L_Extract (L_tmp, &st->y1_hi, &st->y1_lo);
-    }
+      L_tmp = b[0] * (signal[i] - 2*st->x1/*signal[i-1]*/ + st->x2/*signal[i-2]*/);
+      L_tmp <<= 1;
+      L_tmp += Mpy_32_16 (st->y1_hi, st->y1_lo, a[1]);
+      L_tmp += Mpy_32_16 (st->y2_hi, st->y2_lo, a[2]);
 
-    return 0;    
+      /*L_tmp  = L_shl(L_tmp, 2);*/
+      L_tmp <<= 2;
+
+      st->x2 = st->x1;
+      st->x1 = signal[i];
+
+       /* Multiplication by two of output speech with saturation. */
+      /*signal[i] = round(L_shl(L_tmp, 1));*/
+      signal[i] = round(L_tmp << 1);
+
+      st->y2_hi = st->y1_hi;
+      st->y2_lo = st->y1_lo;
+      st->y1_hi = (Word16) (L_tmp >> 16);
+      st->y1_lo = (Word16)((L_tmp >> 1) - (st->y1_hi << 15));
+    }
 }

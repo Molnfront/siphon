@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -31,7 +60,6 @@ const char dec_lag6_id[] = "@(#)$Id $" dec_lag6_h;
 #include <stdio.h>
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
  
 /*
 ********************************************************************************
@@ -73,18 +101,18 @@ void Dec_lag6 (
     if (i_subfr == 0)          /* if 1st or 3rd subframe */
     {
 
-       if (sub (index, 463) < 0)
+       if (index < 463)
        {
           /* T0 = (index+5)/6 + 17 */
-          *T0 = add (mult (add (index, 5), 5462), 17);
-          i = add (add (*T0, *T0), *T0);
-          /* *T0_frac = index - T0*6 + 105 */
-          *T0_frac = add (sub (index, add (i, i)), 105);
+          *T0 = ((Word32)(index+5)*5462) >> 15;
+          *T0 += 17;
 
+          /* *T0_frac = index - T0*6 + 105 */
+          *T0_frac = index - 6 * *T0 + 105;
        }
        else
        {
-          *T0 = sub (index, 368);
+          *T0 = index - 368;
           *T0_frac = 0;
        }
     }
@@ -92,28 +120,25 @@ void Dec_lag6 (
        /* second or fourth subframe */
     {
        /* find T0_min and T0_max for 2nd (or 4th) subframe */
-        
-       T0_min = sub (*T0, 5);
+       T0_min = *T0 - 5;
 
-
-       if (sub (T0_min, pit_min) < 0)
+       if (T0_min < pit_min)
        {
           T0_min = pit_min;
        }
-       T0_max = add (T0_min, 9);
+       T0_max = T0_min + 9;
 
 
-       if (sub (T0_max, pit_max) > 0)
+       if (T0_max > pit_max)
        {
           T0_max = pit_max;
-          T0_min = sub (T0_max, 9);
+          T0_min = T0_max - 9;
        }
        
        /* i = (index+5)/6 - 1 */
-       i = sub (mult (add (index, 5), 5462), 1);
-       *T0 = add (i, T0_min);
-       i = add (add (i, i), i);
-       *T0_frac = sub (sub (index, 3), add (i, i));
-
+       i = ((Word32)(index+5)*5462) >> 15;
+       i--;
+       *T0 = i + T0_min;
+       *T0_frac = index - 3 - 6*i;
     }
 }

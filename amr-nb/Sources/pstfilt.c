@@ -66,7 +66,6 @@ const char pstfilt_id[] = "@(#)$Id $" pstfilt_h;
 #include "copy.h"
 #include "syn_filt.h"
 #include "preemph.h"
-#include "count.h"
 #include "cnst.h"
 
 /*
@@ -174,7 +173,7 @@ int Post_Filter_reset (Post_FilterState *state)
 *
 **************************************************************************
 */
-int Post_Filter (
+void Post_Filter (
     Post_FilterState *st, /* i/o : post filter states                        */
     enum Mode mode,       /* i   : AMR mode                                  */
     Word16 *syn,          /* i/o : synthesis speech (postfiltered is output) */
@@ -193,7 +192,7 @@ int Post_Filter (
 
     Word16 i;
     Word16 temp1, temp2;
-    Word32 L_tmp;
+    Word32 L_tmp1, L_tmp2;
     Word16 *syn_work = &st->synth_buf[M];
     
 
@@ -210,7 +209,7 @@ int Post_Filter (
        /* Find weighted filter coefficients Ap3[] and ap[4] */
 
 
-       if (sub(mode, MR122) == 0 || sub(mode, MR102) == 0)
+       if (mode == MR122 || mode == MR102)
        {
           Weight_Ai (Az, gamma3_MR122, Ap3);
           Weight_Ai (Az, gamma4_MR122, Ap4);
@@ -234,21 +233,15 @@ int Post_Filter (
        Syn_filt (Ap4, h, h, L_H, &h[M + 1], 0);
         
        /* 1st correlation of h[] */
-       
-       L_tmp = L_mult (h[0], h[0]);
-       for (i = 1; i < L_H; i++)
+       L_tmp1 = h[L_H - 1] * h[L_H - 1];
+       L_tmp2 = 0;
+       for (i=0; i<L_H-1; i++)
        {
-          L_tmp = L_mac (L_tmp, h[i], h[i]);
+         L_tmp1 += h[i] * h[i];
+         L_tmp2 += h[i] * h[i+1];
        }
-       temp1 = extract_h (L_tmp);
-       
-       L_tmp = L_mult (h[0], h[1]);
-       for (i = 1; i < L_H - 1; i++)
-       {
-          L_tmp = L_mac (L_tmp, h[i], h[i + 1]);
-       }
-       temp2 = extract_h (L_tmp);
-       
+       temp1 = L_tmp1 >> 15;
+       temp2 = L_tmp2 >> 15;
 
        if (temp2 <= 0)
        {
@@ -276,6 +269,4 @@ int Post_Filter (
     /* update syn_work[] buffer */
     
     Copy (&syn_work[L_FRAME - M], &syn_work[-M], M);
-    
-    return 0;
 }

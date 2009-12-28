@@ -29,7 +29,7 @@ const char gmed_n_id[] = "@(#)$Id $" gmed_n_h;
 #include <stdio.h>
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
+#include "copy.h"
  
 /*
 ********************************************************************************
@@ -67,10 +67,7 @@ Word16 gmed_n (   /* o : index of the median value (0...N-1)      */
     Word16 tmp[NMAX];
     Word16 tmp2[NMAX];
 
-    for (i = 0; i < n; i++)
-    {
-        tmp2[i] = ind[i];
-    }
+    Copy(ind, tmp2, n);
 
     for (i = 0; i < n; i++)
     {
@@ -78,7 +75,7 @@ Word16 gmed_n (   /* o : index of the median value (0...N-1)      */
         for (j = 0; j < n; j++)
         {
 
-            if (sub (tmp2[j], max) >= 0)
+            if (tmp2[j] >= max)
             {
                 max = tmp2[j];
                 ix = j;
@@ -88,6 +85,6 @@ Word16 gmed_n (   /* o : index of the median value (0...N-1)      */
         tmp[i] = ix;
     }
 
-    medianIndex=tmp[ shr(n,1) ];  /* account for complex addressing */
+    medianIndex=tmp[ n >> 1 ];  /* account for complex addressing */
     return (ind[medianIndex]);                                     
 }

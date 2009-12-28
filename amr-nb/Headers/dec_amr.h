@@ -163,7 +163,7 @@ int Decoder_amr_reset (Decoder_amrState *st,enum Mode mode);
 *
 **************************************************************************
 */
-int Decoder_amr (
+void Decoder_amr (
     Decoder_amrState *st,  /* i/o : State variables                       */
     enum Mode mode,        /* i   : AMR mode                              */
     Word16 parm[],         /* i   : vector of synthesis parameters

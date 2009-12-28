@@ -154,7 +154,7 @@ void ec_gain_code (
 
     /* new gain = minimum(median, past_gain) * cdown[state] */
 
-    if (sub (tmp, st->past_gain_code) > 0)
+    if (tmp > st->past_gain_code)
     {
         tmp = st->past_gain_code;
     }
@@ -196,7 +196,7 @@ void ec_gain_code_update (
         if (prev_bf != 0)
         {
 
-            if (sub (*gain_code, st->prev_gc) > 0)
+            if (*gain_code > st->prev_gc)
             {
                 *gain_code = st->prev_gc;
             }
@@ -212,8 +212,6 @@ void ec_gain_code_update (
         st->gbuf[i - 1] = st->gbuf[i];
     }
     st->gbuf[4] = *gain_code;
-
-    return;
 }
 
 
@@ -291,7 +289,7 @@ void ec_gain_pitch (
 
     /* new gain = minimum(median, past_gain) * pdown[state] */
 
-    if (sub (tmp, st->past_gain_pit) > 0)
+    if (tmp > st->past_gain_pit)
     {
         tmp = st->past_gain_pit;
     }
@@ -325,7 +323,7 @@ void ec_gain_pitch_update (
         if (prev_bf != 0)
         {
 
-            if (sub (*gain_pitch, st->prev_gp) > 0)
+            if (*gain_pitch > st->prev_gp)
             {
                 *gain_pitch = st->prev_gp;
             }
@@ -336,7 +334,7 @@ void ec_gain_pitch_update (
     st->past_gain_pit = *gain_pitch;
 
 
-    if (sub (st->past_gain_pit, 16384) > 0)  /* if (st->past_gain_pit > 1.0) */
+    if (st->past_gain_pit > 16384)  /* if (st->past_gain_pit > 1.0) */
     {
         st->past_gain_pit = 16384;
     }

@@ -71,10 +71,6 @@ void A_Refl(
 
    /* initialize states */
    Copy(a, aState, M);
-   /*for (i = 0; i < M; i++)
-   {
-      aState[i] = a[i];
-   }*/
    
    /* backward Levinson recursion */
    for (i = M-1; i >= 0; i--)
@@ -115,17 +111,9 @@ void A_Refl(
       }
       
       Copy(bState, aState, i);
-      /*for (j = 0; j < i; j++)
-      {
-         aState[j] = bState[j];
-      }*/
    }
    return;
 
 ExitRefl:
   Set_zero(refl, M);
-   /*for (i = 0; i < M; i++)
-   {
-      refl[i] = 0;
-   }*/
 }

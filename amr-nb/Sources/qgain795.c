@@ -157,13 +157,13 @@ MR795_gain_code_quant3(
     e_max = exp_max[0];
     for (i = 1; i < 5; i++)     /* implemented flattened */
     {
-        if (sub(exp_max[i], e_max) > 0)
+        if (exp_max[i] > e_max)
         {
             e_max = exp_max[i];
         }
     }
 
-    e_max = add(e_max, 1);      /* To avoid overflow */
+    e_max++;/*e_max = add(e_max, 1);*/      /* To avoid overflow */
 
     for (i = 0; i < 5; i++) {
         j = sub(e_max, exp_max[i]);
@@ -225,7 +225,7 @@ MR795_gain_code_quant3(
                than the minimum MSE seen so far; also store the
                pitch gain for this (so far) lowest MSE          */
             /**/
-            if (L_sub(L_tmp, dist_min) < (Word32) 0)
+            if (L_tmp < (Word32)dist_min)
             {
                 dist_min = L_tmp;
                 cod_ind = i;
@@ -394,7 +394,7 @@ MR795_gain_code_quant_mod(  /* o  : index of quantization.            */
     for (i = 1; i <= 4; i++)
     {
         /**/
-        if (sub (exp_coeff[i], e_max) > 0)
+      if (exp_coeff[i] > e_max)
         {
             e_max = exp_coeff[i];
         }
@@ -442,7 +442,7 @@ MR795_gain_code_quant_mod(  /* o  : index of quantization.            */
         /* only continue if    gc[i]            < 2.0*gc
            which is equiv. to  g_code (Q10-ec0) < gain_code (Q11-ec0) */
         /**/
-        if (sub (g_code, gain_code) >= 0)
+        if (g_code >= gain_code)
             break;
 
         L_tmp = L_mult (g_code, g_code);
@@ -468,8 +468,7 @@ MR795_gain_code_quant_mod(  /* o  : index of quantization.            */
 
         /* store table index if distance measure for this
             index is lower than the minimum seen so far   */
-
-        if (L_sub (L_tmp, dist_min) < (Word32) 0)
+        if ( L_tmp < (Word32) dist_min)
         {
             dist_min = L_tmp;
             index = i;

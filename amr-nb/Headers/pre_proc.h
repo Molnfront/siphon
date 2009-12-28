@@ -67,8 +67,8 @@ typedef struct {
   Word16 y2_lo;
   Word16 y1_hi;
   Word16 y1_lo;
-  Word16 x0;
   Word16 x1;
+  Word16 x2;
 } Pre_ProcessState;
  
 /*
@@ -88,7 +88,7 @@ int Pre_Process_reset (Pre_ProcessState *st);
    returns 0 on success
  */
 
-int Pre_Process (
+void Pre_Process (
     Pre_ProcessState *st,
     Word16 signal[],   /* Input/output signal                               */
     Word16 lg          /* Lenght of signal                                  */

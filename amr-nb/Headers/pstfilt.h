@@ -86,7 +86,7 @@ int Post_Filter_reset (Post_FilterState *st);
    returns 0 on success
  */
 
-int Post_Filter (
+void Post_Filter (
     Post_FilterState *st, /* i/o : post filter states                        */
     enum Mode mode,       /* i   : AMR mode                                  */
     Word16 *syn,          /* i/o : synthesis speech (postfiltered is output) */

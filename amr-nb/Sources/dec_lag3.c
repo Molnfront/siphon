@@ -31,7 +31,6 @@ const char dec_lag3_id[] = "@(#)$Id $" dec_lag3_h;
 */
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
 
 /*
 ********************************************************************************
@@ -72,74 +71,69 @@ void Dec_lag3(Word16 index,     /* i : received pitch index                 */
     Word16 i;
     Word16 tmp_lag;
     
+    if (i_subfr == 0) /* if 1st or 3rd subframe */
+    {
+	   if (index < 197)
+	   {
+	     *T0 = ((Word32)(index+2) * 10923) >> 15;
+       *T0 += 19;
 
-    if (i_subfr == 0) {    /* if 1st or 3rd subframe */
-
-	   if (sub(index, 197) < 0) {
-          
-          *T0 = add(mult(add(index, 2), 10923), 19);
-           
-          i = add(add(*T0, *T0), *T0);
-          *T0_frac = add(sub(index, i), 58);
-       } else {
-          *T0 = sub(index, 112);
-          *T0_frac = 0;
-       }
-       
-    } else {    /* 2nd or 4th subframe */
-
-
-       if (flag4 == 0) {
-          
+       i = *T0 + (*T0 << 1);
+       *T0_frac = index - i + 58;
+     }
+	   else
+	   {
+	     *T0 = index - 112;
+       *T0_frac = 0;
+     }
+    }
+    else /* 2nd or 4th subframe */
+    {
+       if (flag4 == 0)
+       {
           /* 'normal' decoding: either with 5 or 6 bit resolution */
+          i = ((Word32)(index+2) * 10923) >> 15;
+          i--;
+          *T0 = t0_min + i;
           
-          i = sub(mult(add(index, 2), 10923), 1);
-          *T0 = add(i, t0_min);
-          
-          i = add(add(i, i), i);
-          *T0_frac = sub(sub(index, 2), i);
+          i += ( i << 1);
+          *T0_frac = index - 2 -i;
        }
-       else {
-          
+       else
+       {
           /* decoding with 4 bit resolution */
-          
           tmp_lag = T0_prev;
 
+          if ( (tmp_lag - t0_min) > 5)
+             tmp_lag = t0_min + 5;
 
-          if ( sub( sub(tmp_lag, t0_min), 5) > 0)
-             tmp_lag = add (t0_min, 5);
-
-          if ( sub( sub(t0_max, tmp_lag), 4) > 0)
-             tmp_lag = sub (t0_max, 4);
+          if ( (t0_max - tmp_lag) > 4)
+             tmp_lag = t0_max - 4;
           
 
-          if (sub(index, 4) < 0)
+          if (index < 4)
           {
-             i = sub(tmp_lag, 5);
-             *T0 = add(i, index);
+             *T0 = tmp_lag - 5 + index;
              *T0_frac = 0;
           }
           else
           {
 
-             if (sub(index, 12) < 0)
+             if (index < 12)
              {
-                i = sub(mult(sub(index, 5), 10923), 1);
-                *T0 = add(i, tmp_lag);
+                i = ((Word32)(index-5)*10923) >> 15;
+                i--;
+                *T0 = i + tmp_lag;
                 
-                i = add(add(i, i), i);
-                *T0_frac = sub(sub(index, 9), i);
+                i += (i << 1);
+                *T0_frac = index - 9 - i;
              }
              else
              {
-                i = add( sub (index, 12), tmp_lag);
-                *T0 = add (i, 1);                
+                *T0 = index - 11 + tmp_lag;
                 *T0_frac = 0;
              }
           }
-          
        } /* end if (decoding with 4 bit resolution) */
     }
-    
-    return;
 }

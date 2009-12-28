@@ -78,7 +78,7 @@ int preemphasis_reset (preemphasisState *st);
    returns 0 on success
  */
 
-int preemphasis (
+void preemphasis (
     preemphasisState *st, /* (i/o): preemphasis filter state                  */
     Word16 *signal,    /* (i/o): input signal overwritten by the output     */
     Word16 g,          /* (i)  : preemphasis coefficient                    */

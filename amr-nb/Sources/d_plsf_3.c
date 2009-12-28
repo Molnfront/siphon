@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -96,7 +125,7 @@ void D_plsf_3(
 
         /* estimate past quantized residual to be used in next frame */
 
-	if (sub(mode, MRDTX) != 0) {
+	if (mode != MRDTX) {
 	  for (i = 0; i < M; i++) {
             /* temp  = mean_lsf[i] +  past_r2_q[i] * PRED_FAC; */
 	    
@@ -116,13 +145,13 @@ void D_plsf_3(
     else  /* if good LSFs received */
     {
 
-       if (sub (mode, MR475) == 0 || sub (mode, MR515) == 0)
+       if (mode == MR475 || mode == MR515)
        {   /* MR475, MR515 */
           p_cb1 = dico1_lsf;
           p_cb2 = dico2_lsf;
           p_cb3 = mr515_3_lsf;
        }
-       else if (sub (mode, MR795) == 0)
+       else if (mode == MR795)
        {   /* MR795 */
 
           p_cb1 = mr795_1_lsf;
@@ -140,7 +169,7 @@ void D_plsf_3(
        /* decode prediction residuals from 3 received indices */
 
         index = *indice++;
-        p_dico = &p_cb1[add(index, add(index, index))];
+        p_dico = &p_cb1[/*add(index, add(index, index))*/ 3 * index];
         lsf1_r[0] = *p_dico++;
         lsf1_r[1] = *p_dico++;
         lsf1_r[2] = *p_dico++;
@@ -148,9 +177,10 @@ void D_plsf_3(
         index = *indice++;
         
 
-        if ((sub (mode, MR475) == 0) || (sub (mode, MR515) == 0))
+        if (mode == MR475 || mode == MR515)
         {   /* MR475, MR515 only using every second entry */
-            index = shl(index,1);
+            /*index = shl(index,1);*/
+          index <<= 1;
         }
         
         p_dico = &p_cb2[add(index, add(index, index))];
@@ -167,7 +197,7 @@ void D_plsf_3(
 
         /* Compute quantized LSFs and update the past quantized residual */
 
-	if (sub(mode, MRDTX) != 0) 
+        if (mode != MRDTX)
            for (i = 0; i < M; i++) {
               temp = add(mean_lsf[i], mult(st->past_r_q[i], pred_fac[i]));
               lsf1_q[i] = add(lsf1_r[i], temp);
@@ -190,8 +220,6 @@ void D_plsf_3(
     /*  convert LSFs to the cosine domain */
 
     Lsf_lsp(lsf1_q, lsp1_q, M);
-
-    return;
 }
 
 void Init_D_plsf_3(D_plsfState *st,  /* i/o: State struct                */

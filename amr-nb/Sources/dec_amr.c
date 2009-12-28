@@ -196,13 +196,9 @@ int Decoder_amr_reset (Decoder_amrState *state, enum Mode mode)
   state->inBackgroundNoise = 0;
   state->voicedHangover = 0;
   if (mode != MRDTX) {
-      /*for (i=0;i<9;i++)
-          state->excEnergyHist[i] = 0;*/
       Set_zero(state->excEnergyHist, 9);
   }
-  
-  /*for (i = 0; i < 9; i++)
-     state->ltpGainHistory[i] = 0;*/
+
   Set_zero(state->ltpGainHistory, 9);
 
   Cb_gain_average_reset(&state->Cb_gain_averState);
@@ -232,7 +228,7 @@ int Decoder_amr_reset (Decoder_amrState *state, enum Mode mode)
 *
 **************************************************************************
 */
-int Decoder_amr (
+void Decoder_amr (
     Decoder_amrState *st,      /* i/o : State variables                   */
     enum Mode mode,            /* i   : AMR mode                          */
     Word16 parm[],             /* i   : vector of synthesis parameters
@@ -294,8 +290,7 @@ int Decoder_amr (
        /* function result */
 
     /* DTX actions */
-
-    if (sub(newDTXState, SPEECH) != 0 )
+    if (newDTXState != SPEECH)
     {
        Decoder_amr_reset (st, MRDTX);
 
@@ -315,48 +310,30 @@ int Decoder_amr (
     }
 
     /* SPEECH action state machine  */
-
-    if ((sub(frame_type, RX_SPEECH_BAD) == 0) ||
-        (sub(frame_type, RX_NO_DATA) == 0) ||
-        (sub(frame_type, RX_ONSET) == 0))
+    switch(frame_type)
     {
-       bfi = 1;
-
-       if ((sub(frame_type, RX_NO_DATA) == 0) ||
-           (sub(frame_type, RX_ONSET) == 0))
-       {
-    build_CN_param(&st->nodataSeed,
-       prmno[mode],
-       bitno[mode],
-       parm);
-       }
-    }
-    else if (sub(frame_type, RX_SPEECH_DEGRADED) == 0)
-    {
-       pdfi = 1;
-    }
-
-
-
-    if (bfi != 0)
-    {
+      case RX_ONSET:
+      case RX_NO_DATA:
+        build_CN_param(&st->nodataSeed,
+           prmno[mode],
+           bitno[mode],
+           parm);
+      case RX_SPEECH_BAD:
+        bfi = 1;
         st->state = add (st->state, 1);
+        break;
+      case RX_SPEECH_DEGRADED:
+        pdfi = 1;
+      default:
+        if (st->state == 6)
+          st->state = 5;
+        else
+          st->state = 0;
+        break;
     }
-    else if (sub (st->state, 6) == 0)
 
-    {
-        st->state = 5;
-    }
-    else
-    {
-        st->state = 0;
-    }
-
-
-    if (sub (st->state, 6) > 0)
-    {
-        st->state = 6;
-    }
+    if (st->state > 6)
+      st->state = 6;
 
     /* If this frame is the first speech frame after CNI period,     */
     /* set the BFH state machine to an appropriate state depending   */
@@ -368,14 +345,11 @@ int Decoder_amr (
     /* erroneously interpreted as a good speech frame as small as    */
     /* possible (the decoder output in this case is quickly muted)   */
 
-
-    /*if (sub(st->dtxDecoderState->dtxGlobalState, DTX) == 0)*/
     if ( st->dtxDecoderState.dtxGlobalState == DTX )
     {
        st->state = 5;
        st->prev_bf = 0;
     }
-    /*else if (test (), sub(st->dtxDecoderState->dtxGlobalState, DTX_MUTE) == 0)*/
     else if ( st->dtxDecoderState.dtxGlobalState == DTX_MUTE )
     {
        st->state = 5;
@@ -388,7 +362,7 @@ int Decoder_amr (
     /* decode LSF parameters and generate interpolated lpc coefficients
        for the 4 subframes */
 
-    if (sub (mode, MR122) != 0)
+    if (mode != MR122)
     {
        D_plsf_3(&st->lsfState, mode, bfi, parm, lsp_new);
 
@@ -401,8 +375,6 @@ int Decoder_amr (
     {
        D_plsf_5 (&st->lsfState, bfi, parm, lsp_mid, lsp_new);
 
-
-
        /* Advance synthesis parameters pointer */
        parm += 5;
 
@@ -410,10 +382,7 @@ int Decoder_amr (
     }
 
     /* update the LSPs for the next frame */
-    for (i = 0; i < M; i++)
-    {
-       st->lsp_old[i] = lsp_new[i];
-    }
+    Copy(lsp_new, st->lsp_old, M);
 
 
 
@@ -435,17 +404,17 @@ int Decoder_amr (
     subfrNr = -1;
     for (i_subfr = 0; i_subfr < L_FRAME; i_subfr += L_SUBFR)
     {
-       subfrNr = add(subfrNr, 1);
-       evenSubfr = sub(1, evenSubfr);
+      subfrNr++;
+      evenSubfr = 1 - evenSubfr;
 
        /* flag for first and 3th subframe */
        pit_flag = i_subfr;
 
 
-       if (sub (i_subfr, L_FRAME_BY2) == 0)
+       if (i_subfr == L_FRAME_BY2)
        {
 
-          if (sub(mode, MR475) != 0 && sub(mode, MR515) != 0)
+          if (mode != MR475 && mode != MR515)
           {
              pit_flag = 0;
           }
@@ -459,47 +428,45 @@ int Decoder_amr (
         *-------------------------------------------------------*/
 
 
-       if (sub(mode, MR122) != 0)
+       if (mode != MR122)
        {
           /* flag4 indicates encoding with 4 bit resolution;     */
           /* this is needed for mode MR475, MR515, MR59 and MR67 */
 
-          flag4 = 0;
+          /*flag4 = 0;*/
 
-          if ((sub (mode, MR475) == 0) ||
-              (sub (mode, MR515) == 0) ||
-              (sub (mode, MR59) == 0) ||
-              (sub (mode, MR67) == 0) ) {
+          if (mode < MR74) /* MR475, MR515, MR59 and MR67 */
              flag4 = 1;
-          }
+          else
+            flag4 = 0;
 
           /*-------------------------------------------------------*
            * - get ranges for the t0_min and t0_max                *
            * - only needed in delta decoding                       *
            *-------------------------------------------------------*/
-
-          delta_frc_low = 5;
-          delta_frc_range = 9;
-
-
-          if ( sub(mode, MR795) == 0 )
+          if ( mode == MR795)
           {
              delta_frc_low = 10;
              delta_frc_range = 19;
           }
+          else
+          {
+            delta_frc_low = 5;
+            delta_frc_range = 9;
+          }
 
-          t0_min = sub(st->old_T0, delta_frc_low);
+          t0_min = st->old_T0 - delta_frc_low;
 
-          if (sub(t0_min, PIT_MIN) < 0)
+          if (t0_min < PIT_MIN)
           {
              t0_min = PIT_MIN;
           }
-          t0_max = add(t0_min, delta_frc_range);
+          t0_max = t0_min + delta_frc_range;
 
-          if (sub(t0_max, PIT_MAX) > 0)
+          if (t0_max > PIT_MAX)
           {
              t0_max = PIT_MAX;
-             t0_min = sub(t0_max, delta_frc_range);
+             t0_min = PIT_MAX - delta_frc_range;
           }
 
           Dec_lag3 (index, t0_min, t0_max, pit_flag, st->old_T0,
@@ -511,23 +478,20 @@ int Decoder_amr (
           if (bfi != 0)
           {
 
-             if (sub (st->old_T0, PIT_MAX) < 0)
+             if (st->old_T0 < PIT_MAX)
              {                                      /* Graceful pitch */
-                st->old_T0 = add(st->old_T0, 1);    /* degradation    */
+                st->old_T0++;    /* degradation    */
              }
-             T0 = st->old_T0;
-             T0_frac = 0;
-
 
              if ( st->inBackgroundNoise != 0 &&
-                  sub(st->voicedHangover, 4) > 0 &&
-                  ((sub(mode, MR475) == 0 ) ||
-                   (sub(mode, MR515) == 0 ) ||
-                   (sub(mode, MR59) == 0) )
+                  (st->voicedHangover > 4) &&
+                  (mode < MR67) /* MR475, MR515, MR59 */
                   )
-             {
                 T0 = st->T0_lagBuff;
-             }
+             else
+               T0 = st->old_T0;
+
+             T0_frac = 0;
           }
 
           Pred_lt_3or6 (st->exc, T0, T0_frac, L_SUBFR, 1);
@@ -538,7 +502,7 @@ int Decoder_amr (
                     PIT_MAX, pit_flag, &T0, &T0_frac);
 
 
-          if ( bfi == 0 && (pit_flag == 0 || sub (index, 61) < 0))
+          if ( bfi == 0 && (pit_flag == 0 || index < 61))
           {
           }
           else
@@ -558,7 +522,7 @@ int Decoder_amr (
         *-------------------------------------------------------*/
 
 
-        if (sub (mode, MR475) == 0 || sub (mode, MR515) == 0)
+        if (mode == MR475 || mode == MR515)
         {   /* MR475, MR515 */
            index = *parm++;        /* index of position */
            i = *parm++;            /* signs             */
@@ -567,7 +531,7 @@ int Decoder_amr (
 
            pit_sharp = shl (st->sharp, 1);
         }
-        else if (sub (mode, MR59) == 0)
+        else if (mode == MR59)
         {   /* MR59 */
 
            index = *parm++;        /* index of position */
@@ -577,7 +541,7 @@ int Decoder_amr (
 
            pit_sharp = shl (st->sharp, 1);
         }
-        else if (sub (mode, MR67) == 0)
+        else if (mode == MR67)
         {   /* MR67 */
 
            index = *parm++;        /* index of position */
@@ -587,7 +551,7 @@ int Decoder_amr (
 
            pit_sharp = shl (st->sharp, 1);
         }
-        else if (sub (mode, MR795) <= 0)
+        else if (mode < MR102)
         {   /* MR74, MR795 */
 
            index = *parm++;        /* index of position */
@@ -597,7 +561,7 @@ int Decoder_amr (
 
            pit_sharp = shl (st->sharp, 1);
         }
-        else if (sub (mode, MR102) == 0)
+        else if (mode == MR102)
         {  /* MR102 */
            dec_8i40_31bits (parm, code);
            parm += 7;
@@ -644,8 +608,6 @@ int Decoder_amr (
          *   gain and codebook gain (all others)                      *
          * - Update pitch sharpening "sharp" with quantized gain_pit  *
          *------------------------------------------------------------*/
-
-        /*if (test(), sub (mode, MR475) == 0)*/
         if ( mode == MR475 )
         {
            /* read and decode pitch and code gain */
@@ -672,16 +634,14 @@ int Decoder_amr (
            ec_gain_code_update (&st->ec_gain_c_st, bfi, st->prev_bf,
                                 &gain_code);
 
-           pit_sharp = gain_pit;
+           /*pit_sharp = gain_pit;*/
 
-           if (sub (pit_sharp, SHARPMAX) > 0)
-           {
-               pit_sharp = SHARPMAX;
-           }
+           if (gain_pit > SHARPMAX)
+             pit_sharp = SHARPMAX;
+           else
+             pit_sharp = gain_pit;
 
         }
-        /*else if (test(), test(), (sub (mode, MR74) <= 0) ||
-                 (sub (mode, MR102) == 0))*/
         else if (( mode <= MR74 ) ||  ( mode == MR102 ))
         {
             /* read and decode pitch and code gain */
@@ -704,16 +664,16 @@ int Decoder_amr (
             ec_gain_code_update (&st->ec_gain_c_st, bfi, st->prev_bf,
                                  &gain_code);
 
-            pit_sharp = gain_pit;
+            /*pit_sharp = gain_pit;*/
 
-            if (sub (pit_sharp, SHARPMAX) > 0)
-            {
-               pit_sharp = SHARPMAX;
-            }
+            if (gain_pit > SHARPMAX)
+              pit_sharp = SHARPMAX;
+            else
+              pit_sharp = gain_pit;
 
-            if (sub (mode, MR102) == 0)
+            if (mode == MR102)
             {
-               if (sub (st->old_T0, add(L_SUBFR, 5)) > 0)
+              if (st->old_T0 > L_SUBFR + 5)
                {
                   pit_sharp = shr(pit_sharp, 2);
                }
@@ -725,7 +685,7 @@ int Decoder_amr (
            index = *parm++;                 /* index of gain(s) */
 
 
-           if (sub (mode, MR795) == 0)
+           if (mode == MR795)
            {
               /* decode pitch gain */
 
@@ -755,12 +715,12 @@ int Decoder_amr (
               ec_gain_code_update (&st->ec_gain_c_st, bfi, st->prev_bf,
                                    &gain_code);
 
-              pit_sharp = gain_pit;
+              /*pit_sharp = gain_pit;*/
 
-              if (sub (pit_sharp, SHARPMAX) > 0)
-              {
-                 pit_sharp = SHARPMAX;
-              }
+              if (gain_pit > SHARPMAX)
+                pit_sharp = SHARPMAX;
+              else
+                pit_sharp = gain_pit;
            }
            else
            { /* MR122 */
@@ -786,31 +746,38 @@ int Decoder_amr (
            pitch sharpening in the search phase)             */
         /* do not update sharpening in even subframes for MR475 */
         /* */
-        if (sub(mode, MR475) != 0 || evenSubfr == 0)
+        if (mode != MR475 || evenSubfr == 0)
         {
-            st->sharp = gain_pit;
-
-            if (sub (st->sharp, SHARPMAX) > 0)
-            {
-                st->sharp = SHARPMAX;
-            }
+            if (gain_pit > SHARPMAX)
+              st->sharp = SHARPMAX;
+            else
+              st->sharp = gain_pit;
         }
 
         pit_sharp = shl (pit_sharp, 1);
 
-        if (sub (pit_sharp, 16384) > 0)
+        if (pit_sharp > 16384)
         {
+          if (mode == MR122)
+          {
+            for (i = 0; i < L_SUBFR; i++)
+             {
+                temp = mult (st->exc[i], pit_sharp);
+                /*L_temp = L_mult (temp, gain_pit);
+                L_temp = L_shr (L_temp, 1);*/
+                L_temp = (Word32)temp * (Word32)gain_pit;
+                excp[i] = round (L_temp);
+             }
+          }
+          else
+          {
            for (i = 0; i < L_SUBFR; i++)
             {
                temp = mult (st->exc[i], pit_sharp);
                L_temp = L_mult (temp, gain_pit);
-
-               if (sub(mode, MR122)==0)
-               {
-                  L_temp = L_shr (L_temp, 1);
-               }
                excp[i] = round (L_temp);
             }
+          }
         }
 
         /*-------------------------------------------------------*
@@ -834,18 +801,16 @@ int Decoder_amr (
 
         /*     */
         if ( (st->prev_bf != 0 || bfi != 0) && st->inBackgroundNoise != 0 &&
-             ((sub(mode, MR475) == 0) ||
-              (sub(mode, MR515) == 0) ||
-              (sub(mode, MR59) == 0))
+             (mode < MR67) /* MR475, MR515, MR59 */
              )
         {
 
-           if ( sub (gain_pit, 12288) > 0)    /* if (gain_pit > 0.75) in Q14*/
+           if (gain_pit > 12288)    /* if (gain_pit > 0.75) in Q14*/
               gain_pit = add( shr( sub(gain_pit, 12288), 1 ), 12288 );
               /* gain_pit = (gain_pit-0.75)/2.0 + 0.75; */
 
 
-           if ( sub (gain_pit, 14745) > 0)    /* if (gain_pit > 0.90) in Q14*/
+           if (gain_pit > 14745)   /* if (gain_pit > 0.90) in Q14*/
            {
               gain_pit = 14745;
            }
@@ -863,7 +828,7 @@ int Decoder_amr (
 
         /* make sure that MR74, MR795, MR122 have original code_gain*/
 
-        if ((sub(mode, MR67) > 0) && (sub(mode, MR102) != 0) )
+        if ( (mode > MR67) && (mode != MR102) )
            /* MR74, MR795, MR122 */
         {
            gain_code_mix = gain_code;
@@ -874,7 +839,7 @@ int Decoder_amr (
          * - Find synthesis speech corresponding to st->exc[].   *
          *-------------------------------------------------------*/
 
-        if (sub(mode, MR102) <= 0) /* MR475, MR515, MR59, MR67, MR74, MR795, MR102*/
+        if (mode != MR122) /* MR475, MR515, MR59, MR67, MR74, MR795, MR102*/
         {
            pitch_fac = gain_pit;
            tmp_shift = 1;
@@ -909,10 +874,8 @@ int Decoder_amr (
         ph_disp_release(&st->ph_disp_st); /* free phase dispersion adaption */
 
 
-        if ( ((sub(mode, MR475) == 0) ||
-              (sub(mode, MR515) == 0) ||
-              (sub(mode, MR59) == 0))   &&
-             sub(st->voicedHangover, 3) > 0 &&
+        if ( (mode < MR67)   && /* MR475, MR515, MR59 */
+             st->voicedHangover > 3 &&
              st->inBackgroundNoise != 0 &&
              bfi != 0 )
         {
@@ -933,10 +896,11 @@ int Decoder_amr (
         L_temp = 0;
         for (i = 0; i < L_SUBFR; i++)
         {
-            L_temp = L_mac (L_temp, exc_enhanced[i], exc_enhanced[i] );
+            /*L_temp = L_mac (L_temp, exc_enhanced[i], exc_enhanced[i] );*/
+          L_temp += exc_enhanced[i] * exc_enhanced[i];
         }
 
-        L_temp = L_shr (L_temp, 1);     /* excEnergy = sqrt(L_temp) in Q0 */
+        /*L_temp = L_shr (L_temp, 1);     /* excEnergy = sqrt(L_temp) in Q0 */
         L_temp = sqrt_l_exp(L_temp, &temp);  /* function result */
         L_temp = L_shr(L_temp, add( shr(temp, 1), 15));
         L_temp = L_shr(L_temp, 2);       /* To cope with 16-bit and  */
@@ -944,12 +908,10 @@ int Decoder_amr (
 
         /*
             */
-        if ( ((sub (mode, MR475) == 0) ||
-              (sub (mode, MR515) == 0) ||
-              (sub (mode, MR59) == 0))  &&
-             sub(st->voicedHangover, 5) > 0 &&
+        if ( mode < MR67  && /* MR475, MR515, MR59 */
+             st->voicedHangover > 5 &&
              st->inBackgroundNoise != 0 &&
-             sub(st->state, 4) < 0 &&
+             st->state < 4 &&
              ( (pdfi != 0 && st->prev_pdf != 0) ||
                 bfi != 0 ||
                 st->prev_bf != 0) )
@@ -972,7 +934,7 @@ int Decoder_amr (
 
         if ( st->inBackgroundNoise != 0 &&
              ( bfi != 0 || st->prev_bf != 0 ) &&
-             sub(st->state, 4) < 0 )
+             st->state < 4 )
         {
            ; /* do nothing! */
         }
@@ -988,7 +950,7 @@ int Decoder_amr (
         /*-------------------------------------------------------*
          * Excitation control module end.                        *
          *-------------------------------------------------------*/
-        if (sub (pit_sharp, 16384) > 0)
+        if (pit_sharp > 16384)
         {
            for (i = 0; i < L_SUBFR; i++)
            {
@@ -1007,13 +969,14 @@ int Decoder_amr (
 
         if (ovrflw) /* Test for overflow */
         {
-           for (i = 0; i < PIT_MAX + L_INTERPOL + L_SUBFR; i++)
+          for (i = 0; i < L_SUBFR; i++)
+          {
+            st->old_exc[i] = shr(st->old_exc[i], 2);
+            exc_enhanced[i] = shr(exc_enhanced[i], 2);
+          }
+          for (; i < PIT_MAX + L_INTERPOL + L_SUBFR; i++)
            {
               st->old_exc[i] = shr(st->old_exc[i], 2);
-           }
-           for (i = 0; i < L_SUBFR; i++)
-           {
-              exc_enhanced[i] = shr(exc_enhanced[i], 2);
            }
            Syn_filt(Az, exc_enhanced, &synth[i_subfr], L_SUBFR, st->mem_syn, 1);
         }
@@ -1064,6 +1027,4 @@ int Decoder_amr (
 
 the_end:
     st->dtxDecoderState.dtxGlobalState = newDTXState;
-
-    return 0;
 }

@@ -71,8 +71,8 @@ typedef struct {
    Word16 y2_lo;
    Word16 y1_hi;
    Word16 y1_lo;
-   Word16 x0;
    Word16 x1;
+   Word16 x2;
 } Post_ProcessState;
  
 /*
@@ -93,7 +93,7 @@ int Post_Process_reset (Post_ProcessState *st);
    returns 0 on success
  */
  
-int Post_Process (
+void Post_Process (
     Post_ProcessState *st,  /* i/o : post process state                   */
     Word16 signal[],        /* i/o : signal                               */
     Word16 lg               /* i   : lenght of signal                     */

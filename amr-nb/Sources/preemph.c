@@ -119,28 +119,21 @@ int preemphasis_reset (preemphasisState *state)
 *
 **************************************************************************
 */
-int preemphasis (
+void preemphasis (
     preemphasisState *st, /* (i/o)  : preemphasis filter state    */
     Word16 *signal, /* (i/o)   : input signal overwritten by the output */
     Word16 g,       /* (i)     : preemphasis coefficient                */
     Word16 L        /* (i)     : size of filtering                      */
 )
 {
-    Word16 *p1, *p2, temp, i;
+    Word16 temp, i;
 
-    p1 = signal + L - 1;
-    p2 = p1 - 1;
-    temp = *p1;
+    temp = signal[L-1];
 
-    for (i = 0; i <= L - 2; i++)
-    {
-        *p1 = sub (*p1, mult (g, *p2--));
-        p1--;
-    }
+    for (i = L - 1; i > 0; --i)
+      signal[i] -= ((Word32)g * (Word32)signal[i-1]) >> 15;
 
-    *p1 = sub (*p1, mult (g, st->mem_pre));
+    signal[0] -= ((Word32)g * (Word32)st->mem_pre) >> 15;
 
     st->mem_pre = temp;
-
-    return 0;
 }

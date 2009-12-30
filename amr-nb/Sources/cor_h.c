@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 *****************************************************************************
 *
@@ -26,7 +55,6 @@ const char cor_h_id[] = "@(#)$Id $" cor_h_h;
 */
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
 #include "inv_sqrt.h"
 #include "cnst.h" 
  
@@ -96,19 +124,22 @@ void cor_h_x2 (
         {
             s = 0;
             for (j = i; j < L_CODE; j++)
-                s = L_mac (s, x[j], h[j - i]);
+              s += x[j] * h[j - i];
             
-            y32[i] = s;
+            /*s <<= 1;
+            y32[i] = s;*/
+            y32[i] = s << 1;
             
             s = L_abs (s);
 
-            if (L_sub (s, max) > (Word32) 0L)
+            if (s > max)
                 max = s;
         }
-        tot = L_add (tot, L_shr (max, 1));
+        /*tot += max >> 1;*/
+        tot += max;
     }
     
-    j = sub (norm_l (tot), sf);
+    j = norm_l (tot) - sf;
     
     for (i = 0; i < L_CODE; i++)
     {
@@ -138,22 +169,20 @@ void cor_h (
     Word16 rr[][L_CODE] /* (o) : matrix of autocorrelation               */
 )
 {
-    Word16 i, j, k, dec, h2[L_CODE];
-    Word32 s;
+    Word16 i, j, k, dec, h2[L_CODE], tmp, tmp1;
+    Word32 s, s1;
 
     /* Scaling for maximum precision */
-
-    s = 2;
+    s = 1;
     for (i = 0; i < L_CODE; i++)
-        s = L_mac (s, h[i], h[i]);
-    
-    j = sub (extract_h (s), 32767);
+      s += (Word32)h[i] * h[i];
+    s <<= 1;
 
-    if (j == 0)
+    if (s & MIN_32)
     {
         for (i = 0; i < L_CODE; i++)
         {
-            h2[i] = shr (h[i], 1);
+          h2[i] = h[i] >> 1;
         }
     }
     else
@@ -165,29 +194,26 @@ void cor_h (
         for (i = 0; i < L_CODE; i++)
         {
             h2[i] = round (L_shl (L_mult (h[i], k), 9));
-
         }
     }
     
     /* build matrix rr[] */
-    s = 0;
-    i = L_CODE - 1;
-    for (k = 0; k < L_CODE; k++, i--)
-    {
-        s = L_mac (s, h2[k], h2[k]);
-        rr[i][i] = round (s);
-    }
-    
+    s1 = (Word32)h2[0] * h2[0];
+    rr[L_CODE - 1][L_CODE - 1] = (Word16)((s1 + 0x4000) >> 15);
     for (dec = 1; dec < L_CODE; dec++)
     {
         s = 0;
         j = L_CODE - 1;
-        i = sub (j, dec);
+        i = j - dec;
+
+        s1 += (Word32)h2[dec] * h2[dec];
+        rr[i][i] = (Word16)((s1 + 0x4000) >> 15);
         for (k = 0; k < (L_CODE - dec); k++, i--, j--)
         {
-            s = L_mac (s, h2[k], h2[k + dec]);
-            rr[j][i] = mult (round (s), mult (sign[i], sign[j]));
-
+            s += (Word32)h2[k] * h2[k + dec];
+            tmp = (Word16)((s + 0x4000L) >> 15);
+            tmp1 = ((Word32)sign[i] * sign[j]) >> 15;
+            rr[j][i] = ((Word32)tmp * tmp1) >> 15;
             rr[i][j] = rr[j][i];
         }
     }

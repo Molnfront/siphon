@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -27,7 +56,6 @@ const char enc_lag3_id[] = "@(#)$Id $" enc_lag3_h;
 */
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
 #include "cnst.h"
 
 /*
@@ -89,15 +117,13 @@ Enc_lag3(                /* o  : Return index of encoding             */
       /* encode pitch delay (with fraction) */
       
 
-      if (sub (T0, 85) <= 0)
+      if (T0 <= 85)
       {
-         /* index = T0*3 - 58 + T0_frac   */
-         i = add (add (T0, T0), T0);
-         index = add (sub (i, 58), T0_frac);
+         index = T0*3 - 58 + T0_frac;
       }
       else
       {
-         index = add (T0, 112);
+         index = T0 + 112;
       }
    }
    else
@@ -106,47 +132,34 @@ Enc_lag3(                /* o  : Return index of encoding             */
       if (flag4 == 0) {
          
          /* 'normal' encoding: either with 5 or 6 bit resolution */
-		  
-         /* index = 3*(T0 - T0_min) + 2 + T0_frac */
-         i = sub (T0, T0_min);
-         i = add (add (i, i), i);
-         index = add (add (i, 2), T0_frac);
+         index = 3*(T0 - T0_min) + 2 + T0_frac;
       }
       else {
-         
          /* encoding with 4 bit resolution */
-         
          tmp_lag = T0_prev;
 
+         if ( (tmp_lag - T0_min) > 5)
+            tmp_lag = T0_min + 5;
 
-         if ( sub( sub(tmp_lag, T0_min), 5) > 0)
-            tmp_lag = add (T0_min, 5);
-
-         if ( sub( sub(T0_max, tmp_lag), 4) > 0)
-            tmp_lag = sub (T0_max, 4);
+         if ( (T0_max - tmp_lag) > 4)
+            tmp_lag = T0_max - 4;
          
-         uplag = add (add (add (T0, T0), T0), T0_frac);
+         uplag = 3*T0 + T0_frac;
          
-         i = sub (tmp_lag, 2);
-         tmp_ind = add (add (i, i), i);
+         tmp_ind = 3*(tmp_lag - 2);
          
 
-         if (sub (tmp_ind, uplag) >= 0) { 
+         if (tmp_ind >= uplag) {
             index = add (sub (T0, tmp_lag), 5);
          } 
          else {
+            i = 3*(tmp_lag + 1);
             
-            i = add (tmp_lag, 1);
-            i = add (add (i, i), i);
-            
-
-            if (sub (i, uplag) > 0) {
-               
-                index = add ( sub (uplag, tmp_ind), 3);                
+            if (i > uplag) {
+                index = uplag - tmp_ind + 3;
             }
             else {
-               
-               index = add (sub (T0, tmp_lag), 11);
+               index = T0 - tmp_lag + 11;
             }
          }
          

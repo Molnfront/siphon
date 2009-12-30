@@ -198,7 +198,7 @@ int cod_amr_first(cod_amrState *st,     /* i/o : State struct            */
  *
  ***************************************************************************/
 
-int cod_amr(cod_amrState *st,         /* i/o : State struct                 */
+void cod_amr(cod_amrState *st,         /* i/o : State struct                 */
             enum Mode mode,           /* i   : AMR mode                     */
             Word16 new_speech[],      /* i   : speech input (L_FRAME)       */
             Word16 ana[],             /* o   : Analysis parameters          */

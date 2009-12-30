@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 *****************************************************************************
 *
@@ -29,7 +58,6 @@ const char c2_9pf_id[] = "@(#)$Id $" c2_9pf_h;
 */
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
 #include "inv_sqrt.h"
 #include "cnst.h"
 #include "cor_h.h"
@@ -128,9 +156,10 @@ Word16 code_2i40_9bits(
     Word16 rr[L_CODE][L_CODE];
     Word16 i, index, sharp;
     
-    sharp = shl(pitch_sharp, 1);
+    /*sharp = shl(pitch_sharp, 1);*/
+    sharp =  pitch_sharp << 1;
 
-    if (sub(T0, L_CODE) < 0)
+    if (T0 < L_CODE)
        for (i = T0; i < L_CODE; i++) {
           h[i] = add(h[i], mult(h[i - T0], sharp));
        }
@@ -147,7 +176,7 @@ Word16 code_2i40_9bits(
    *-----------------------------------------------------------------*/
     
 
-    if (sub(T0, L_CODE) < 0)
+    if (T0 < L_CODE)
        for (i = T0; i < L_CODE; i++) {
           code[i] = add(code[i], mult(code[i - T0], sharp));
        }
@@ -326,16 +355,16 @@ static Word16 build_code(
              track = 0;
           } else {
              track = 1;
-             index = shl(index, 3);
+             index <<= 3;
           }             
        } else {
 
           if (k == 0) {
              track = 0;
-             index = add(index, 64);  /* table bit is MSB */
+             index += 64;  /* table bit is MSB */
           } else {
              track = 1;
-             index = shl(index, 3);
+             index <<= 3;
           }             
        }
 

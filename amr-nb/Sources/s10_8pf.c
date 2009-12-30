@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -77,7 +106,7 @@ void search_10and8i40 (
    
 
 
-   if (sub(nbPulse, 10) == 0)
+   if (nbPulse == 10)
    {
       gsmefrFlag=1;
    }
@@ -105,9 +134,10 @@ void search_10and8i40 (
    {
       i1 = pos_max[ipos[1]];
       ps0 = add (dn[i0], dn[i1]);
-      alp0 = L_mult (rr[i0][i0], _1_16);
-      alp0 = L_mac (alp0, rr[i1][i1], _1_16);
-      alp0 = L_mac (alp0, rr[i0][i1], _1_8);
+      alp0  = rr[i0][i0];
+      alp0 += rr[i1][i1];
+      alp0 += rr[i0][i1] << 1;
+      alp0 <<= 12;
       
       /*----------------------------------------------------------------*
        * i2 and i3 loop:                                                *
@@ -121,10 +151,12 @@ void search_10and8i40 (
       
       for (i3 = ipos[3]; i3 < L_CODE; i3 += step)
       {
-         s = L_mult (rr[i3][i3], _1_8);       /* index incr= step+L_CODE */
-         s = L_mac (s, rr[i0][i3], _1_4);     /* index increment = step  */
-         s = L_mac (s, rr[i1][i3], _1_4);     /* index increment = step  */
+         s  = rr[i3][i3] >> 1;
+         s += rr[i0][i3];
+         s += rr[i1][i3];
+         s <<= 14;
          rrv[i3] = round (s);
+         /*rrv[i3] = (Word16)((s + 2) >> 2);*/
       }
       
       /* Default value */
@@ -145,12 +177,11 @@ void search_10and8i40 (
          /* index increment = step  */            
          ps1 = add (ps0, dn[i2]);    
          
-         /* index incr= step+L_CODE */
-         alp1 = L_mac (alp0, rr[i2][i2], _1_16);
-            /* index increment = step  */
-         alp1 = L_mac (alp1, rr[i0][i2], _1_8);
-         /* index increment = step  */
-         alp1 = L_mac (alp1, rr[i1][i2], _1_8);
+         alp1  = rr[i2][i2] >> 1;
+         alp1 += rr[i0][i2];
+         alp1 += rr[i1][i2];
+         alp1 <<= 13;
+         alp1 += alp0;
          
          /* initialize 3 indices for i3 inner loop */
           /* initialize "dn[i3]" pointer     */
@@ -199,12 +230,14 @@ void search_10and8i40 (
         
         for (i5 = ipos[5]; i5 < L_CODE; i5 += step)
         {
-            s = L_mult (rr[i5][i5], _1_8);
-            s = L_mac (s, rr[i0][i5], _1_4);
-            s = L_mac (s, rr[i1][i5], _1_4);
-            s = L_mac (s, rr[i2][i5], _1_4);
-            s = L_mac (s, rr[i3][i5], _1_4);
+            s  = rr[i5][i5] >> 1;
+            s += rr[i0][i5];
+            s += rr[i1][i5];
+            s += rr[i2][i5];
+            s += rr[i3][i5];
+            s <<= 14;
             rrv[i5] = round (s);
+            /*rrv[i5] = (Word16)((s + 2) >> 2);*/
         }
         
         /* Default value */
@@ -221,11 +254,13 @@ void search_10and8i40 (
         {
             ps1 = add (ps0, dn[i4]);
             
-            alp1 = L_mac (alp0, rr[i4][i4], _1_32);
-            alp1 = L_mac (alp1, rr[i0][i4], _1_16);
-            alp1 = L_mac (alp1, rr[i1][i4], _1_16);
-            alp1 = L_mac (alp1, rr[i2][i4], _1_16);
-            alp1 = L_mac (alp1, rr[i3][i4], _1_16);
+            alp1 = rr[i4][i4] >> 1;
+            alp1 += rr[i0][i4];
+            alp1 += rr[i1][i4];
+            alp1 += rr[i2][i4];
+            alp1 += rr[i3][i4];
+            alp1 <<= 12;
+            alp1 += alp0;
             
             /* initialize 3 indices for i5 inner loop (see i2-i3 loop) */
 
@@ -265,19 +300,18 @@ void search_10and8i40 (
         alp0 = L_mult (alp, _1_2);
         
         /* initialize 8 indices for next loop (see i2-i3 loop) */
-
-
-        
         for (i7 = ipos[7]; i7 < L_CODE; i7 += step)
         {
-            s = L_mult (rr[i7][i7], _1_16);
-            s = L_mac (s, rr[i0][i7], _1_8);
-            s = L_mac (s, rr[i1][i7], _1_8);
-            s = L_mac (s, rr[i2][i7], _1_8);
-            s = L_mac (s, rr[i3][i7], _1_8);
-            s = L_mac (s, rr[i4][i7], _1_8);
-            s = L_mac (s, rr[i5][i7], _1_8);
+            s = rr[i7][i7] >> 1;
+            s += rr[i0][i7];
+            s += rr[i1][i7];
+            s += rr[i2][i7];
+            s += rr[i3][i7];
+            s += rr[i4][i7];
+            s += rr[i5][i7];
+            s <<= 13;
             rrv[i7] = round (s);
+            /*rrv[i7] = (Word16)((s + 4) >> 3);*/
         }
         
         /* Default value */
@@ -295,13 +329,15 @@ void search_10and8i40 (
         {
             ps1 = add (ps0, dn[i6]);
             
-            alp1 = L_mac (alp0, rr[i6][i6], _1_64);
-            alp1 = L_mac (alp1, rr[i0][i6], _1_32);
-            alp1 = L_mac (alp1, rr[i1][i6], _1_32);
-            alp1 = L_mac (alp1, rr[i2][i6], _1_32);
-            alp1 = L_mac (alp1, rr[i3][i6], _1_32);
-            alp1 = L_mac (alp1, rr[i4][i6], _1_32);
-            alp1 = L_mac (alp1, rr[i5][i6], _1_32);
+            alp1  = rr[i6][i6] >> 1;
+            alp1 += rr[i0][i6];
+            alp1 += rr[i1][i6];
+            alp1 += rr[i2][i6];
+            alp1 += rr[i3][i6];
+            alp1 += rr[i4][i6];
+            alp1 += rr[i5][i6];
+            alp1 <<= 11;
+            alp1 += alp0;
             
             /* initialize 3 indices for i7 inner loop (see i2-i3 loop) */
 
@@ -351,16 +387,18 @@ void search_10and8i40 (
            
            for (i9 = ipos[9]; i9 < L_CODE; i9 += step)
            {
-              s = L_mult (rr[i9][i9], _1_16);
-              s = L_mac (s, rr[i0][i9], _1_8);
-              s = L_mac (s, rr[i1][i9], _1_8);
-              s = L_mac (s, rr[i2][i9], _1_8);
-              s = L_mac (s, rr[i3][i9], _1_8);
-              s = L_mac (s, rr[i4][i9], _1_8);
-              s = L_mac (s, rr[i5][i9], _1_8);
-              s = L_mac (s, rr[i6][i9], _1_8);
-              s = L_mac (s, rr[i7][i9], _1_8);
+              s  = rr[i9][i9] >> 1;
+              s += rr[i0][i9];
+              s += rr[i1][i9];
+              s += rr[i2][i9];
+              s += rr[i3][i9];
+              s += rr[i4][i9];
+              s += rr[i5][i9];
+              s += rr[i6][i9];
+              s += rr[i7][i9];
+              s <<= 13;
               rrv[i9] = round (s);
+              /*rrv[i9] = (Word16)((s + 4) >> 3);*/
            }
            
            /* Default value */
@@ -378,16 +416,18 @@ void search_10and8i40 (
            {
               ps1 = add (ps0, dn[i8]);
               
-              alp1 = L_mac (alp0, rr[i8][i8], _1_128);
-              alp1 = L_mac (alp1, rr[i0][i8], _1_64);
-              alp1 = L_mac (alp1, rr[i1][i8], _1_64);
-              alp1 = L_mac (alp1, rr[i2][i8], _1_64);
-              alp1 = L_mac (alp1, rr[i3][i8], _1_64);
-              alp1 = L_mac (alp1, rr[i4][i8], _1_64);
-              alp1 = L_mac (alp1, rr[i5][i8], _1_64);
-              alp1 = L_mac (alp1, rr[i6][i8], _1_64);
-              alp1 = L_mac (alp1, rr[i7][i8], _1_64);
-              
+              alp1  = rr[i8][i8] >> 1;
+              alp1 += rr[i0][i8];
+              alp1 += rr[i1][i8];
+              alp1 += rr[i2][i8];
+              alp1 += rr[i3][i8];
+              alp1 += rr[i4][i8];
+              alp1 += rr[i5][i8];
+              alp1 += rr[i6][i8];
+              alp1 += rr[i7][i8];
+              alp1 <<= 10;
+              alp1 += alp0;
+
               /* initialize 3 indices for i9 inner loop (see i2-i3 loop) */
 
               

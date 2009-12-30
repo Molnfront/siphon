@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -29,11 +58,11 @@ const char c4_17pf_id[] = "@(#)$Id $" c4_17pf_h;
 */
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
 #include "inv_sqrt.h"
 #include "cnst.h"
 #include "cor_h.h"
 #include "set_sign.h"
+#include "set_zero.h"
 
 /*
 ********************************************************************************
@@ -110,7 +139,7 @@ Word16 code_4i40_17bits(
 
     sharp = shl(pitch_sharp, 1);
 
-    if (sub(T0, L_CODE) < 0)
+    if (T0 < L_CODE)
     {
        for (i = T0; i < L_CODE; i++) {
           h[i] = add(h[i], mult(h[i - T0], sharp));
@@ -130,7 +159,7 @@ Word16 code_4i40_17bits(
   *-----------------------------------------------------------------*/
 
 
-    if (sub(T0, L_CODE) < 0)
+    if (T0 < L_CODE)
     {
        for (i = T0; i < L_CODE; i++) {
           code[i] = add(code[i], mult(code[i - T0], sharp));
@@ -377,8 +406,6 @@ static void search_4i40(
           ipos[0] = pos;
        }
     }
-    
-    return;
 }
 
 /*************************************************************************
@@ -404,10 +431,7 @@ build_code(
     Word16 *p0, *p1, *p2, *p3;
     Word32 s;
 
-    for (i = 0; i < L_CODE; i++)
-    {
-        cod[i] = 0;
-    }          
+    Set_zero(cod, L_CODE);
 
     indx = 0;
     rsign = 0;
@@ -424,23 +448,16 @@ build_code(
        index = gray[index];
        
 
-       if (sub(track, 1) == 0)
-          index = shl(index, 3);
-       else if (sub(track, 2) == 0)
+       if (track == 1)
+          index <<= 3;
+       else if (track == 2)
+          index <<= 6;
+       else if (track == 3)
+          index <<= 10;
+       else if (track == 4)
        {
-
-          index = shl(index, 6);
-       }
-       else if (sub(track, 3) == 0)
-       {
-
-          index = shl(index, 10);
-       }
-       else if (sub(track, 4) == 0)
-       {
-
           track = 3;
-          index = add(shl(index, 10), 512);
+          index = add(index << 10, 512);
        }
        
 

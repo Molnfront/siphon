@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -193,11 +222,10 @@ calc_filt_energies(
     Word16 *cod_gain_exp  /* o: optimum codebook gain (exponent part),   Q0  */
 )
 {
-    Word32 s, ener_init;
+    Word32 s, ener_init, s1, s2, s3;
     Word16 i, exp, frac;
     Word16 y2[L_SUBFR];
 
-    /*if (test(), sub(mode, MR795) == 0 || sub(mode, MR475) == 0)*/
     if (( mode == MR795 ) || ( mode == MR475))
     {
         ener_init = 0L; /**/
@@ -207,62 +235,53 @@ calc_filt_energies(
         ener_init = 1L; /**/
     }
     
+    /* Compute scalar product <y2[],y2[]> */
+    /* Compute scalar product -2*<xn[],y2[]> */
+    /* Compute scalar product 2*<y1[],y2[]> */
+    s1 = s2 = s3 = 0;
     for (i = 0; i < L_SUBFR; i++) {
-        y2[i] = shr(Y2[i], 3);
+      y2[i] = Y2[i] >> 3;
+      s1 += y2[i] * y2[i];
+      s2 += y2[i] * xn[i];
+      s3 += y2[i] * y1[i];
     }
 
     frac_coeff[0] = g_coeff[0];
     exp_coeff[0] = g_coeff[1];
-    frac_coeff[1] = negate(g_coeff[2]);     /* coeff[1] = -2 xn y1 */
-    exp_coeff[1] = add(g_coeff[3], 1);
+    frac_coeff[1] = -g_coeff[2];     /* coeff[1] = -2 xn y1 */
+    exp_coeff[1] = g_coeff[3] + 1;
 
-
-    /* Compute scalar product <y2[],y2[]> */
-
-    s = L_mac(ener_init, y2[0], y2[0]);
-    for (i = 1; i < L_SUBFR; i++)
-        s = L_mac(s, y2[i], y2[i]);
-
-    exp = norm_l(s);
-    frac_coeff[2] = extract_h(L_shl(s, exp));
+    s1 <<= 1;
+    s1 += ener_init;
+    exp = norm_l(s1);
+    frac_coeff[2] = extract_h(L_shl(s1, exp));
     exp_coeff[2] = sub(15 - 18, exp);
 
-    /* Compute scalar product -2*<xn[],y2[]> */
-
-    s = L_mac(ener_init, xn[0], y2[0]);
-    for (i = 1; i < L_SUBFR; i++)
-        s = L_mac(s, xn[i], y2[i]);
-
-    exp = norm_l(s);
-    frac_coeff[3] = negate(extract_h(L_shl(s, exp)));
+    s2 <<= 1;
+    s2 += ener_init;
+    exp = norm_l(s2);
+    frac_coeff[3] = negate(extract_h(L_shl(s2, exp)));
     exp_coeff[3] = sub(15 - 9 + 1, exp);
 
-
-    /* Compute scalar product 2*<y1[],y2[]> */
-
-    s = L_mac(ener_init, y1[0], y2[0]);
-    for (i = 1; i < L_SUBFR; i++)
-        s = L_mac(s, y1[i], y2[i]);
-
-    exp = norm_l(s);
-    frac_coeff[4] = extract_h(L_shl(s, exp));
+    s3 <<= 1;
+    s3 += ener_init;
+    exp = norm_l(s3);
+    frac_coeff[4] = extract_h(L_shl(s3, exp));
     exp_coeff[4] = sub(15 - 9 + 1, exp);
 
-    /*if (test(), test (), sub(mode, MR475) == 0 || sub(mode, MR795) == 0)*/
     if ((mode == MR475) || (mode == MR795))
     {
         /* Compute scalar product <xn2[],y2[]> */
-
-        s = L_mac(ener_init, xn2[0], y2[0]);
-        for (i = 1; i < L_SUBFR; i++)
-            s = L_mac(s, xn2[i], y2[i]);
+        s = 0;
+        for (i = 0; i < L_SUBFR; i++)
+          s += xn2[i] * y2[i];
+        s <<= 1;
+        s += ener_init;
         
         exp = norm_l(s);
         frac = extract_h(L_shl(s, exp));
         exp = sub(15 - 9, exp);
 
-        
-        /*if (test (), frac <= 0)*/
         if (frac <= 0)
         {
             *cod_gain_frac = 0;
@@ -303,9 +322,10 @@ calc_target_energy(
     Word16 i, exp;
 
     /* Compute scalar product <xn[], xn[]> */
-    s = L_mac(0L, xn[0], xn[0]);
-    for (i = 1; i < L_SUBFR; i++)
-        s = L_mac(s, xn[i], xn[i]);
+    s = 0;
+    for (i = 0; i < L_SUBFR; i++)
+      s += xn[i] * xn[i];
+    s <<= 1;
 
     /* s = SUM 2*xn(i) * xn(i) = <xn xn> * 2 */
     exp = norm_l(s);

@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -41,7 +70,7 @@ const char spreproc_id[] = "@(#)$Id $" spreproc_h;
 *                         PUBLIC PROGRAM CODE
 ********************************************************************************
 */
-int subframePreProc(
+void subframePreProc(
     enum Mode mode,            /* i  : coder mode                            */
     const Word16 gamma1[],     /* i  : spectral exp. factor 1                */
     const Word16 gamma1_12k2[],/* i  : spectral exp. factor 1 for EFR        */
@@ -67,15 +96,6 @@ int subframePreProc(
    /*---------------------------------------------------------------*
     * mode specific pointer to gamma1 values                        *
     *---------------------------------------------------------------*/
-
-	/*if ( sub(mode, MR122) == 0 || sub(mode, MR102) == 0 )
-        {
-           g1 = gamma1_12k2;
-	}
-        else
-        {
-           g1 = gamma1;
-	}*/
 	if (mode == MR122 || mode == MR102)
 	  g1 = gamma1_12k2;
 	else
@@ -89,10 +109,6 @@ int subframePreProc(
    /*---------------------------------------------------------------*
     * Compute impulse response, h1[], of weighted synthesis filter  *
     *---------------------------------------------------------------*/
-   /*for (i = 0; i <= M; i++)
-   {
-      ai_zero[i] = Ap1[i];
-   }*/
    Copy(Ap1, ai_zero, M+1);
 
    Syn_filt(Aq, ai_zero, h1, L_SUBFR, zero, 0);
@@ -114,6 +130,4 @@ int subframePreProc(
    
    /* target signal xn[]*/
    Syn_filt(Ap2, xn, xn, L_SUBFR, mem_w0, 0);    
-
-   return 0;
 }

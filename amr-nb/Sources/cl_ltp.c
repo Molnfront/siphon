@@ -132,7 +132,7 @@ int cl_ltp_reset (clLtpState *state)
 *
 **************************************************************************
 */
-int cl_ltp (
+void cl_ltp (
     clLtpState *clSt,    /* i/o : State struct                              */
     tonStabState *tonSt, /* i/o : State struct                              */
     enum Mode mode,      /* i   : coder mode                                */
@@ -190,8 +190,7 @@ int cl_ltp (
    gpc_flag = 0;
    *gp_limit = MAX_16;
 
-   if ((lsp_flag != 0) &&
-       (sub(*gain_pit, GP_CLIP) > 0))
+   if (lsp_flag != 0 && *gain_pit > GP_CLIP)
    {
        gpc_flag = check_gp_clipping(tonSt, *gain_pit);
    }
@@ -199,9 +198,9 @@ int cl_ltp (
    /* special for the MR475, MR515 mode; limit the gain to 0.85 to */
    /* cope with bit errors in the decoder in a better way.         */
 
-   if ((sub (mode, MR475) == 0) || (sub (mode, MR515) == 0)) {
+   if (mode == MR475 || mode == MR515) {
 
-      if ( sub (*gain_pit, 13926) > 0) {
+      if (*gain_pit > 13926) {
          *gain_pit = 13926;   /* 0.85 in Q14 */
       }
 
@@ -219,25 +218,19 @@ int cl_ltp (
            *gain_pit = GP_CLIP;
        }           
        /* For MR122, gain_pit is quantized here and not in gainQuant */
-       /*if (test (), sub(mode, MR122)==0)*/
        if ( mode ==  MR122 )
        {
            *(*anap)++ = q_gain_pitch(MR122, *gp_limit, gain_pit,
                                      NULL, NULL);
-
        }
    }
 
    /* update target vector und evaluate LTP residual */
    for (i = 0; i < L_SUBFR; i++) {
-       L_temp = L_mult(y1[i], *gain_pit);
-       L_temp = L_shl(L_temp, 1);
-       xn2[i] = sub(xn[i], extract_h(L_temp));
-      
-       L_temp = L_mult(exc[i], *gain_pit);
-       L_temp = L_shl(L_temp, 1);
-       res2[i] = sub(res2[i], extract_h(L_temp));
+       L_temp = ((Word32)y1[i] * *gain_pit) >> 14;
+       xn2[i] = xn[i] - (Word16)L_temp;
+
+       L_temp   = ((Word32)exc[i] * *gain_pit) >> 14;
+       res2[i] -= (Word16)L_temp;
    }
-   
-   return 0;
 }

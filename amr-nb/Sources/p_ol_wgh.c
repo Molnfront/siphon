@@ -65,6 +65,7 @@ const char p_ol_wgh_id[] = "@(#)$Id $" p_ol_wgh_h;
 #include "vad.h"
 #include "calc_cor.h"
 #include "hp_max.h"
+#include "copy.h"
                       
 /*
 *****************************************************************************
@@ -118,19 +119,21 @@ static Word16 Lag_max ( /* o : lag found                               */
        t0 = corr[-i];
        
        /* Weighting of the correlation function.   */
-       L_Extract (corr[-i], &t0_h, &t0_l);
+       t0_h = (Word16) (t0 >> 16);
+       t0_l = (Word16)((t0 >> 1) - (t0_h << 15));
        t0 = Mpy_32_16 (t0_h, t0_l, *ww);
        ww--;
 
        if (wght_flg > 0) {
           /* Weight the neighbourhood of the old lag. */
-          L_Extract (t0, &t0_h, &t0_l);
+          t0_h = (Word16) (t0 >> 16);
+          t0_l = (Word16)((t0 >> 1) - (t0_h << 15));
           t0 = Mpy_32_16 (t0_h, t0_l, *we);
           we--;
        }
        
 
-       if (L_sub (t0, max) >= 0)
+       if (t0 >= max)
        {
           max = t0;
           p_max = i;
@@ -144,9 +147,11 @@ static Word16 Lag_max ( /* o : lag found                               */
     
     for (j = 0; j < L_frame; j++, p++, p1++)
     {
-       t0 = L_mac (t0, *p, *p1);               
-       t1 = L_mac (t1, *p1, *p1);
+      t0 += *p * *p1;
+      t1 += *p1 * *p1;
     }
+    t0 <<= 1;
+    t1 <<= 1;
 
     if (dtx)
     {  /* no test() call since this if is only in simulation env */
@@ -254,10 +259,10 @@ Word16 Pitch_ol_wgh (     /* o   : open loop pitch lag                          
     t0 = 0L;
     for (i = -pit_max; i < L_frame; i++)
     {
-        t0 = L_mac (t0, signal[i], signal[i]);
-      /*t0 += signal[i] * signal[i];*/
+        /*t0 = L_mac (t0, signal[i], signal[i]);*/
+      t0 += signal[i] * signal[i];
     }
-    /*t0 <<= 1;*/
+    t0 <<= 1;
     /*--------------------------------------------------------*
      * Scaling of input signal.                               *
      *                                                        *
@@ -271,28 +276,23 @@ Word16 Pitch_ol_wgh (     /* o   : open loop pitch lag                          
      *--------------------------------------------------------*/
 
 
-    if (L_sub (t0, MAX_32) == 0L)               /* Test for overflow */
+    if (t0 == MAX_32)               /* Test for overflow */
     {
         for (i = -pit_max; i < L_frame; i++)
         {
-            /*scal_sig[i] = shr (signal[i], 3);*/
           scal_sig[i]  = signal[i] >> 3;
         }
     }
-    else if (L_sub (t0, (Word32) 1048576L) < (Word32) 0)
+    else if (t0 < (Word32) 1048576L)
     {
         for (i = -pit_max; i < L_frame; i++)
         {
-            /*scal_sig[i] = shl (signal[i], 3);*/
             scal_sig[i] = signal[i] << 3;
         }
     }
     else
     {
-        for (i = -pit_max; i < L_frame; i++)
-        {
-            scal_sig[i] = signal[i];
-        }
+      scal_sig = signal;
     }
 
     /* calculate all coreelations of scal_sig, from pit_min to pit_max */
@@ -323,7 +323,7 @@ Word16 Pitch_ol_wgh (     /* o   : open loop pitch lag                          
     }
     
 
-    if (sub(st->ada_w, 9830) < 0)  /* ada_w - 0.3 */
+    if (st->ada_w < 9830)  /* ada_w - 0.3 */
     { 
        st->wght_flg = 0;
     } 
@@ -336,7 +336,7 @@ Word16 Pitch_ol_wgh (     /* o   : open loop pitch lag                          
     if (dtx)
     {  /* no test() call since this if is only in simulation env */
 
-       if (sub(idx, 1) == 0)
+       if (idx - 1)
        {
           /* calculate max high-passed filtered correlation of all lags */
           hp_max (corr_ptr, scal_sig, L_frame, pit_max, pit_min, &corr_hp_max); 

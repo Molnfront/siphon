@@ -165,10 +165,11 @@ int dtx_enc(dtx_encState *st,        /* i/o : State struct                    */
       /* compute new SID frame if safe i.e don't
        * compute immediately after a talk spurt  */
       log_en = 0;
-      for (i = 0; i < M; i++)
+      Set_zero(L_lsp, 2*M);
+      /*for (i = 0; i < M; i++)
       {
          L_lsp[i] = 0;
-      }
+      }*/
       
       /* average energy and lsp */
       for (i = 0; i < DTX_HIST_SIZE; i++)
@@ -195,7 +196,7 @@ int dtx_enc(dtx_encState *st,        /* i/o : State struct                    */
       st->log_en_index = shr(st->log_en_index, 8);
 
 
-      if (sub(st->log_en_index, 63) > 0)
+      if (st->log_en_index > 63)
       {
          st->log_en_index = 63;
       }
@@ -216,7 +217,7 @@ int dtx_enc(dtx_encState *st,        /* i/o : State struct                    */
          log_en = 0;
       }
 
-      if (sub(log_en, -14436) < 0)
+      if (log_en < -14436)
       {
          log_en = -14436;
       }
@@ -281,7 +282,7 @@ int dtx_buffer(dtx_encState *st,   /* i/o : State struct                    */
    /* update pointer to circular buffer      */
    st->hist_ptr = add(st->hist_ptr, 1);
 
-   if (sub(st->hist_ptr, DTX_HIST_SIZE) == 0)
+   if (st->hist_ptr == DTX_HIST_SIZE)
    {
       st->hist_ptr = 0;
    }
@@ -293,8 +294,10 @@ int dtx_buffer(dtx_encState *st,   /* i/o : State struct                    */
    L_frame_en = 0;     /* Q0 */
    for (i=0; i < L_FRAME; i++)
    {
-      L_frame_en = L_mac(L_frame_en, speech[i], speech[i]); 
+      /*L_frame_en = L_mac(L_frame_en, speech[i], speech[i]); */
+     L_frame_en += (Word32)speech[i] * speech[i];
    }
+   L_frame_en <<= 1;
    Log2(L_frame_en, &log_en_e, &log_en_m);
    
    /* convert exponent and mantissa to Word16 Q10 */
@@ -351,8 +354,7 @@ Word16 tx_dtx_handler(dtx_encState *st,      /* i/o : State struct           */
          
          /* decAnaElapsedCount + dtxHangoverCount < DTX_ELAPSED_FRAMES_THRESH */
 
-         if (sub(add(st->decAnaElapsedCount, st->dtxHangoverCount),
-                 DTX_ELAPSED_FRAMES_THRESH) < 0)
+         if (add(st->decAnaElapsedCount, st->dtxHangoverCount) < DTX_ELAPSED_FRAMES_THRESH)
          {
             *usedMode = MRDTX;
             /* if short time since decoder update, do not add extra HO */            

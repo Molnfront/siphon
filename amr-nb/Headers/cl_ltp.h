@@ -89,7 +89,7 @@ int cl_ltp_reset (clLtpState *st);
    returns 0 on success
  */
 
-int cl_ltp(
+void cl_ltp(
     clLtpState *clSt,    /* i/o : State struct                              */
     tonStabState *tonSt, /* i/o : State struct                              */
     enum Mode mode,      /* i   : coder mode                                */

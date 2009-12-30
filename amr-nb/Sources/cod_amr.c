@@ -288,7 +288,7 @@ int cod_amr_first(cod_amrState *st,     /* i/o : State struct           */
  *       synth[]:   Local synthesis speech (for debugging purposes)
  *
  ***************************************************************************/
-int cod_amr(
+void cod_amr(
     cod_amrState *st,          /* i/o : State struct                   */
     enum Mode mode,            /* i   : AMR mode                       */
     Word16 new_speech[],       /* i   : speech input (L_FRAME)         */
@@ -390,7 +390,7 @@ int cod_amr(
 
    /* Check if in DTX mode */
 
-   if (sub(*usedMode, MRDTX) == 0)
+   if (*usedMode == MRDTX)
    {
       dtx_enc(&st->dtx_encSt,
               compute_sid_flag,
@@ -432,33 +432,40 @@ int cod_amr(
        st->vadSt->L_R0 = 0;
    }
 #endif
-   for(subfrNr = 0, i_subfr = 0; 
-       subfrNr < L_FRAME/L_FRAME_BY2; 
-       subfrNr++, i_subfr += L_FRAME_BY2)
-   {
-      /* Pre-processing on 80 samples */
-      pre_big(mode, gamma1, gamma1_12k2, gamma2, A_t, i_subfr, st->speech,
-              st->mem_w, st->wsp);
-    
 
-      if ((sub(mode, MR475) != 0) && (sub(mode, MR515) != 0))
-      {
-         /* Find open loop pitch lag for two subframes */
-         ol_ltp(&st->pitchOLWghtSt, &st->vadSt, mode, &st->wsp[i_subfr],
-                &T_op[subfrNr], st->old_lags, st->ol_gain_flg, subfrNr,
-                st->dtx);
-      }
-   }
-
-   if ((sub(mode, MR475) == 0) || (sub(mode, MR515) == 0))
+   if (mode == MR475 || mode == MR515)
    {
+     for(subfrNr = 0, i_subfr = 0;
+         subfrNr < L_FRAME/L_FRAME_BY2;
+         subfrNr++, i_subfr += L_FRAME_BY2)
+     {
+        /* Pre-processing on 80 samples */
+        pre_big(mode, gamma1, gamma1_12k2, gamma2, A_t, i_subfr, st->speech,
+                st->mem_w, st->wsp);
+     }
       /* Find open loop pitch lag for ONE FRAME ONLY */
       /* search on 160 samples */
       
       ol_ltp(&st->pitchOLWghtSt, &st->vadSt, mode, &st->wsp[0], &T_op[0],
              st->old_lags, st->ol_gain_flg, 1, st->dtx);
       T_op[1] = T_op[0];
-   }         
+   }
+   else
+   {
+     for(subfrNr = 0, i_subfr = 0;
+         subfrNr < L_FRAME/L_FRAME_BY2;
+         subfrNr++, i_subfr += L_FRAME_BY2)
+     {
+        /* Pre-processing on 80 samples */
+        pre_big(mode, gamma1, gamma1_12k2, gamma2, A_t, i_subfr, st->speech,
+                st->mem_w, st->wsp);
+
+         /* Find open loop pitch lag for two subframes */
+         ol_ltp(&st->pitchOLWghtSt, &st->vadSt, mode, &st->wsp[i_subfr],
+                &T_op[subfrNr], st->old_lags, st->ol_gain_flg, subfrNr,
+                st->dtx);
+     }
+   }
 
 #ifdef VAD2
    if (st->dtx)
@@ -475,7 +482,7 @@ int cod_amr(
    } 
 #endif
 
-   if (sub(*usedMode, MRDTX) == 0)
+   if (*usedMode == MRDTX)
    {
       goto the_end;
    }
@@ -507,12 +514,12 @@ int cod_amr(
    subfrNr = -1;
    for (i_subfr = 0; i_subfr < L_FRAME; i_subfr += L_SUBFR)
    {
-      subfrNr = add(subfrNr, 1);
-      evenSubfr = sub(1, evenSubfr);
+      subfrNr++;
+      evenSubfr = 1 - evenSubfr;
 
       /* Save states for the MR475 mode */
 
-      if ((evenSubfr != 0) && (sub(*usedMode, MR475) == 0))
+      if ((evenSubfr != 0) && (*usedMode == MR475))
       {
          Copy(st->mem_syn, mem_syn_save, M);
          Copy(st->mem_w0, mem_w0_save, M);         
@@ -524,7 +531,7 @@ int cod_amr(
        * - Preprocessing of subframe                                     *
        *-----------------------------------------------------------------*/
 
-      if (sub(*usedMode, MR475) != 0)
+      if (*usedMode != MR475)
       {
          subframePreProc(*usedMode, gamma1, gamma1_12k2,
                          gamma2, A, Aq, &st->speech[i_subfr],
@@ -567,7 +574,7 @@ int cod_amr(
       }
       
 
-      if ((sub(subfrNr, 3) == 0) && (st->ol_gain_flg[1] > 0))
+      if ((subfrNr == 3) && (st->ol_gain_flg[1] > 0))
       {
          st->old_lags[0] = T0;
       }      
@@ -590,7 +597,7 @@ int cod_amr(
       update_gp_clipping(&st->tonStabSt, gain_pit);
       
 
-      if (sub(*usedMode, MR475) != 0)
+      if (*usedMode != MR475)
       {
          /* Subframe Post Porcessing */
          subframePostProc(st->speech, *usedMode, i_subfr, gain_pit,
@@ -669,6 +676,4 @@ the_end:
    Copy(&st->old_wsp[L_FRAME], &st->old_wsp[0], PIT_MAX);
    
    Copy(&st->old_speech[L_FRAME], &st->old_speech[0], L_TOTAL - L_FRAME);
-
-   return 0;
 }

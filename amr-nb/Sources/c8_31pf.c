@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -28,7 +57,8 @@ const char c8_31pf_id[] = "@(#)$Id $" c8_31pf_h;
 */
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
+#include "copy.h"
+#include "set_zero.h"
 #include "cnst.h"
 #include "inv_sqrt.h"
 #include "cor_h.h"
@@ -80,10 +110,8 @@ static void build_code (
     Word16 *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7;
     Word32 s;
 
-    for (i = 0; i < L_CODE; i++)
-    {
-        cod[i] = 0;
-    }
+    Set_zero(cod, L_CODE);
+
     for (i = 0; i < NB_TRACK_MR102; i++)
     {
         pos_indx[i] = -1;
@@ -97,19 +125,20 @@ static void build_code (
        /* read sign           */        
        j = sign[i];
        
-       pos_index = shr(i, 2);                      /* index = pos/4 */
+       /*pos_index = shr(i, 2);                      /* index = pos/4 */
+       pos_index = i >> 2;                      /* index = pos/4 */
        track = i & 3;                   /* track = pos%4 */
        
 
        if (j > 0)
        {
-          cod[i] = add (cod[i], POS_CODE);
+          cod[i] = cod[i] + POS_CODE;
           _sign[k] = POS_SIGN;
           sign_index = 0;  /* bit=0 -> positive pulse */
        }
        else
        {
-          cod[i] = sub (cod[i], NEG_CODE);
+          cod[i] = cod[i] - NEG_CODE;
           _sign[k] = NEG_SIGN;
           sign_index = 1;      /* bit=1 => negative pulse */
           /* index = add (index, 8); 1 = negative  old code */
@@ -129,7 +158,7 @@ static void build_code (
              /* sign of 1st pulse == sign of 2nd pulse */
              
 
-             if (sub (pos_indx[track], pos_index) <= 0)
+             if (pos_indx[track] <= pos_index)
              {   /* no swap */
                 pos_indx[track + NB_TRACK_MR102] = pos_index;
              }
@@ -147,7 +176,7 @@ static void build_code (
              /* sign of 1st pulse != sign of 2nd pulse */
              
 
-             if (sub (pos_indx[track], pos_index) <= 0)
+             if (pos_indx[track] <= pos_index)
              {  /*swap*/
                 pos_indx[track + NB_TRACK_MR102] = pos_indx[track];
 
@@ -202,17 +231,27 @@ static Word16 compress10 (
        Word16 pos_indxB,  /* i : position index of 8 pulses (pos only)     */
        Word16 pos_indxC) /* i : position and sign of 8 pulses (compressed) */
 {
-   Word16 indx, ia,ib,ic;
+   Word16 indx/*, ia,ib,ic*/;
 
-   ia = shr(pos_indxA, 1);
+   /*ia = shr(pos_indxA, 1);
    ib = extract_l(L_shr(L_mult(shr(pos_indxB, 1), 5), 1));
    ic = extract_l(L_shr(L_mult(shr(pos_indxC, 1), 25), 1));            
    indx = shl(add(ia, add(ib, ic)), 3);
    ia = pos_indxA & 1;
    ib = shl((pos_indxB & 1), 1);
    ic = shl((pos_indxC & 1), 2);
-   indx = add(indx , add(ia, add(ib, ic)));  
+   indx = add(indx , add(ia, add(ib, ic))); */
    
+   indx = pos_indxA >> 1;
+   indx += (Word16)(((Word32)(pos_indxB >> 1) * 10L) >> 1);
+   indx += (Word16)(((Word32)(pos_indxC >> 1) * 50L) >> 1);
+   /*indx = (ia + ib + ic) << 3;*/
+   indx <<= 3;
+
+   indx += pos_indxA & 1;
+   indx += (pos_indxB & 1) << 1;
+   indx += (pos_indxC & 1) << 2;
+
    return indx;
 
 }
@@ -239,10 +278,7 @@ static void compress_code (
 {
    Word16 i, ia, ib, ic;
 
-   for (i = 0; i < NB_TRACK_MR102; i++)
-   {
-      indx[i] = sign_indx[i];
-   }
+   Copy(sign_indx, indx, NB_TRACK_MR102);
     
     /* First index 
       indx[NB_TRACK] = (ia/2+(ib/2)*5 +(ic/2)*25)*8 + ia%2 + (ib%2)*2 + (ic%2)*4; */
@@ -263,19 +299,18 @@ static void compress_code (
         indx[NB_TRACK+2] = ((((ia/2) +   (ib/2)*5)*32+12)/25)*4 + ia%2 + (ib%2)*2;
         */
     
-    ib = shr(pos_indx[7], 1) & 1;
+   ib = (pos_indx[7] >> 1) & 1;
+   ia = pos_indx[3] >> 1;
+    if (ib == 1)
+      ia = 4 - ia;
 
-    if (sub(ib, 1) == 0)
-       ia = sub(4, shr(pos_indx[3], 1));
-    else
-       ia = shr(pos_indx[3], 1);
-
-    ib = extract_l(L_shr(L_mult(shr(pos_indx[7], 1), 5), 1));       
-    ib = add(shl(add(ia, ib), 5), 12);
-    ic = shl(mult(ib, 1311), 2);
-    ia = pos_indx[3] & 1;
-    ib = shl((pos_indx[7] & 1), 1);
-    indx[NB_TRACK_MR102+2] = add(ia, add(ib, ic));
+  ib = (Word16)(((Word32)(pos_indx[7] >> 1) * 10L) >> 1);
+  ib = ((ia + ib) << 5) + 12;
+  ic = (Word16)(((Word32) ib * 1311L) >> 15);
+  ic <<= 2;
+  ia = pos_indx[3] & 1;
+  ib = (pos_indx[7] & 1) << 1;
+  indx[NB_TRACK_MR102+2] = ia + ib + ic;
 }
 
 
@@ -340,6 +375,4 @@ void code_8i40_31bits (
    
    build_code (codvec, sign, cod, h, y, linear_signs, linear_codewords);
    compress_code (linear_signs, linear_codewords, indx);
-   
-   return;
 }

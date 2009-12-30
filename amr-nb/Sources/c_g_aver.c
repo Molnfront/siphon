@@ -193,9 +193,9 @@ Word16 Cb_gain_average (
 
    /* Compute hangover */
 
-   if (sub(diff, 5325) > 0)  /* 0.65 in Q11 */
+   if (diff > 5325)  /* 0.65 in Q11 */
    {
-      st->hangVar = add(st->hangVar, 1);
+      st->hangVar += 1;
    }
    else
    {
@@ -203,7 +203,7 @@ Word16 Cb_gain_average (
    }
 
 
-   if (sub(st->hangVar, 10) > 0)
+   if (st->hangVar > 10)
    {
       st->hangCount = 0;  /* Speech period, reset hangover variable */
    }
@@ -211,16 +211,16 @@ Word16 Cb_gain_average (
    /* Compute mix constant (bgMix) */   
    bgMix = 8192;    /* 1 in Q13 */
 
-   if ((sub(mode, MR67) <= 0) || (sub(mode, MR102) == 0))  
+   if (mode <= MR67 || mode == MR102)
       /* MR475, MR515, MR59, MR67, MR102 */
    {
       /* if errors and presumed noise make smoothing probability stronger */
 
       if (((((pdfi != 0) && (prev_pdf != 0)) || (bfi != 0) || (prev_bf != 0)) &&
-          (sub(voicedHangover, 1) > 0) && (inBackgroundNoise != 0) && 
-          ((sub(mode, MR475) == 0) ||
+          (voicedHangover > 1) && (inBackgroundNoise != 0) &&
+          (mode < MR67/*(sub(mode, MR475) == 0) ||
            (sub(mode, MR515) == 0) ||
-           (sub(mode, MR59) == 0)) ))
+           (sub(mode, MR59) == 0)*/) ))
       {
          /* bgMix = min(0.25, max(0.0, diff-0.55)) / 0.25; */
          tmp_diff = sub(diff, 4506);   /* 0.55 in Q13 */
@@ -238,13 +238,13 @@ Word16 Cb_gain_average (
 
          /* min(0.25, tmp1) */
 
-         if (sub(2048, tmp1) < 0)
+         if (tmp1 > 2048)
          {
             bgMix = 8192;
          }
          else
          {
-            bgMix = shl(tmp1, 2);
+            bgMix = tmp1 << 2; /*shl(tmp1, 2);*/
          }
       }
       else
@@ -265,18 +265,18 @@ Word16 Cb_gain_average (
 
          /* min(0.25, tmp1) */
 
-         if (sub(2048, tmp1) < 0)
+         if (tmp1 > 2048)
          {
             bgMix = 8192;
          }
          else
          {
-            bgMix = shl(tmp1, 2);
+            bgMix = tmp1 << 2; /*shl(tmp1, 2);*/
          }
       }
 
 
-      if ((sub(st->hangCount, 40) < 0) || (sub(diff, 5325) > 0)) /* 0.65 in Q13 */
+      if ((st->hangCount < 40) || (diff > 5325)) /* 0.65 in Q13 */
       {
          bgMix = 8192;  /* disable mix if too short time since */
       }
@@ -293,9 +293,9 @@ Word16 Cb_gain_average (
       /* more smoothing in error and bg noise (NB no DFI used  here) */
 
       if (((bfi != 0) || (prev_bf != 0)) && (inBackgroundNoise != 0) &&
-          ((sub(mode, MR475) == 0) ||
+          (mode < MR67/*(sub(mode, MR475) == 0) ||
            (sub(mode, MR515) == 0) ||
-           (sub(mode, MR59) == 0)) )
+           (sub(mode, MR59) == 0)*/) )
       {
          L_sum = L_mult(4681, st->cbGainHistory[0]);  /* 0.143 in Q15; L_sum in Q17 */     
          for (i = 1; i < L_CBGAINHIST; i++)

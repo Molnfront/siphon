@@ -123,11 +123,11 @@ static void Norm_Corr (Word16 exc[], Word16 xn[], Word16 h[], Word16 L_subfr,
 {
     Word16 i, j, k;
     Word16 corr_h, corr_l, norm_h, norm_l;
-    Word32 s;
+    Word32 s, s1,s2;
 
     /* Usally dynamic allocation of (L_subfr) */
     Word16 excf[L_SUBFR];
-    Word16 scaling, h_fac, *s_excf, scaled_excf[L_SUBFR];
+    Word16 scaling, h_fac, *s_excf;
 
     k = -t_min;
 
@@ -135,51 +135,48 @@ static void Norm_Corr (Word16 exc[], Word16 xn[], Word16 h[], Word16 L_subfr,
 
     Convolve (&exc[k], h, excf, L_subfr);
 
-    /* scale "excf[]" to avoid overflow */
-
-    for (j = 0; j < L_subfr; j++) {
-        scaled_excf[j] = shr (excf[j], 2);
-    }
-
     /* Compute 1/sqrt(energy of excf[]) */
-
     s = 0;
     for (j = 0; j < L_subfr; j++) {
-        s = L_mac (s, excf[j], excf[j]);
+      s += excf[j] * excf[j];
     }
+    /*s <<= 1;*/
 
-    if (L_sub (s, 67108864L) <= 0) {            /* if (s <= 2^26) */
+    /*if (L_sub (s, 67108864L) <= 0) {            /* if (s <= 2^26) */
+    if (s <= 0x2000000) {
         s_excf = excf;
         h_fac = 15 - 12;
         scaling = 0;
     }
     else {
-        /* "excf[]" is divided by 2 */
-        s_excf = scaled_excf;
-        h_fac = 15 - 12 - 2;
-        scaling = 2;
+      /* scale "excf[]" to avoid overflow */
+      /* "excf[]" is divided by 2 */
+      for (j = 0; j < L_subfr; j++)
+        excf[j] >>= 2;
+      s_excf = excf;
+      h_fac = 15 - 12 - 2;
+      scaling = 2;
     }
 
     /* loop for every possible period */
 
     for (i = t_min; i <= t_max; i++) {
         /* Compute 1/sqrt(energy of excf[]) */
-        
-        s = 0;
+      /* Compute correlation between xn[] and excf[] */
+        s1 = 0;
+        s2 = 0;
         for (j = 0; j < L_subfr; j++) {
-            s = L_mac (s, s_excf[j], s_excf[j]);
+            s1 += s_excf[j] * s_excf[j];
+            s2 += xn[j] * s_excf[j];
         }
-        
-        s = Inv_sqrt (s);
-        L_Extract (s, &norm_h, &norm_l);
-        
-        /* Compute correlation between xn[] and excf[] */
-        
-        s = 0;
-        for (j = 0; j < L_subfr; j++) {
-            s = L_mac (s, xn[j], s_excf[j]);
-        }
-        L_Extract (s, &corr_h, &corr_l);
+        s1 <<= 1;
+        s2 <<= 1;
+        s1 = Inv_sqrt (s1);
+
+        norm_h = (Word16) (s1 >> 16);
+        norm_l = (Word16)((s1 >> 1) - (norm_h << 15));
+        corr_h = (Word16) (s2 >> 16);
+        corr_l = (Word16)((s2 >> 1) - (corr_h << 15));
 
         /* Normalize correlation = correlation * (1/sqrt(energy)) */
         
@@ -191,17 +188,15 @@ static void Norm_Corr (Word16 exc[], Word16 xn[], Word16 h[], Word16 L_subfr,
             /* modify the filtered excitation excf[] for the next iteration */
         
 
-        if (sub (i, t_max) != 0) {
+        if (i != t_max) {
             k--;
             for (j = L_subfr - 1; j > 0; j--) {
-                s = L_mult (exc[k], h[j]);
-                s = L_shl (s, h_fac);
-                s_excf[j] = add (extract_h (s), s_excf[j - 1]);
+                s = ((Word32)exc[k] * h[j]) >> (16 - h_fac - 1);
+                s_excf[j] = (Word16)s + s_excf[j - 1];
             }
-            s_excf[0] = shr (exc[k], scaling);
+            s_excf[0] = exc[k] >> scaling;
         }
     }
-    return;
 }
 
 /*************************************************************************
@@ -237,11 +232,11 @@ static void searchFrac (
 
     max = Interpol_3or6 (&corr[*lag], *frac, flag3);  /* function result */
 
-    for (i = add (*frac, 1); i <= last_frac; i++) {
+    for (i = *frac + 1; i <= last_frac; i++) {
         corr_int = Interpol_3or6 (&corr[*lag], i, flag3);
 
 
-        if (sub (corr_int, max) > 0) {
+        if (corr_int > max) {
             max = corr_int;
             *frac = i;
         }
@@ -252,23 +247,23 @@ static void searchFrac (
         /* Limit the fraction value in the interval [-2,-1,0,1,2,3] */
 
 
-        if (sub (*frac, -3) == 0) {
+        if (*frac == -3) {
             *frac = 3;
-            *lag = sub (*lag, 1);
+            *lag -= 1;
         }
     }
     else {
         /* limit the fraction value between -1 and 1 */
 
 
-        if (sub (*frac, -2) == 0) {
+        if (*frac == -2) {
             *frac = 1;
-            *lag = sub (*lag, 1);
+            *lag -= 1;
         }
 
-        if (sub (*frac, 2) == 0) {
+        if (*frac == 2) {
             *frac = -1;
-            *lag = add (*lag, 1);
+            *lag += 1;
         }
     }
 }
@@ -294,16 +289,16 @@ static void getRange (
     Word16 *t0_min,      /* o : search range minimum   */
     Word16 *t0_max)      /* o : search range maximum   */
 {
-    *t0_min = sub(T0, delta_low);
+    *t0_min = T0 - delta_low;
 
-    if (sub(*t0_min, pitmin) < 0) {
+    if (*t0_min < pitmin) {
         *t0_min = pitmin;
     }
-    *t0_max = add(*t0_min, delta_range);
+    *t0_max = *t0_min + delta_range;
 
-    if (sub(*t0_max, pitmax) > 0) {
+    if (*t0_max > pitmax) {
         *t0_max = pitmax;
-        *t0_min = sub(*t0_max, delta_range);
+        *t0_min = *t0_max - delta_range;
     }
 }
 
@@ -422,13 +417,12 @@ Word16 Pitch_fr (        /* o   : pitch period (integer)                    */
     delta_search = 1;
     
 
-    if ((i_subfr == 0) || (sub(i_subfr,L_FRAME_BY2) == 0)) {
+    if ((i_subfr == 0) || i_subfr == L_FRAME_BY2) {
       
         /* Subframe 1 and 3 */
       
 
-        if (((sub(mode, MR475) != 0) && (sub(mode, MR515) != 0)) ||
-            (sub(i_subfr,L_FRAME_BY2) != 0)) {
+        if (((mode != MR475) && (mode != MR515)) || (i_subfr != L_FRAME_BY2)) {
         
             /* set t0_min, t0_max for full search */
             /* this is *not* done for mode MR475, MR515 in subframe 3 */
@@ -469,8 +463,8 @@ Word16 Pitch_fr (        /* o   : pitch period (integer)                    */
      *           Find interval to compute normalized correlation             *
      *-----------------------------------------------------------------------*/
 
-    t_min = sub (t0_min, L_INTER_SRCH);
-    t_max = add (t0_max, L_INTER_SRCH);
+    t_min = t0_min - L_INTER_SRCH;
+    t_max = t0_max + L_INTER_SRCH;
 
     corr = &corr_v[-t_min];
 
@@ -488,8 +482,7 @@ Word16 Pitch_fr (        /* o   : pitch period (integer)                    */
     lag = t0_min;
 
     for (i = t0_min + 1; i <= t0_max; i++) {
-
-        if (sub (corr[i], max) >= 0) {
+      if (corr[i] >= max) {
             max = corr[i];
             lag = i;
         }
@@ -498,8 +491,7 @@ Word16 Pitch_fr (        /* o   : pitch period (integer)                    */
     /*-----------------------------------------------------------------------*
      *                        Find fractional pitch                          *
      *-----------------------------------------------------------------------*/
-
-    if ((delta_search == 0) && (sub (lag, max_frac_lag) > 0)) {
+    if ((delta_search == 0) && (lag > max_frac_lag)) {
 
         /* full search and integer pitch greater than max_frac_lag */
         /* fractional search is not needed, set fractional to zero */
@@ -512,47 +504,41 @@ Word16 Pitch_fr (        /* o   : pitch period (integer)                    */
         /* then search fractional with 4 bits resolution           */
        
 
-       if ((delta_search != 0) &&
-           ((sub (mode, MR475) == 0) ||
-            (sub (mode, MR515) == 0) ||
-            (sub (mode, MR59) == 0) ||
-            (sub (mode, MR67) == 0))) {
-
+       if ((delta_search != 0) && mode < MR74) { /* MR475, MR515, MR59, MR67 */
           /* modify frac or last_frac according to position of last */
           /* integer pitch: either search around integer pitch, */
           /* or only on left or right side */
           
           tmp_lag = st->T0_prev_subframe;
 
-          if ( sub( sub(tmp_lag, t0_min), 5) > 0)
-             tmp_lag = add (t0_min, 5);
+          if ( (tmp_lag - t0_min) > 5)
+             tmp_lag = t0_min + 5;
 
-          if ( sub( sub(t0_max, tmp_lag), 4) > 0)
-               tmp_lag = sub (t0_max, 4);
+          if ( (t0_max - tmp_lag) > 4)
+               tmp_lag = t0_max - 4;
           
 
-          if ((sub (lag, tmp_lag) == 0) ||
-              (sub (lag, sub(tmp_lag, 1)) == 0)) {
+          if ((lag == tmp_lag) ||
+              (lag == tmp_lag - 1)) {
              
              /* normal search in fractions around T0 */
              
              searchFrac (&lag, &frac, last_frac, corr, flag3);
              
           }
-          else if (sub (lag, sub (tmp_lag, 2)) == 0) {
+          else if (lag == tmp_lag - 2) {
 
              /* limit search around T0 to the right side */
              frac = 0;
              searchFrac (&lag, &frac, last_frac, corr, flag3);
           }
-          else if (sub (lag, add(tmp_lag, 1)) == 0) {
+          else if (lag == tmp_lag + 1) {
 
              /* limit search around T0 to the left side */
              last_frac = 0;
              searchFrac (&lag, &frac, last_frac, corr, flag3);
           }
           else {
-
              /* no fractional search */
              frac = 0;
             }
@@ -570,15 +556,10 @@ Word16 Pitch_fr (        /* o   : pitch period (integer)                    */
     if (flag3 != 0) {       
        /* flag4 indicates encoding with 4 bit resolution;         */
        /* this is needed for mode MR475, MR515 and MR59           */
-       
-       flag4 = 0;
-
-       if ( (sub (mode, MR475) == 0) ||
-            (sub (mode, MR515) == 0) ||
-            (sub (mode, MR59) == 0) ||
-            (sub (mode, MR67) == 0) ) {
-          flag4 = 1;
-       }
+       if ( mode < MR74 ) /* MR475, MR515, MR59, MR67 */
+         flag4 = 1;
+       else
+         flag4 = 0;
        
        /* encode with 1/3 subsample resolution */
        

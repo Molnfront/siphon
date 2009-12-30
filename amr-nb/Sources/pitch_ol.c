@@ -279,11 +279,11 @@ Word16 Pitch_ol (      /* o   : open loop pitch lag                         */
      *--------------------------------------------------------*/
 
 
-    if (L_sub (t0, MAX_32) == 0L)               /* Test for overflow */
+    if (t0 == MAX_32)              /* Test for overflow */
     {
         for (i = -pit_max; i < L_frame; i++)
         {
-            scal_sig[i] = shr (signal[i], 3);
+            scal_sig[i] = signal[i]>>3; /*shr (signal[i], 3);*/
         }
         scal_fac = 3;
     }
@@ -293,18 +293,14 @@ Word16 Pitch_ol (      /* o   : open loop pitch lag                         */
 
         for (i = -pit_max; i < L_frame; i++)
         {
-            scal_sig[i] = shl (signal[i], 3);
+            scal_sig[i] = signal[i] << 3;
         }
         scal_fac = -3;
     }
     else
     {
-
-        for (i = -pit_max; i < L_frame; i++)
-        {
-            scal_sig[i] = signal[i];
-        }
-        scal_fac = 0;
+      scal_sig = signal;
+      scal_fac = 0;
     }
 
     /* calculate all coreelations of scal_sig, from pit_min to pit_max */
@@ -324,7 +320,7 @@ Word16 Pitch_ol (      /* o   : open loop pitch lag                         */
 
     /* mode dependent scaling in Lag_max */
 
-    if (sub(mode, MR122) == 0)
+    if (mode == MR122)
     {
        scal_flag = 1;
     }
@@ -366,7 +362,7 @@ Word16 Pitch_ol (      /* o   : open loop pitch lag                         */
     if (dtx)
     {  /* no test() call since this if is only in simulation env */
 
-       if (sub(idx, 1) == 0)
+       if (idx == 1)
        {
           /* calculate max high-passed filtered correlation of all lags */
           hp_max (corr_ptr, scal_sig, L_frame, pit_max, pit_min, &corr_hp_max); 
@@ -382,7 +378,7 @@ Word16 Pitch_ol (      /* o   : open loop pitch lag                         */
      *--------------------------------------------------------------------*/
     
 
-    if (sub (mult (max1, THRESHOLD), max2) < 0)
+    if (mult (max1, THRESHOLD) < max2)
     {
         max1 = max2;
         p_max1 = p_max2;
@@ -395,7 +391,7 @@ Word16 Pitch_ol (      /* o   : open loop pitch lag                         */
 #endif
     }
 
-    if (sub (mult (max1, THRESHOLD), max3) < 0)
+    if (mult (max1, THRESHOLD) < max3)
     {
         p_max1 = p_max3;
 #ifdef VAD2

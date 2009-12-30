@@ -74,7 +74,7 @@ const char ol_ltp_id[] = "@(#)$Id $" ol_ltp_h;
 *                         PUBLIC PROGRAM CODE
 ********************************************************************************
 */
-int ol_ltp(
+void ol_ltp(
     pitchOLWghtState *st, /* i/o : State struct                            */
     vadState *vadSt,      /* i/o : VAD state struct                        */
     enum Mode mode,       /* i   : coder mode                              */
@@ -87,8 +87,6 @@ int ol_ltp(
     Flag dtx              /* i   : dtx flag; use dtx=1, do not use dtx=0   */
     )
 {
-
-   /*if (sub (mode, MR102) != 0 )*/
    if (mode != MR102)
    {
       ol_gain_flg[0] = 0;
@@ -96,7 +94,6 @@ int ol_ltp(
    }
    
 
-   /*if (sub (mode, MR475) == 0 || sub (mode, MR515) == 0 )*/
    if (mode == MR475 || mode == MR515)
    {
       *T_op = Pitch_ol(vadSt, mode, wsp, PIT_MIN, PIT_MAX, L_FRAME, idx, dtx);
@@ -104,7 +101,6 @@ int ol_ltp(
    }
    else
    {
-      /*if ( sub (mode, MR795) <= 0 )*/
      if ( mode <= MR795 )
       {
 
@@ -112,7 +108,6 @@ int ol_ltp(
                           idx, dtx);
 
       }
-      /*else if ( sub (mode, MR102) == 0 )*/
       else if ( mode == MR102 )
       {
 
@@ -128,5 +123,4 @@ int ol_ltp(
 
       }
    }
-   return 0;
 }

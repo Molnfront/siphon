@@ -1,3 +1,32 @@
+/**
+ *  AMR codec for iPhone and iPod Touch
+ *  Copyright (C) 2009 Samuel <samuelv0304@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/*******************************************************************************
+ Portions of this file are derived from the following 3GPP standard:
+
+    3GPP TS 26.073
+    ANSI-C code for the Adaptive Multi-Rate (AMR) speech codec
+    Available from http://www.3gpp.org
+
+ (C) 2004, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TTA, TTC)
+ Permission to distribute, modify and use this file under the standard license
+ terms listed above has been obtained from the copyright holder.
+*******************************************************************************/
 /*
 ********************************************************************************
 *
@@ -27,7 +56,7 @@ const char c1035pf_id[] = "@(#)$Id $" c1035pf_h;
 */
 #include "typedef.h"
 #include "basic_op.h"
-#include "count.h"
+#include "set_zero.h"
 #include "cnst.h"
 #include "inv_sqrt.h"
 #include "set_sign.h"
@@ -48,7 +77,7 @@ const char c1035pf_id[] = "@(#)$Id $" c1035pf_h;
 *                         LOCAL PROGRAM CODE
 ********************************************************************************
 */
-void q_p (
+static inline void q_p (
     Word16 *ind,        /* Pulse position */
     Word16 n            /* Pulse number   */
 )
@@ -56,16 +85,11 @@ void q_p (
     Word16 tmp;
     
     tmp = *ind;
-    
+    *ind = gray[tmp & 0x7];
 
-    if (sub (n, 5) < 0)
+    if (n < 5)
     {
-        *ind = (tmp & 0x8) | gray[tmp & 0x7];
-
-    }
-    else
-    {
-        *ind = gray[tmp & 0x7];
+      *ind |= (tmp & 0x8);
     }
 }
 
@@ -92,10 +116,7 @@ static void build_code (
     Word16 *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7, *p8, *p9;
     Word32 s;
 
-    for (i = 0; i < L_CODE; i++)
-    {
-        cod[i] = 0;
-    }
+    Set_zero(cod, L_CODE);
     for (i = 0; i < NB_TRACK; i++)
     {
         indx[i] = -1;
@@ -114,15 +135,15 @@ static void build_code (
 
         if (j > 0)
         {
-            cod[i] = add (cod[i], 4096);
+            cod[i] = cod[i] + 4096;
             _sign[k] = 8192;
             
         }
         else
         {
-            cod[i] = sub (cod[i], 4096);
+            cod[i] = cod[i] - 4096;
             _sign[k] = -8192;
-            index = add (index, 8);
+            index += 8;
         }
         
 
@@ -138,7 +159,7 @@ static void build_code (
                 /* sign of 1st pulse == sign of 2nd pulse */
                 
 
-                if (sub (indx[track], index) <= 0)
+                if (indx[track] <= index)
                 {
                     indx[track + 5] = index;
                 }
@@ -152,9 +173,7 @@ static void build_code (
             else
             {
                 /* sign of 1st pulse != sign of 2nd pulse */
-                
-
-                if (sub ((indx[track] & 7), (index & 7)) <= 0)
+                if ((indx[track] & 7) <= (index & 7))
                 {
                     indx[track + 5] = indx[track];
 

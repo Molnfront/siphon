@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
+ *  Copyright (C) 2008-2010 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -53,6 +53,11 @@ NSString *forbiddenChars;
                                              selector:@selector(processRegState:)
                                                  name: kSIPRegState 
                                                object:nil];
+#if SPECIFIC_ADD_PERSON
+    peoplePickerCtrl = [[ABPeoplePickerNavigationController alloc] init];
+    peoplePickerCtrl.navigationBar.barStyle = UIBarStyleBlackOpaque;
+    peoplePickerCtrl.peoplePickerDelegate = self;
+#endif
 	}
 	return self;
 }
@@ -274,6 +279,9 @@ NSString *forbiddenChars;
   [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                   name: kSIPRegState 
                                                 object:nil];
+#if SPECIFIC_ADD_PERSON
+  [peoplePickerCtrl release];
+#endif
   
   [_label release];
   [_lcd release];
@@ -295,7 +303,7 @@ NSString *forbiddenChars;
 }
 
 /*** Buttons callback ***/
-- (void)phonePad:(DialerPhonePad *)phonepad appendString:(NSString *)string
+- (void)phonePad:(id)phonepad appendString:(NSString *)string
 {
   NSString *curText = [_label text];
   [_label setText: [curText stringByAppendingString: string]];
@@ -352,7 +360,7 @@ NSString *forbiddenChars;
   ABUnknownPersonViewController *unknownCtrl = [[ABUnknownPersonViewController alloc] init];
   unknownCtrl.displayedPerson = person;
   unknownCtrl.allowsActions = NO;
-  unknownCtrl.allowsAddingToAddressBook = true;
+  unknownCtrl.allowsAddingToAddressBook = YES;
   unknownCtrl.unknownPersonViewDelegate = self;
   CFRelease(person);
 
@@ -370,18 +378,19 @@ NSString *forbiddenChars;
   if (ABAddressBookGetPersonCount(ABAddressBookCreate ()) == 0)
   {
     // Create a new contact
+    [self addNewPerson];
   }
   else
   {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil 
-                                  delegate:self 
-                                  cancelButtonTitle:NSLocalizedString(@"Cancel",@"Phone View") 
-                                  destructiveButtonTitle:nil 
-                                  otherButtonTitles:NSLocalizedString(@"Create New Contact",@"Phone View"),
+                                                             delegate:self 
+                                                    cancelButtonTitle:NSLocalizedString(@"Cancel",@"Phone View") 
+                                               destructiveButtonTitle:nil 
+                                                    otherButtonTitles:NSLocalizedString(@"Create New Contact",@"Phone View"),
                                   NSLocalizedString(@"Add to Existing Contact",@"Phone View"), nil];
     actionSheet.actionSheetStyle = UIActionSheetStyleDefault;
-    //[actionSheet showFromTabBar:self.view.superview];
-    [actionSheet showFromTabBar:self.parentViewController.tabBarController.view];
+    [actionSheet showFromTabBar:[self.parentViewController view]];
+    //[actionSheet showFromTabBar:self.parentViewController.tabBarController.view];
   }
 #endif
 }
@@ -460,49 +469,120 @@ NSString *forbiddenChars;
   [self stopTimer];
 }
 
+#if !SPECIFIC_ADD_PERSON
+
 #pragma mark ABUnknownPersonViewControllerDelegate 
 - (void)unknownPersonViewController:(ABUnknownPersonViewController *)unknownCtrl
                  didResolveToPerson:(ABRecordRef)person
 {
-  [self.parentViewController dismissModalViewControllerAnimated:YES];
+  //[self/*.parentViewController*/ dismissModalViewControllerAnimated:YES];
+  [unknownCtrl dismissModalViewControllerAnimated:YES];
 }
 
-#pragma mark ABPeoplePickerNavigationControllerDelegate
-- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person
+- (BOOL)unknownPersonViewController:(ABUnknownPersonViewController *)personViewController shouldPerformDefaultActionForPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier
 {
   return YES;
 }
 
-- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier
+#else /* SPECIFIC_ADD_PERSON */
+- (void)addNewPerson
+{
+  CFErrorRef error = NULL;
+  // Create New Contact
+  ABRecordRef person = ABPersonCreate ();
+  
+  // Add phone number
+  ABMutableMultiValueRef multiValue = 
+  ABMultiValueCreateMutable(kABStringPropertyType);
+  
+  ABMultiValueAddValueAndLabel(multiValue, [_label text], kABPersonPhoneMainLabel, 
+                               NULL);  
+  
+  ABRecordSetValue(person, kABPersonPhoneProperty, multiValue, &error);
+  
+  
+  ABNewPersonViewController *newPersonCtrl = [[ABNewPersonViewController alloc] init];
+  newPersonCtrl.newPersonViewDelegate = self;
+  newPersonCtrl.displayedPerson = person;
+  CFRelease(person); // TODO check
+  
+  UINavigationController *navCtrl = [[UINavigationController alloc] 
+                                     initWithRootViewController:newPersonCtrl];
+  navCtrl.navigationBar.barStyle = UIBarStyleBlackOpaque;
+  [self.parentViewController presentModalViewController:navCtrl animated:YES];
+  [newPersonCtrl release];
+  [navCtrl release];
+}
+
+#pragma mark ABNewPersonViewControllerDelegate
+- (void)newPersonViewController:(ABNewPersonViewController *)newPersonViewController 
+       didCompleteWithNewPerson:(ABRecordRef)person
+{
+  [newPersonViewController dismissModalViewControllerAnimated:YES];
+}
+
+
+#pragma mark ABPeoplePickerNavigationControllerDelegate
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
+      shouldContinueAfterSelectingPerson:(ABRecordRef)person
+{
+  CFErrorRef error = NULL;
+  BOOL status;
+  ABMutableMultiValueRef multiValue;
+  // Inserer le numéro dans la fiche de la personne
+  // Add phone number
+  CFTypeRef typeRef = ABRecordCopyValue(person, kABPersonPhoneProperty);
+  if (ABMultiValueGetCount(typeRef) == 0)
+    multiValue = ABMultiValueCreateMutable(kABStringPropertyType);
+  else
+    multiValue = ABMultiValueCreateMutableCopy (typeRef);
+  
+  // TODO type (mobile, main...)
+  // TODO manage URI
+  status = ABMultiValueAddValueAndLabel(multiValue, [_label text], kABPersonPhoneMainLabel, 
+                                        NULL);  
+  
+  status = ABRecordSetValue(person, kABPersonPhoneProperty, multiValue, &error);
+  status = ABAddressBookSave(peoplePicker.addressBook, &error);
+  [peoplePicker dismissModalViewControllerAnimated:YES];
+  return NO;
+}
+
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker 
+      shouldContinueAfterSelectingPerson:(ABRecordRef)person 
+                                property:(ABPropertyID)property 
+                              identifier:(ABMultiValueIdentifier)identifier
 {
   return NO;
 }
 
 - (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker
 {
-  [self.parentViewController dismissModalViewControllerAnimated:YES];
+  [peoplePicker dismissModalViewControllerAnimated:YES];
 }
 
-- (void)cancelAddPerson:(id)unused
-{
-  [self.parentViewController dismissModalViewControllerAnimated:YES];
-}
-
-#if SPECIFIC_ADD_PERSON
+#pragma mark UIActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet 
-                    clickedButtonAtIndex:(NSInteger)buttonIndex
+clickedButtonAtIndex:(NSInteger)buttonIndex
 {
   switch (buttonIndex) 
   {
     case 0: // Create new contact
+      [self addNewPerson];
       break;
     case 1: // Add to existing Contact
+      [self presentModalViewController:peoplePickerCtrl animated:YES];
       // do something else
     default:
       break;
   }
 }
-#endif
+#endif /* SPECIFIC_ADD_PERSON */
+
+- (void)cancelAddPerson:(id)unused
+{
+  [self.parentViewController dismissModalViewControllerAnimated:YES];
+}
 
 - (void)reachabilityChanged:(NSNotification *)notification
 {

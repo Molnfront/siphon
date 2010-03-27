@@ -1,9 +1,9 @@
 /*
  
  File: Reachability.h
- Abstract: SystemConfiguration framework wrapper.
+ Abstract: Basic demonstration of how to use the SystemConfiguration Reachablity APIs.
  
- Version: 1.5
+ Version: 2.0
  
  Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple Inc.
  ("Apple") in consideration of your agreement to the following terms, and your
@@ -41,85 +41,49 @@
  CONTRACT, TORT (INCLUDING NEGLIGENCE), STRICT LIABILITY OR OTHERWISE, EVEN IF
  APPLE HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2008 Apple Inc. All Rights Reserved.
+ Copyright (C) 2009 Apple Inc. All Rights Reserved.
  
- */
+*/
 
-#import <UIKit/UIKit.h>
+
+#import <Foundation/Foundation.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 
-@class Reachability;
-
-@interface Reachability : NSObject 
-{  
-@private
-	BOOL _networkStatusNotificationsEnabled;
-	
-	NSString *_hostName;
-	NSString *_address;
-  
-	NSMutableDictionary *_reachabilityQueries;
-}
-
-/*
- An enumeration that defines the return values of the network state
- of the device.
- */
-typedef enum 
-{
+typedef enum {
 	NotReachable = 0,
-	ReachableViaCarrierDataNetwork,
-	ReachableViaWiFiNetwork
+	ReachableViaWiFi,
+	ReachableViaWWAN
 } NetworkStatus;
 
+#define kReachabilityChangedNotification @"kNetworkReachabilityChangedNotification"
 
-// Set to YES to register for changes in network status. Otherwise reachability queries
-// will be handled synchronously.
-@property BOOL networkStatusNotificationsEnabled;
-// The remote host whose reachability will be queried.
-// Either this or 'addressName' must be set.
-@property (nonatomic, retain) NSString *hostName;
-// The IP address of the remote host whose reachability will be queried.
-// Either this or 'hostName' must be set.
-@property (nonatomic, retain) NSString *address;
-// A cache of ReachabilityQuery objects, which encapsulate a SCNetworkReachabilityRef, a host or address, and a run loop. The keys are host names or addresses.
-@property (nonatomic, assign) NSMutableDictionary *reachabilityQueries;
-
-// This class is intended to be used as a singleton.
-+ (Reachability *)sharedReachability;
-
-// Is self.hostName is not nil, determines its reachability.
-// If self.hostName is nil and self.address is not nil, determines the reachability of self.address.
-- (NetworkStatus)remoteHostStatus;
-// Is the device able to communicate with Internet hosts? If so, through which network interface?
-- (NetworkStatus)internetConnectionStatus;
-// Is the device able to communicate with hosts on the local WiFi network? (Typically these are Bonjour hosts).
-- (NetworkStatus)localWiFiConnectionStatus;
-
-- (BOOL)addressFromString:(NSString *)IPAddress address:(struct sockaddr_in *)outAddress;
-
-/*
- When reachability change notifications are posted, the callback method 'ReachabilityCallback' is called
- and posts a notification that the client application can observe to learn about changes.
- */
-static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info);
-
-@end
-
-@interface ReachabilityQuery : NSObject
+@interface Reachability: NSObject
 {
-@private
-	SCNetworkReachabilityRef _reachabilityRef;
-	CFMutableArrayRef _runLoops;
-	NSString *_hostNameOrAddress;
+	BOOL localWiFiRef;
+	SCNetworkReachabilityRef reachabilityRef;
 }
-// Keep around each network reachability query object so that we can
-// register for updates from those objects.
-@property (nonatomic) SCNetworkReachabilityRef reachabilityRef;
-@property (nonatomic, retain) NSString *hostNameOrAddress;
-@property (nonatomic) CFMutableArrayRef runLoops;
 
-- (void)scheduleOnRunLoop:(NSRunLoop *)inRunLoop;
+//reachabilityWithHostName- Use to check the reachability of a particular host name. 
++ (Reachability*) reachabilityWithHostName: (NSString*) hostName;
 
+//reachabilityWithAddress- Use to check the reachability of a particular IP address. 
++ (Reachability*) reachabilityWithAddress: (const struct sockaddr_in*) hostAddress;
+
+//reachabilityForInternetConnection- checks whether the default route is available.  
+//  Should be used by applications that do not connect to a particular host
++ (Reachability*) reachabilityForInternetConnection;
+
+//reachabilityForLocalWiFi- checks whether a local wifi connection is available.
++ (Reachability*) reachabilityForLocalWiFi;
+
+//Start listening for reachability notifications on the current run loop
+- (BOOL) startNotifer;
+- (void) stopNotifer;
+
+- (NetworkStatus) currentReachabilityStatus;
+//WWAN may be available, but not active until a connection has been established.
+//WiFi may require a connection for VPN on Demand.
+- (BOOL) connectionRequired;
 @end
+
 

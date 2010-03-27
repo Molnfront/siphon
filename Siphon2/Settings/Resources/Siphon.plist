@@ -113,13 +113,13 @@
 			<key>cell</key>
 			<string>PSTitleViewCell</string>
 			<key>label</key>
-			<string>Version 2.2.0</string>
+			<string>Version 2.3</string>
 		</dict>
 		<dict>
 			<key>cell</key>
 			<string>PSTitleViewCell</string>
 			<key>label</key>
-			<string>Siphon (c) 2007 - 2009, Samuel. samuelv0304@gmail.com</string>
+			<string>Siphon (c) 2007 - 2010, Samuel. samuelv0304@gmail.com</string>
 		</dict>
 	</array>
 	<key>title</key>

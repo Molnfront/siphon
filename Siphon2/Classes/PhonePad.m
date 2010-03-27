@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
+ *  Copyright (C) 2008-2010 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 static NSString *_keyStrs[] = {nil, @"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9", @"*", @"0", @"#"};
 const static char _keyValues[] = {0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'};
 static SystemSoundID sounds[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+@synthesize delegate = _delegate;
 
 - (id)initWithFrame:(CGRect)rect
 {
@@ -314,16 +316,6 @@ static SystemSoundID sounds[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   [_keypadImage release];
   [_pressedImage release];
   [super dealloc];
-}
-
-- (id)delegate
-{
-  return _delegate;
-}
-
-- (void)setDelegate:(id)newDelegate
-{
-  _delegate = newDelegate;
 }
 
 @end

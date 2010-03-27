@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
+ *  Copyright (C) 2008-2010 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,20 +20,22 @@
 #import <UIKit/UIKit.h>
 #import <AddressBookUI/AddressBookUI.h>
 
+#import "PhoneCallDelegate.h"
 #import "DialerPhonePad.h"
 #import "AbsLCDView.h"
 
-@protocol PhoneViewController
--(void) dialup:(NSString *)phoneNumber number:(BOOL)isNumber;
-@end
+#define SPECIFIC_ADD_PERSON 1
 
 @interface PhoneViewController : UIViewController <
           UITextFieldDelegate,
 #if SPECIFIC_ADD_PERSON
           UIActionSheetDelegate,
+          ABNewPersonViewControllerDelegate,
+          ABPeoplePickerNavigationControllerDelegate,
+#else         
+          ABUnknownPersonViewControllerDelegate,
 #endif
-          ABPeoplePickerNavigationControllerDelegate, 
-          ABUnknownPersonViewControllerDelegate>
+           PhonePadDelegate>
 {
   UITextField *_label;
   UIView      *_container;
@@ -51,9 +53,12 @@
   
   NSString *_lastNumber;
   
-  id phoneCallDelegate;
+  id<PhoneCallDelegate> phoneCallDelegate;
+#if SPECIFIC_ADD_PERSON
+  ABPeoplePickerNavigationController *peoplePickerCtrl;
+#endif
 }
 
-@property (nonatomic, retain)   id phoneCallDelegate;
+@property (nonatomic, retain)   id<PhoneCallDelegate> phoneCallDelegate;
 
 @end

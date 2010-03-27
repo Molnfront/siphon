@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
+ *  Copyright (C) 2008-2010 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,19 +19,11 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol PhonePad
-
-@optional
-- (void)phonePad:(id)phonepad appendString:(NSString *)string;
-- (void)phonePad:(id)phonepad replaceLastDigitWithString:(NSString *)string;
-
-- (void)phonePad:(id)phonepad keyDown:(char)car;
-- (void)phonePad:(id)phonepad keyUp:(char)car;
-@end
+@protocol PhonePadDelegate;
 
 @interface PhonePad : UIControl
 {
-  id _delegate;
+  id<PhonePadDelegate> _delegate;
   int _downKey;
   
   UIImage *_keypadImage;
@@ -61,7 +53,16 @@
 - (void)setPlaysSounds:(BOOL)activate;
 - (void)playSoundForKey:(int)key;
 
-- (id)delegate;
-- (void)setDelegate:(id)newDelegate;
+@property (nonatomic, retain) id<PhonePadDelegate> delegate;
 
+@end
+
+@protocol PhonePadDelegate <NSObject>
+
+@optional
+- (void)phonePad:(id)phonepad appendString:(NSString *)string;
+- (void)phonePad:(id)phonepad replaceLastDigitWithString:(NSString *)string;
+
+- (void)phonePad:(id)phonepad keyDown:(char)car;
+- (void)phonePad:(id)phonepad keyUp:(char)car;
 @end

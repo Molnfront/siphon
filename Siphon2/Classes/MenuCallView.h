@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
+ *  Copyright (C) 2008-2010 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,21 +20,20 @@
 #import <UIKit/UIKit.h>
 #import "PushButton.h"
 
-@protocol MenuCallView
-
-- (void)menuButtonClicked:(NSInteger)button;
-
-@end
+@protocol MenuCallViewDelegate;
 
 @interface MenuCallView : UIView 
 {
   PushButton *_buttons[6];
-  id delegate;
+  id<MenuCallViewDelegate> delegate;
 }
 
-@property (nonatomic, retain)  id delegate;
+@property (nonatomic, retain)  id<MenuCallViewDelegate> delegate;
 
 - (PushButton *)buttonAtPosition:(NSInteger)button;
 - (void)setTitle:(NSString *)title image:(UIImage *)image forPosition:(NSInteger)pos;
 
+@end
+@protocol MenuCallViewDelegate <NSObject>
+- (void)menuButtonClicked:(NSInteger)button;
 @end

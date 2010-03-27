@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
+ *  Copyright (C) 2008-2010 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,19 +19,31 @@
 
 #import <UIKit/UIKit.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
+
+#if defined(CYDIA) && (CYDIA == 1)
+#include <IOKit/pwr_mgt/IOPMLib.h>
+#include <IOKit/IOMessage.h>
+#endif
+
 #import "CallViewController.h"
 #import "RecentsViewController.h"
 #import "PhoneViewController.h"
+#import "PhoneCallDelegate.h"
+#import "Reachability.h"
 
 #include "call.h"
 
+//#define MWI 1
+#define REACHABILITY_2_0 1
+
 @class SiphonApplication;
 
-@interface SiphonApplication : UIApplication <UIActionSheetDelegate, UIApplicationDelegate
+@interface SiphonApplication : UIApplication <UIActionSheetDelegate, 
+	UIApplicationDelegate,
 #if defined(CYDIA) && (CYDIA == 1)
-  , UIAlertViewDelegate
+  UIAlertViewDelegate,
 #endif
->
+  PhoneCallDelegate>
 {
   UIWindow *window;
  // UINavigationController *navController;
@@ -50,6 +62,16 @@
 @private
   NSString *_phoneNumber;
   BOOL launchDefault;
+  
+#if defined(REACHABILITY_2_0) && REACHABILITY_2_0==1
+  Reachability *_hostReach;
+#endif
+  
+#if defined(CYDIA) && (CYDIA == 1)
+  io_connect_t  root_port; // a reference to the Root Power Domain IOService
+  io_object_t   notifierObject; // notifier object, used to deregister later
+  IONotificationPortRef  notifyPortRef; // notification port allocated by IORegisterForSystemPower
+#endif
 }
 
 @property (nonatomic, retain) UIWindow *window;
@@ -64,6 +86,7 @@
 -(void)displayError:(NSString *)error withTitle:(NSString *)title;
 -(void)displayParameterError:(NSString *)error;
 
+- (void)callDisconnecting;
 -(void)disconnected:(id)fp8;
 
 //-(RecentsViewController *)recentsViewController;

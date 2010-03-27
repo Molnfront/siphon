@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
+ *  Copyright (C) 2008-2010 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,19 +20,16 @@
 #import <UIKit/UIKit.h>
 #import <AddressBookUI/AddressBookUI.h>
 #import <AddressBook/AddressBook.h>
-
-@protocol ContactViewController
--(void) dialup:(NSString *)phoneNumber number:(BOOL)isNumber;
-@end
+#import "PhoneCallDelegate.h"
 
 @interface ContactViewController : ABPeoplePickerNavigationController
     <ABPeoplePickerNavigationControllerDelegate,
 //ABNewPersonViewControllerDelegate,
     UIActionSheetDelegate>
 {
-   id phoneCallDelegate;
+   id<PhoneCallDelegate> phoneCallDelegate;
 }
 
-@property (nonatomic, retain)  id phoneCallDelegate;
+@property (nonatomic, retain)  id<PhoneCallDelegate> phoneCallDelegate;
 
 @end

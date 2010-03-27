@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
+ *  Copyright (C) 2008-2010 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,18 +21,15 @@
 #import <AddressBookUI/AddressBookUI.h>
 #import <sqlite3.h>
 
+#import "PhoneCallDelegate.h"
 #import "RecentCall.h"
-
-@protocol RecentsViewController
--(void) dialup:(NSString *)phoneNumber number:(BOOL)isNumber;
-@end
 
 @interface RecentsViewController : UITableViewController <UIActionSheetDelegate,
   ABPersonViewControllerDelegate, ABUnknownPersonViewControllerDelegate>
 //<UIActionSheetDelegate,
 //    UITableViewDelegate, UITableViewDataSource>
 {
-  id phoneCallDelegate;
+  id<PhoneCallDelegate> phoneCallDelegate;
   
   NSMutableArray *calls;
   // Opaque reference to the SQLite database.
@@ -42,7 +39,7 @@
   RecentCall *unknownCall;
 }
 
-@property (nonatomic, retain)  id phoneCallDelegate;
+@property (nonatomic, retain)  id<PhoneCallDelegate> phoneCallDelegate;
 // Makes the main array of recentCall objects available to other objects in the application.
 @property (nonatomic, retain) NSMutableArray *calls;
 

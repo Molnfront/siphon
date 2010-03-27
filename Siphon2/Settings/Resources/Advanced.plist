@@ -70,6 +70,22 @@
 			<key>label</key>
 			<string>Contact</string>
 		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>defaults</key>
+			<string>com.googlecode.siphon</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>label</key>
+			<string>Magic Jack</string>
+			<key>key</key>
+			<string>enableMJ</string>
+			<key>default</key>
+			<false/>
+		</dict>
 	</array>
 	<key>title</key>
 	<string>Advanced</string>

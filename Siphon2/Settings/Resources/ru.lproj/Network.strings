@@ -29,9 +29,9 @@
 "Keep Alive Interval" = "Удерживать";
 
 /* Media Transport Options */
-"Media Transport Options" = "Media Transport Options";
+"Media Transport Options" = "Настройки транспорта медиа";
 "RTP Port" = "RTP порт";
 "Enable ICE" = "Включить ICE";
 
-"Siphon over EDGE/3G" = "Siphon over EDGE/3G";
-"You must read your mobile subscription agreement before activate this option. The author is not responsible of your \"Siphon\" usage." = "You must read your mobile subscription agreement before activating this option. The author is not responsible of your \"Siphon\" usage.";
+"Siphon over EDGE/3G" = "Siphon через EDGE/3G";
+"You must read your mobile subscription agreement before activate this option. The author is not responsible of your \"Siphon\" usage." = "Вы должны внимательно изучить ваш контракт с мобильным оператором до включения этой опции. Автор не отвечает за убытки, нанесенные неправильным использованием \"Siphon\".";

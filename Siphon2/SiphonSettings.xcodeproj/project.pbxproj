@@ -101,6 +101,14 @@
 		7ECAB7920F0CE2E100DE9737 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = Settings/Resources/icon.png; sourceTree = "<group>"; };
 		7ECAB7970F0CE77000DE9737 /* Preferences.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Preferences.framework; path = System/Library/PrivateFrameworks/Preferences.framework; sourceTree = SDKROOT; };
 		7ECAB8430F0D4B6B00DE9737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		7ED87EC31132806800FB14D2 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = Settings/Resources/nl.lproj/Siphon.strings; sourceTree = "<group>"; };
+		7ED87ED01132809F00FB14D2 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = Settings/Resources/nl.lproj/Advanced.strings; sourceTree = "<group>"; };
+		7ED87ED5113280BD00FB14D2 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = Settings/Resources/nl.lproj/Phone.strings; sourceTree = "<group>"; };
+		7ED87ED6113280EE00FB14D2 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = Settings/Resources/nl.lproj/Network.strings; sourceTree = "<group>"; };
+		7ED87ED71132814A00FB14D2 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = Settings/Resources/sv.lproj/Siphon.strings; sourceTree = "<group>"; };
+		7ED87ED81132814A00FB14D2 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = Settings/Resources/sv.lproj/Phone.strings; sourceTree = "<group>"; };
+		7ED87ED91132814A00FB14D2 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = Settings/Resources/sv.lproj/Network.strings; sourceTree = "<group>"; };
+		7ED87EDA1132814A00FB14D2 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = Settings/Resources/sv.lproj/Advanced.strings; sourceTree = "<group>"; };
 		7EDD6E620F62A5C200952790 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = Settings/Resources/zh_CN.lproj/Network.strings; sourceTree = "<group>"; };
 		7EDD6E630F62A60500952790 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = Settings/Resources/zh_TW.lproj/Network.strings; sourceTree = "<group>"; };
 		7EDD6E640F62A61E00952790 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = Settings/Resources/zh_CN.lproj/Phone.strings; sourceTree = "<group>"; };
@@ -244,6 +252,8 @@
 				he,
 				ca,
 				sk,
+				nl,
+				sv,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
@@ -319,9 +329,11 @@
 				7E41B24C0F35F61500B4567A /* it */,
 				7EC423791025E21E005EDE22 /* ko */,
 				7E4915260F894EA100A0CF44 /* ru */,
+				7ED87ED6113280EE00FB14D2 /* nl */,
 				7E41B24D0F35F62100B4567A /* pt */,
 				7E05EF63106ECA4300670BB8 /* sk */,
 				7E082DA20F3DD30E006E317E /* sl */,
+				7ED87ED91132814A00FB14D2 /* sv */,
 				7EDD6E620F62A5C200952790 /* zh_CN */,
 				7EDD6E630F62A60500952790 /* zh_TW */,
 			);
@@ -351,10 +363,12 @@
 				7EC4249B10283B64005EDE22 /* hr */,
 				7E41B2460F35F5A900B4567A /* it */,
 				7EC4236D1025E12B005EDE22 /* ko */,
+				7ED87ED5113280BD00FB14D2 /* nl */,
 				7E41B2470F35F5B500B4567A /* pt */,
 				7E4915270F894EA100A0CF44 /* ru */,
 				7E05EF62106ECA1600670BB8 /* sk */,
 				7E082DA10F3DD2FD006E317E /* sl */,
+				7ED87ED81132814A00FB14D2 /* sv */,
 				7EDD6E640F62A61E00952790 /* zh_CN */,
 				7EDD6E650F62A64000952790 /* zh_TW */,
 			);
@@ -375,10 +389,12 @@
 				7EC4248D10283A17005EDE22 /* hr */,
 				7ECAB6380F0CBDE800DE9737 /* it */,
 				7EC4236B1025E0D8005EDE22 /* ko */,
+				7ED87EC31132806800FB14D2 /* nl */,
 				7ECAB63A0F0CBDF700DE9737 /* pt */,
 				7E4915280F894EA100A0CF44 /* ru */,
 				7E05EF60106EC9C200670BB8 /* sk */,
 				7E082D9F0F3DD2C7006E317E /* sl */,
+				7ED87ED71132814A00FB14D2 /* sv */,
 				7EDD6E680F62A76900952790 /* zh_CN */,
 				7EDD6E690F62A77700952790 /* zh_TW */,
 			);
@@ -399,10 +415,12 @@
 				7EC4249A10283ADC005EDE22 /* hr */,
 				7ECAB6370F0CBDE800DE9737 /* it */,
 				7EC4236C1025E106005EDE22 /* ko */,
+				7ED87ED01132809F00FB14D2 /* nl */,
 				7ECAB6390F0CBDF700DE9737 /* pt */,
 				7E4915250F894EA100A0CF44 /* ru */,
 				7E05EF61106EC9EA00670BB8 /* sk */,
 				7E082DA00F3DD2EE006E317E /* sl */,
+				7ED87EDA1132814A00FB14D2 /* sv */,
 				7EDD6E660F62A6B900952790 /* zh_CN */,
 				7EDD6E670F62A6C600952790 /* zh_TW */,
 			);
@@ -470,6 +488,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = Headers;

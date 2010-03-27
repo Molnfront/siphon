@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
+ *  Copyright (C) 2008-2010 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,19 +23,31 @@
 #import "BottomDualButtonBar.h"
 #import "MenuCallView.h"
 #import "LCDView.h"
+#import "DualButtonView.h"
 #import "RecentCall.h"
 
 #include <pjsua-lib/pjsua.h>
 
-@interface CallViewController : UIViewController<PhonePad,
-	MenuCallView
+@interface CallViewController : UIViewController<PhonePadDelegate,
+    MenuCallViewDelegate
+#if defined(ONECALL) && (ONECALL == 1)
+#else 
+, DualButtonViewDelegate
+#endif
 	>
 {
   LCDView             *_lcd;
   
+  UIView              *_switchViews[2];
+  NSUInteger           _whichView;
   UIView		          *_containerView;
-  PhonePad            *_phonePad;
-  MenuCallView        *_menuView;
+  //PhonePad            *_phonePad;
+  //MenuCallView        *_menuView;
+#if defined(ONECALL) && (ONECALL == 1)
+#else
+  DualButtonView      *_buttonView;
+  BottomButtonBar     *_bottomBar;
+#endif
 
   BottomDualButtonBar *_defaultBottomBar;
   UIButton            *_menuButton;
@@ -45,7 +57,12 @@
   NSTimer *_timer;
   NSString *dtmfCmd;
 
+#if defined(ONECALL) && (ONECALL == 1)
   pjsua_call_id  _call_id;
+#else
+  pjsua_call_id  _current_call;
+  pjsua_call_id  _new_call;
+#endif
   RecentCall    *_call[PJSUA_MAX_CALLS];
 }
 

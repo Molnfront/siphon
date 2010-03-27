@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
+ *  Copyright (C) 2008-2010 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@
 
 #define THIS_FILE "SiphonApplication.m"
 #define kDelayToCall 10.0
+static NSString *kVoipOverEdge = @"siphonOverEDGE";
 
 typedef enum ConnectionState {
   DISCONNECTED,
@@ -44,6 +45,25 @@ typedef enum ConnectionState {
   CONNECTED,
   ERROR
 } ConnectionState;
+
+@interface UIApplication ()
+
+- (BOOL)launchApplicationWithIdentifier:(NSString *)identifier suspended:(BOOL)suspended;
+- (void)addStatusBarImageNamed:(NSString *)imageName removeOnExit:(BOOL)remove;
+- (void)addStatusBarImageNamed:(NSString *)imageName;
+- (void)removeStatusBarImageNamed:(NSString *)imageName;
+
+@end
+
+
+@interface SiphonApplication (private)
+- (BOOL) sipStartup;
+- (void) sipCleanup;
+- (BOOL) sipConnect;
+- (BOOL) sipDisconnect;
+
+@end
+
 
 @implementation SiphonApplication
 
@@ -111,13 +131,143 @@ typedef enum ConnectionState {
   //[message release];
 }
 
+#if defined(CYDIA) && (CYDIA == 1)
+#pragma mark -
+#pragma mark Power Management
+// Technical Q&A QA1340 : Registering and unregistering for sleep and wake notifications
+// http://developer.apple.com/mac/library/qa/qa2004/qa1340.html
+void powerCallback( void * refCon, io_service_t service, natural_t messageType, 
+                   void * messageArgument )
+{
+  [(SiphonApplication *)refCon powerMessageReceived: messageType 
+                                       withArgument: messageArgument];
+}
+
+- (void)powerMessageReceived:(natural_t)messageType withArgument:(void *) messageArgument
+{
+  /*printf( "messageType %08lx, arg %08lx\n",
+         (long unsigned int)messageType,
+         (long unsigned int)messageArgument );*/
+  
+  switch ( messageType )
+  {
+      
+    case kIOMessageCanSystemSleep:
+      /* Idle sleep is about to kick in. This message will not be sent for forced sleep.
+       Applications have a chance to prevent sleep by calling IOCancelPowerChange.
+       Most applications should not prevent idle sleep.
+       
+       Power Management waits up to 30 seconds for you to either allow or deny idle sleep.
+       If you don't acknowledge this power change by calling either IOAllowPowerChange
+       or IOCancelPowerChange, the system will wait 30 seconds then go to sleep.
+       */
+      
+      //Uncomment to cancel idle sleep
+      IOCancelPowerChange( root_port, (long)messageArgument );
+      // we will allow idle sleep
+      //IOAllowPowerChange( root_port, (long)messageArgument );
+      break;
+      
+    case kIOMessageSystemWillSleep:
+      /* The system WILL go to sleep. If you do not call IOAllowPowerChange or
+       IOCancelPowerChange to acknowledge this message, sleep will be
+       delayed by 30 seconds.
+       
+       NOTE: If you call IOCancelPowerChange to deny sleep it returns kIOReturnSuccess,
+       however the system WILL still go to sleep. 
+       */
+      
+      IOAllowPowerChange( root_port, (long)messageArgument );
+      break;
+      
+    case kIOMessageSystemWillPowerOn:
+      //System has started the wake up process...
+      break;
+      
+    case kIOMessageSystemHasPoweredOn:
+      //System has finished waking up...
+      break;
+      
+    default:
+      break;      
+  }
+}
+
+- (void)keepAwakeEnabled
+{
+  NSLog(@"keepAwakeEnabled");
+  root_port = IORegisterForSystemPower(self, &notifyPortRef, powerCallback, 
+                                       &notifierObject);
+  if ( root_port == 0 )
+  {
+    NSLog(@"IORegisterForSystemPower failed\n");
+    return;
+  }
+  
+  // add the notification port to the application runloop
+  CFRunLoopAddSource(CFRunLoopGetCurrent(),
+                     IONotificationPortGetRunLoopSource(notifyPortRef),
+                     kCFRunLoopCommonModes );
+
+  [super addStatusBarImageNamed:@"Siphon" removeOnExit: YES];
+}
+
+- (void)keepAwakeDisabled
+{
+  NSLog(@"keepAwakeDisabled");
+  if (root_port == 0)
+    return;
+  
+  [self removeStatusBarImageNamed:@"Siphon"];
+  
+  // remove the sleep notification port from the application runloop
+  CFRunLoopRemoveSource( CFRunLoopGetCurrent(),
+                        IONotificationPortGetRunLoopSource(notifyPortRef),
+                        kCFRunLoopCommonModes );
+  
+  // deregister for system sleep notifications
+  IODeregisterForSystemPower( &notifierObject );
+  
+  // IORegisterForSystemPower implicitly opens the Root Power Domain IOService
+  // so we close it here
+  IOServiceClose( root_port );
+  
+  // destroy the notification port allocated by IORegisterForSystemPower
+  IONotificationPortDestroy( notifyPortRef );  
+}
+#endif
+
 #if 1
 - (void) activateWWAN
 {
+   self.networkActivityIndicatorVisible = YES;
   //NSURL * url = [[NSURL alloc] initWithString:[NSString stringWithCString:"http://www.anyurl.com"]];
   NSURL * url = [[NSURL alloc] initWithString:[NSString stringWithCString:"http://www.google.com"]];
   NSData * data = [NSData dataWithContentsOfURL:url];
   [url release];
+   self.networkActivityIndicatorVisible = NO;
+}
+
+- (BOOL)wakeUpNetwork
+{
+  BOOL overEDGE = FALSE;
+  if (isIpod == FALSE)
+  {
+    overEDGE = [[NSUserDefaults standardUserDefaults] boolForKey:kVoipOverEdge];
+}
+
+  NetworkStatus netStatus = [_hostReach currentReachabilityStatus];
+  BOOL connectionRequired= [_hostReach connectionRequired];
+  if ((overEDGE && netStatus == NotReachable) ||
+      (!overEDGE && netStatus != ReachableViaWiFi))
+    return NO;
+  //if (overEDGE && netStatus == ReachableViaWWAN)
+  if (connectionRequired)
+  {
+    [self activateWWAN];
+  }
+
+  return YES;
 }
 #endif
 
@@ -147,11 +297,6 @@ typedef enum ConnectionState {
                                            selector:@selector(processRegState:)
                                                name: kSIPRegState object:nil];
   
-  /*[[NSNotificationCenter defaultCenter] addObserver:self 
-                                           selector:@selector(reachabilityChanged:) 
-                                               name:@"kNetworkReachabilityChangedNotification" 
-                                             object:nil];*/
-  
   return YES;
 }
 
@@ -159,9 +304,6 @@ typedef enum ConnectionState {
 - (void)sipCleanup
 {
   //[[NSNotificationCenter defaultCenter] removeObserver:self];
-/*  [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                  name:@"kNetworkReachabilityChangedNotification" 
-                                                object:nil];*/
   [[NSNotificationCenter defaultCenter] removeObserver:self
                                                   name: kSIPRegState
                                                 object:nil];
@@ -184,40 +326,8 @@ typedef enum ConnectionState {
   if (![self sipStartup])
   	return FALSE;
 
-#if defined(CYDIA) && (CYDIA == 1)
-  BOOL overEDGE = FALSE;
-  if (isIpod == FALSE)
-  {
-    overEDGE = [[NSUserDefaults standardUserDefaults] boolForKey:@"siphonOverEDGE"];
-  }
-  if ((overEDGE  && [[Reachability sharedReachability] remoteHostStatus] == NotReachable) || 
-      (!overEDGE && [[Reachability sharedReachability] remoteHostStatus] != ReachableViaWiFiNetwork))
-    return FALSE;
-  // FIXME: beurk
-  if (overEDGE  && [[Reachability sharedReachability] remoteHostStatus] == ReachableViaCarrierDataNetwork)
-  {
-#if 0
-    CFStreamError error;
-    Boolean hasBeenResolved;
-    CFArrayRef array;
-    CFStringRef google = CFSTR("www.google.com");
-    CFHostRef host = CFHostCreateWithName(kCFAllocatorDefault, google);
-    CFHostStartInfoResolution (host, kCFHostAddresses, &error);
-    array = CFHostGetAddressing(host, &hasBeenResolved);
-    array = CFHostGetNames (host, &hasBeenResolved);
-    CFRelease(host);
-#else
-    [self activateWWAN];
-#endif
-  }
-#else /* !CYDIA */
-  if (isIpod == FALSE &&
-      [[Reachability sharedReachability] remoteHostStatus] != ReachableViaWiFiNetwork)
-  {
-    return FALSE;
-  }
-#endif
-
+  if ([self wakeUpNetwork] == NO)
+    return NO;
   
   if (_sip_acc_id == PJSUA_INVALID_ID)
   {
@@ -240,7 +350,7 @@ typedef enum ConnectionState {
   {
     return FALSE;
   }
-
+  
   _sip_acc_id = PJSUA_INVALID_ID;
 
   isConnected = FALSE;
@@ -280,6 +390,7 @@ typedef enum ConnectionState {
   NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
                         [NSNumber numberWithInt: 1800], @"regTimeout",
                         [NSNumber numberWithBool:NO], @"enableNat",
+                        [NSNumber numberWithBool:NO], @"enableMJ",
                         [NSNumber numberWithInt: 5060], @"localPort",
                         [NSNumber numberWithInt: 4000], @"rtpPort",
                         [NSNumber numberWithInt: 15], @"kaInterval",
@@ -295,6 +406,7 @@ typedef enum ConnectionState {
                         [NSNumber numberWithBool:NO],   @"enableG7221",
                         [NSNumber numberWithBool:NO],   @"enableG729",
                         [NSNumber numberWithBool:YES],  @"enableGSM",
+                        [NSNumber numberWithBool:NO], @"keepAwake",
                         nil];
   
   [userDef registerDefaults:dict];
@@ -400,7 +512,6 @@ typedef enum ConnectionState {
     /* Voicemail */
     VoicemailController *voicemailController = [[VoicemailController alloc]
                                                 initWithStyle:UITableViewStyleGrouped];
-                                          //autorelease];
     voicemailController.phoneCallDelegate = self;
     UINavigationController *voicemailNavCtrl = [[[UINavigationController alloc]
                                                 initWithRootViewController:
@@ -497,16 +608,6 @@ typedef enum ConnectionState {
       server = [server substringToIndex:range.location];
     }
     
-    [[Reachability sharedReachability] setHostName:server];
-    // The Reachability class is capable of notifying your application when the network
-    // status changes. By default, those notifications are not enabled.
-    // Uncomment the following line to enable them:
-    [[Reachability sharedReachability] setNetworkStatusNotificationsEnabled:YES];
-    // Observe the kNetworkReachabilityChangedNotification. When that notification is posted, the
-    // method "reachabilityChanged" will be called. 
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:@"kNetworkReachabilityChangedNotification" object:nil];
-    
-
     // Build GUI
     callViewController = [[CallViewController alloc] initWithNibName:nil bundle:nil];
     
@@ -515,11 +616,16 @@ typedef enum ConnectionState {
 
    [[NSNotificationCenter defaultCenter] addObserver:self 
                                             selector:@selector(reachabilityChanged:) 
-                                                name:@"kNetworkReachabilityChangedNotification" 
+                                                 name:kReachabilityChangedNotification 
                                               object:nil];
+    _hostReach = [[Reachability reachabilityWithHostName: server] retain];
+    [_hostReach startNotifer];
     
     launchDefault = YES;
     [self performSelector:@selector(sipConnect) withObject:nil afterDelay:0.2];
+    
+    if ([userDef boolForKey:@"keepAwake"])
+      [self keepAwakeEnabled];
   }
 
   [window makeKeyAndVisible];
@@ -528,12 +634,17 @@ typedef enum ConnectionState {
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
+  if ([[NSUserDefaults standardUserDefaults] boolForKey:@"keepAwake"])
+    [self keepAwakeDisabled];
+  
   // TODO enregistrer le numéro en cours pour le rappeler au retour ?
+  [_hostReach stopNotifer];
   [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                  name:@"kNetworkReachabilityChangedNotification" 
+                                                  name:kReachabilityChangedNotification 
                                                 object:nil];
   [self sipCleanup]; // FIXME non logique avec l'appel au démarrage : sipConnect
   //[[NSNotificationCenter defaultCenter] removeObserver:self]; // FIXME il y a des observers qui trainent
+  //[tabBarController release] should be ok !!!
   [callViewController release];
   //[tabBarController release];
   
@@ -612,6 +723,8 @@ typedef enum ConnectionState {
 
 - (void)dealloc
 {
+  [_hostReach release];
+
   [phoneViewController release];
   [recentsViewController release];
   
@@ -718,21 +831,7 @@ typedef enum ConnectionState {
     [callViewController setDtmfCmd:[array objectAtIndex:1]];
   }
 
-#if defined(CYDIA) && (CYDIA == 1)
-  //NetworkStatus networkStatus = NotReachable;
-  BOOL overEDGE = FALSE;
-  if (isIpod == FALSE)
-  {
-    overEDGE = [[NSUserDefaults standardUserDefaults] boolForKey:@"siphonOverEDGE"];
-  }
-  
-  if (!isConnected &&
-    ((overEDGE  && [[Reachability sharedReachability] remoteHostStatus] == NotReachable) ||
-     (!overEDGE && [[Reachability sharedReachability] remoteHostStatus] != ReachableViaWiFiNetwork)))
-#else
-  if (!isConnected &&
-      [[Reachability sharedReachability] remoteHostStatus] != ReachableViaWiFiNetwork)
-#endif
+  if (!isConnected && [self wakeUpNetwork] == NO)
   {
     _phoneNumber = [[NSString stringWithString: number] retain];
     if (isIpod)
@@ -804,8 +903,10 @@ typedef enum ConnectionState {
     case PJSIP_INV_STATE_INCOMING: // After INVITE is received.
       self.idleTimerDisabled = YES;
       self.statusBarStyle = UIStatusBarStyleBlackTranslucent;
-      //if (pjsua_call_get_count() == 1)
-      [tabBarController presentModalViewController:callViewController animated:YES];
+      if (pjsua_call_get_count() == 1)
+      {
+        [tabBarController presentModalViewController:callViewController animated:YES];
+      }
     case PJSIP_INV_STATE_EARLY: // After response with To tag.
     case PJSIP_INV_STATE_CONNECTING: // After 2xx is sent/received.
       break;
@@ -817,20 +918,33 @@ typedef enum ConnectionState {
 #endif
       break;
     case PJSIP_INV_STATE_DISCONNECTED:
+#if 0
       self.idleTimerDisabled = NO;
 #ifdef __IPHONE_3_0
       [UIDevice currentDevice].proximityMonitoringEnabled = NO;
 #else
       self.proximitySensingEnabled = NO;
 #endif
-      //[tabBarController dismissModalViewControllerAnimated: YES];
-      // TODO vérifier si c'est la dernière communication
-      
-      [self performSelector:@selector(disconnected:) 
-                 withObject:nil afterDelay:1.0];
+      if (pjsua_call_get_count() <= 1)
+        [self performSelector:@selector(disconnected:) 
+                   withObject:nil afterDelay:1.0];
+#endif
       break;
   }
   [callViewController processCall: [ notification userInfo ]];
+}
+
+- (void)callDisconnecting
+{
+  self.idleTimerDisabled = NO;
+#ifdef __IPHONE_3_0
+  [UIDevice currentDevice].proximityMonitoringEnabled = NO;
+#else
+  self.proximitySensingEnabled = NO;
+#endif
+  if (pjsua_call_get_count() <= 1)
+    [self performSelector:@selector(disconnected:) 
+               withObject:nil afterDelay:1.0];
 }
 
 - (void)processRegState:(NSNotification *)notification
@@ -874,11 +988,8 @@ typedef enum ConnectionState {
 
 - (void) disconnected:(id)fp8
 {
-  //if (pjsua_call_get_count() == 0)
-  //{
   self.statusBarStyle = UIStatusBarStyleDefault;
   [tabBarController dismissModalViewControllerAnimated: YES];
-	//}
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet 
@@ -915,9 +1026,16 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
   //NSLog(@"reachabilityChanged");
  // SCNetworkReachabilityFlags flags = [[[ notification userInfo ] 
   //                                     objectForKey: @"Flags"] intValue];
+  Reachability* curReach = [notification object];
+  if ([curReach currentReachabilityStatus] == NotReachable)
+  {
   [phoneViewController reachabilityChanged:notification];
   [self sipDisconnect];
+  }
+  else
+  {
   [self sipConnect];
+}
 }
 
 @end

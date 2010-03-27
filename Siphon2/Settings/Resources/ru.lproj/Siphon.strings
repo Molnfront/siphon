@@ -23,15 +23,15 @@
 "Username" = "Имя пользователя";
 "Server" = "Сервер";
 "Password" = "Пароль";
-"Voicemail Number" = "Voicemail Number";
+"Voicemail Number" = "Номер автоответч.";
 "Advanced settings" = "Расш. настройки";
 
 "Phone settings" = "Настройки";
 "Network settings" = "Сетевые настройки";
 
 /* Donate */
-"Donate" = "Donate";
-"Yes" = "Yes";
-"Not Now" = "Later";
-"Exit Settings and donate via PayPal through Safari?" = "Exit Settings and donate via PayPal?";
+"Donate" = "Пожертвовать";
+"Yes" = "Да";
+"Not Now" = "Позже";
+"Exit Settings and donate via PayPal through Safari?" = "Выйти из настроек и отблагодарить разработчика через PayPal";
 

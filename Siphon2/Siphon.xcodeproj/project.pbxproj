@@ -86,6 +86,7 @@
 		7ED5123810A24B8E0017BAE2 /* PushButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 7ED5123710A24B8E0017BAE2 /* PushButton.m */; };
 		7ED5125710A24CD60017BAE2 /* libpjmedia-audiodev-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7ED5125610A24CD60017BAE2 /* libpjmedia-audiodev-arm-apple-darwin9.a */; };
 		7ED5125C10A24D0B0017BAE2 /* libresample-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7ED5125B10A24D0B0017BAE2 /* libresample-arm-apple-darwin9.a */; };
+		7ED88064113494FB00FB14D2 /* DualButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7ED88063113494FB00FB14D2 /* DualButtonView.m */; };
 		7EDAB1840E3B5F7700882D34 /* DialerPhonePad.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EDAB1830E3B5F7700882D34 /* DialerPhonePad.m */; };
 		7EDAB18F0E3B61B500882D34 /* dialerkeypad.png in Resources */ = {isa = PBXBuildFile; fileRef = 7EDAB18E0E3B61B500882D34 /* dialerkeypad.png */; };
 		7EDAB4680E41082300882D34 /* call.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EDAB4670E41082300882D34 /* call.m */; };
@@ -115,6 +116,7 @@
 		7EE7A9970EBF0AD400DA96DC /* dtmf-9.aif in Resources */ = {isa = PBXBuildFile; fileRef = 7EE7A98B0EBF0AD400DA96DC /* dtmf-9.aif */; };
 		7EE7AAE10EC08C3C00DA96DC /* phone.caf in Resources */ = {isa = PBXBuildFile; fileRef = 7EE7AAE00EC08C3C00DA96DC /* phone.caf */; };
 		7EF132DA0E4921C7005680B1 /* CallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EF132D90E4921C7005680B1 /* CallViewController.m */; };
+		7EF98E14115E5B38001D1E21 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EF98E13115E5B38001D1E21 /* IOKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -234,6 +236,11 @@
 		7ED5125510A24C9E0017BAE2 /* MenuCallView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MenuCallView.h; path = Classes/MenuCallView.h; sourceTree = "<group>"; };
 		7ED5125610A24CD60017BAE2 /* libpjmedia-audiodev-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjmedia-audiodev-arm-apple-darwin9.a"; path = "../pjproject-svn/pjmedia/lib/libpjmedia-audiodev-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
 		7ED5125B10A24D0B0017BAE2 /* libresample-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libresample-arm-apple-darwin9.a"; path = "../pjproject-svn/third_party/lib/libresample-arm-apple-darwin9.a"; sourceTree = SOURCE_ROOT; };
+		7ED87EB411327E5300FB14D2 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = Resources/nl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		7ED87EE411330D3600FB14D2 /* PhoneCallDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoneCallDelegate.h; path = Classes/PhoneCallDelegate.h; sourceTree = "<group>"; };
+		7ED87F401133260200FB14D2 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = Resources/sv.lproj/Localizable.strings; sourceTree = "<group>"; };
+		7ED88062113494FB00FB14D2 /* DualButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DualButtonView.h; path = Classes/DualButtonView.h; sourceTree = "<group>"; };
+		7ED88063113494FB00FB14D2 /* DualButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DualButtonView.m; path = Classes/DualButtonView.m; sourceTree = "<group>"; };
 		7EDAB1820E3B5F7700882D34 /* DialerPhonePad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DialerPhonePad.h; path = Classes/DialerPhonePad.h; sourceTree = "<group>"; };
 		7EDAB1830E3B5F7700882D34 /* DialerPhonePad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DialerPhonePad.m; path = Classes/DialerPhonePad.m; sourceTree = "<group>"; };
 		7EDAB18E0E3B61B500882D34 /* dialerkeypad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = dialerkeypad.png; path = Resources/dialerkeypad.png; sourceTree = "<group>"; };
@@ -269,6 +276,7 @@
 		7EECB0260EF857130044293F /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constants.h; path = Classes/constants.h; sourceTree = "<group>"; };
 		7EF132D80E4921C7005680B1 /* CallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CallViewController.h; path = Classes/CallViewController.h; sourceTree = "<group>"; };
 		7EF132D90E4921C7005680B1 /* CallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CallViewController.m; path = Classes/CallViewController.m; sourceTree = "<group>"; };
+		7EF98E13115E5B38001D1E21 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -299,6 +307,7 @@
 				7ED5125C10A24D0B0017BAE2 /* libresample-arm-apple-darwin9.a in Frameworks */,
 				7ED0583010C5C3A5007F69B4 /* libg7221codec-arm-apple-darwin9.a in Frameworks */,
 				7ED0583410C5C3D4007F69B4 /* libg729a.a in Frameworks */,
+				7EF98E14115E5B38001D1E21 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,6 +398,9 @@
 		2207C6F30DF9EAF400B5CFBD /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				7ED88062113494FB00FB14D2 /* DualButtonView.h */,
+				7ED88063113494FB00FB14D2 /* DualButtonView.m */,
+				7ED87EE411330D3600FB14D2 /* PhoneCallDelegate.h */,
 				7ED5123610A24B8E0017BAE2 /* PushButton.h */,
 				7ED5123710A24B8E0017BAE2 /* PushButton.m */,
 				7EE0DB20102C953500831291 /* VoicemailController.h */,
@@ -477,6 +489,7 @@
 		7EDAB5860E425BCB00882D34 /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7EF98E13115E5B38001D1E21 /* IOKit.framework */,
 				7E21FB1A0F2BD59B00AD2C7C /* CFNetwork.framework */,
 				7EC38E560E9C10B0006C8D19 /* libsqlite3.0.dylib */,
 				7EBF2F210E47A69C0018FB48 /* CoreGraphics.framework */,
@@ -570,6 +583,8 @@
 				he,
 				ca,
 				sk,
+				nl,
+				sv,
 			);
 			mainGroup = 2207C6DA0DF9E9B200B5CFBD;
 			productRefGroup = 2207C6FD0DF9EB7000B5CFBD /* Products */;
@@ -697,6 +712,7 @@
 				7E986F960F89664300930F9C /* AbsLCDView.m in Sources */,
 				7EE0DB22102C953500831291 /* VoicemailController.m in Sources */,
 				7ED5123810A24B8E0017BAE2 /* PushButton.m in Sources */,
+				7ED88064113494FB00FB14D2 /* DualButtonView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -717,10 +733,12 @@
 				7EC42472102838F7005EDE22 /* hr */,
 				7EA0F1FE0E7EFF16004A6F7D /* it */,
 				7EC42474102839A0005EDE22 /* ko */,
+				7ED87EB411327E5300FB14D2 /* nl */,
 				7EC38FC20E9D701F006C8D19 /* pt */,
 				7E49156E0F89515D00A0CF44 /* ru */,
 				7E05EF53106EC85F00670BB8 /* sk */,
 				7E082D470F3DC4E4006E317E /* sl */,
+				7ED87F401133260200FB14D2 /* sv */,
 				7E188CA20F61E1610031D080 /* zh_CN */,
 				7E188CA30F61E1750031D080 /* zh_TW */,
 			);
@@ -776,6 +794,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"CYDIA=1",
 					"RING_FILE=1",

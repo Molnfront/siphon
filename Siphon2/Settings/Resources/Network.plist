@@ -22,6 +22,18 @@
 			<key>defaults</key>
 			<string>com.googlecode.siphon</string>
 			<key>key</key>
+			<string>keepAwake</string>
+			<key>label</key>
+			<string>Keep Awake</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.googlecode.siphon</string>
+			<key>key</key>
 			<string>siphonOverEDGE</string>
 			<key>label</key>
 			<string>Siphon over EDGE/3G</string>

@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
+ *  Copyright (C) 2008-2010 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,7 +39,11 @@
 	button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
 	
 	[button setTitle:title forState:UIControlStateNormal];
+#ifdef __IPHONE_3_0
+  button.titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont buttonFontSize]]; 
+#else
   button.font = [UIFont boldSystemFontOfSize:[UIFont buttonFontSize]]; 
+#endif
   [button setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
   //button.titleEdgeInsets = UIEdgeInsetsMake (0.0f, 2.0f, 0.0f, 0.0f);
   //button.font = [UIFont systemFontOfSize: 30.0];

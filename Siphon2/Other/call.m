@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
+ *  Copyright (C) 2008-2010 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,15 +26,14 @@
 #include "ring.h"
 #include "dtmf.h"
 
-#if defined(MWI) && (MWI == 1)
-#include "message_summary.h"
-#include "pjsua_messum.h"
-#endif
+#define MWI 1
+
 
 #define THIS_FILE "call.m"
 
 NSString *kSIPCallState         = @"CallState";
 NSString *kSIPRegState          = @"RegState";
+NSString *kSIPMwiInfo           = @"MWIInfo";
 
 
 static void postCallStateNotification(pjsua_call_id call_id, const pjsua_call_info *ci)
@@ -237,6 +236,56 @@ static void on_reg_state(pjsua_acc_id acc_id)
 //  }
 }
 
+
+#if defined(MWI) && MWI==1
+/*
+ * MWI indication
+ */
+static void on_mwi_info(pjsua_acc_id acc_id, pjsua_mwi_info *mwi_info)
+{
+  pj_str_t body;
+  NSString *bodyText;
+  
+  PJ_LOG(3,(THIS_FILE, "Received MWI for acc %d:", acc_id));
+  
+  if (mwi_info->rdata->msg_info.ctype) {
+    const pjsip_ctype_hdr *ctype = mwi_info->rdata->msg_info.ctype;
+    
+    PJ_LOG(3,(THIS_FILE, " Content-Type: %.*s/%.*s",
+              (int)ctype->media.type.slen,
+              ctype->media.type.ptr,
+              (int)ctype->media.subtype.slen,
+              ctype->media.subtype.ptr));
+  }
+  
+  if (!mwi_info->rdata->msg_info.msg->body) {
+    PJ_LOG(3,(THIS_FILE, "  no message body"));
+    return;
+  }
+  
+  body.ptr = mwi_info->rdata->msg_info.msg->body->data;
+  body.slen = mwi_info->rdata->msg_info.msg->body->len;
+  
+  PJ_LOG(3,(THIS_FILE, " Body:\n%.*s", (int)body.slen, body.ptr));
+  
+  if (body.slen == 0)
+    return;
+  
+  NSAutoreleasePool *autoreleasePool = [[ NSAutoreleasePool alloc ] init];
+  bodyText = [NSString stringWithUTF8String:body.ptr];
+  
+  NSDictionary *userinfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                            [NSNumber numberWithInt: acc_id], @"AccountID",
+                            bodyText, @"Body", 
+                            nil];
+  
+  [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadWithName:kSIPMwiInfo 
+                                                                      object:nil 
+                                                                    userInfo:userinfo];
+  [autoreleasePool release];
+}
+#endif /* MWI */
+
 typedef struct struct_codecs {
   NSString *param;
   pj_str_t pjsip_name;
@@ -335,10 +384,12 @@ pj_status_t sip_startup(app_config_t *app_config)
 #endif
 
   pjsua_media_config_default(&(app_config->media_cfg));
-  app_config->media_cfg.clock_rate = 8000;
-  app_config->media_cfg.snd_clock_rate = 8000;
-  //app_config->media_cfg.clock_rate = 44100;
-  //app_config->media_cfg.snd_clock_rate = 44100;
+  
+  // TODO select clock rate with enabled codec (8000 if nb codec only, or 16000 and more if wb codec)
+  //app_config->media_cfg.clock_rate = 8000;
+  //app_config->media_cfg.snd_clock_rate = 8000;
+  app_config->media_cfg.clock_rate = 16000;
+  app_config->media_cfg.snd_clock_rate = 16000;
   //app_config->media_cfg.ec_options = 0;//0=default,1=speex, 2=suppressor
 
   if (![[NSUserDefaults standardUserDefaults] boolForKey:@"enableEC"])
@@ -419,10 +470,14 @@ pj_status_t sip_startup(app_config_t *app_config)
 #endif
   
   /* Initialize application callbacks */
-  app_config->cfg.cb.on_incoming_call = &on_incoming_call;
-  app_config->cfg.cb.on_call_media_state = &on_call_media_state;
   app_config->cfg.cb.on_call_state = &on_call_state;
+  app_config->cfg.cb.on_call_media_state = &on_call_media_state;
+  app_config->cfg.cb.on_incoming_call = &on_incoming_call;
   app_config->cfg.cb.on_reg_state = &on_reg_state;
+#if defined(MWI) && MWI==1
+  app_config->cfg.cb.on_mwi_info = &on_mwi_info;
+  app_config->cfg.enable_unsolicited_mwi = PJ_TRUE;
+#endif
 
   srv = [[[NSUserDefaults standardUserDefaults] stringForKey: 
               @"stunServer"] UTF8String];
@@ -473,18 +528,6 @@ pj_status_t sip_startup(app_config_t *app_config)
   if (status != PJ_SUCCESS)
     goto error;
 
-#if defined(MWI) && (MWI == 1)
-  /* Initialize Message Summary and Message Waiting Indication Event Package */
-  status = pjsip_mwi_init_module( pjsua_get_pjsip_endpt()/*pjsua_var.endpt*/, 
-                                  pjsip_evsub_instance());
-  if (status != PJ_SUCCESS)
-    goto error;
-  /* Init pjsua message summary handler: */
-  status = pjsua_mwi_init();
-  if (status != PJ_SUCCESS)
-    goto error;
-#endif
-  
   /* Initialize Ring and Ringback */
   sip_ring_init(app_config);
   
@@ -517,12 +560,6 @@ pj_status_t sip_startup(app_config_t *app_config)
   if (status != PJ_SUCCESS)
     goto error;
   
-#if defined(MWI) && (MWI == 1)
-  status = pjsua_mwi_start();
-  if (status != PJ_SUCCESS)
-    goto error;
-#endif
-
   return status;
 error:
   sip_cleanup(app_config);
@@ -544,11 +581,6 @@ pj_status_t sip_cleanup(app_config_t *app_config)
     app_config->pool = NULL;
   }
 
-#if defined(MWI) && ( MWI == 1)
-  /* Terminate all message summary subscriptions. */
-	pjsua_mwi_shutdown();
-#endif
-  
   /* Destroy pjsua */
   status = pjsua_destroy();
   
@@ -624,10 +656,16 @@ pj_status_t sip_connect(pj_pool_t *pool, pjsua_acc_id *acc_id)
     acc_cfg.cred_info[0].username = pj_str((char *)authname);
   else
     acc_cfg.cred_info[0].username = pj_str((char *)uname);
-  acc_cfg.cred_info[0].data_type = PJSIP_CRED_DATA_PLAIN_PASSWD;
+  if ([[NSUserDefaults standardUserDefaults] boolForKey:@"enableMJ"])
+    acc_cfg.cred_info[0].data_type = PJSIP_CRED_DATA_MJ_DIGEST;
+  else
+    acc_cfg.cred_info[0].data_type = PJSIP_CRED_DATA_PLAIN_PASSWD;
   acc_cfg.cred_info[0].data = pj_str((char *)passwd);
   
   acc_cfg.publish_enabled = PJ_TRUE;
+#if defined(MWI) && MWI==1
+  acc_cfg.mwi_enabled = PJ_TRUE;
+#endif
 
   acc_cfg.allow_contact_rewrite = [[NSUserDefaults standardUserDefaults] 
                                    boolForKey:@"enableNat"];

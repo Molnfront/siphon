@@ -1,6 +1,6 @@
 /**
  *  Siphon SIP-VoIP for iPhone and iPod Touch
- *  Copyright (C) 2008-2009 Samuel <samuelv0304@gmail.com>
+ *  Copyright (C) 2008-2010 Samuel <samuelv0304@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,26 +22,40 @@
 #import "SiphonSettings.h"
 
 @implementation CodecSettings
-- (NSArray *)specifiers 
+
+- (id) specifiers 
 {
-  NSArray *s = [self loadSpecifiersFromPlistName:@"Codec" target: self];
-  return s;
+	if (!_specifiers)
+  {
+    _specifiers = [[self loadSpecifiersFromPlistName:@"Codec"  target: self] retain];
+	}
+  
+	return _specifiers;
 }
 @end
 
 @implementation AdvancedSettings
-- (NSArray *)specifiers 
+
+- (id) specifiers 
 {
-  NSArray *s = [self loadSpecifiersFromPlistName:@"Advanced" target: self];
-  return s;
+	if (!_specifiers)
+  {
+    _specifiers = [[self loadSpecifiersFromPlistName:@"Advanced"  target: self] retain];
+	}
+  
+	return _specifiers;
 }
 @end
 
 @implementation PhoneSettings
-- (NSArray *)specifiers 
+- (id) specifiers 
 {
-  NSArray *s = [self loadSpecifiersFromPlistName:@"Phone" target: self];
-  return s;
+	if (!_specifiers)
+  {
+    _specifiers = [[self loadSpecifiersFromPlistName:@"Phone"  target: self] retain];
+	}
+  
+	return _specifiers;
 }
 
 -(void)setCellularButton:(id)value specifier:(id)specifier
@@ -66,18 +80,26 @@
 @end
 
 @implementation NetworkSettings
-- (NSArray *)specifiers 
+- (id) specifiers 
 {
-  NSArray *s = [self loadSpecifiersFromPlistName:@"Network" target: self];
-  return s;
+	if (!_specifiers)
+  {
+    _specifiers = [[self loadSpecifiersFromPlistName:@"Network"  target: self] retain];
+	}
+  
+	return _specifiers;
 }
 @end
 
 @implementation SiphonSettings
-- (NSArray *)specifiers 
+- (id) specifiers 
 {
-  NSArray *s = [self loadSpecifiersFromPlistName:@"Siphon" target: self];
-  return s;
+	if (!_specifiers)
+  {
+    _specifiers = [[self loadSpecifiersFromPlistName:@"Siphon"  target: self] retain];
+	}
+  
+	return _specifiers;
 }
 
 -(void)donate:(id)param 
